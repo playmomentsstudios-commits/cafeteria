@@ -4,134 +4,203 @@
 <meta charset="UTF-8">
 <title>Painel Admin • Cardápio Digital</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 body{margin:0;font-family:Arial,sans-serif;background:#f4f4f4}
 header{background:#1d3557;color:#fff;padding:15px;text-align:center}
 main{max-width:1100px;margin:auto;padding:20px}
 .card{background:#fff;border-radius:10px;padding:15px;margin-bottom:20px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 h2{margin-top:0}
-input,select,button{width:100%;padding:10px;margin:6px 0;border-radius:6px;border:1px solid #ccc}
+input,button{width:100%;padding:10px;margin:6px 0;border-radius:6px;border:1px solid #ccc}
 button{background:#457b9d;color:#fff;border:none;cursor:pointer}
 button:hover{opacity:.9}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{padding:10px;border-bottom:1px solid #ddd;text-align:left}
-.actions button{width:auto;margin-right:5px;padding:6px 10px;font-size:12px}
 .login{max-width:400px;margin:80px auto}
 .hidden{display:none}
+small{color:#888}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>Painel Admin – Cardápio Digital</h1>
+  <h1>Painel Admin – Cardápio Digital</h1>
 </header>
 
 <main>
+
 <!-- LOGIN -->
-<div id="login" class="card login">
-<h2>Login</h2>
-<input type="email" id="email" placeholder="E-mail">
-<input type="password" id="password" placeholder="Senha">
-<button onclick="login()">Entrar</button>
+<div id="loginBox" class="card login">
+  <h2>Login</h2>
+  <input id="email" type="email" placeholder="E-mail">
+  <input id="password" type="password" placeholder="Senha">
+  <button onclick="login()">Entrar</button>
+  <small id="loginErro"></small>
 </div>
 
 <!-- PAINEL -->
 <div id="painel" class="hidden">
 
-<div class="card">
-<h2>Clientes</h2>
-<div class="grid">
-<input id="cliente_nome" placeholder="Nome do cliente">
-<input id="cliente_slug" placeholder="Slug (ex: cafeteria)">
-<input id="cliente_whatsapp" placeholder="WhatsApp (DDD + número)">
-<button onclick="criarCliente()">Cadastrar Cliente</button>
-</div>
-<table class="table" id="listaClientes"></table>
+  <!-- CLIENTES -->
+  <div class="card">
+    <h2>Clientes</h2>
+    <div class="grid">
+      <input id="cliente_nome" placeholder="Nome do cliente">
+      <input id="cliente_slug" placeholder="Slug (ex: cuscuzdabaiana)">
+      <input id="cliente_whatsapp" placeholder="WhatsApp (DDD + número)">
+      <button onclick="criarCliente()">Cadastrar Cliente</button>
+    </div>
+    <table class="table" id="listaClientes"></table>
+  </div>
+
+  <!-- PRODUTOS -->
+  <div class="card">
+    <h2>Produtos</h2>
+    <div class="grid">
+      <input id="produto_cliente" placeholder="Slug do cliente">
+      <input id="produto_nome" placeholder="Nome do produto">
+      <input id="produto_desc" placeholder="Descrição">
+      <input id="produto_preco" type="number" step="0.01" placeholder="Preço">
+      <input id="produto_img" placeholder="URL da imagem">
+      <button onclick="criarProduto()">Cadastrar Produto</button>
+    </div>
+    <table class="table" id="listaProdutos"></table>
+  </div>
+
+  <button onclick="logout()">Sair</button>
+
 </div>
 
-<div class="card">
-<h2>Produtos</h2>
-<input id="produto_cliente" placeholder="Slug do cliente">
-<input id="produto_nome" placeholder="Nome do produto">
-<input id="produto_desc" placeholder="Descrição">
-<input id="produto_preco" type="number" placeholder="Preço">
-<input id="produto_img" placeholder="URL da imagem">
-<button onclick="criarProduto()">Cadastrar Produto</button>
-<table class="table" id="listaProdutos"></table>
-</div>
-
-<button onclick="logout()">Sair</button>
-</div>
 </main>
 
 <script>
-const supabaseUrl = 'https://rgsnmxspyywwouhcdwkj.supabase.co';
-const supabaseKey = 'sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+// ===============================
+// SUPABASE CONFIG
+// ===============================
+const SUPABASE_URL = 'https://rgsnmxspyywwouhcdwkj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1';
 
-async function login(){
- const { error } = await supabaseClient.auth.signInWithPassword({
-  email: email.value,
-  password: password.value
- });
- if(error) return alert('Erro no login');
- iniciar();
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+// ===============================
+// AUTH
+// ===============================
+async function login() {
+  loginErro.innerText = '';
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email.value.trim(),
+    password: password.value.trim()
+  });
+
+  if (error) {
+    console.error(error);
+    loginErro.innerText = error.message;
+    return;
+  }
+
+  iniciarPainel();
 }
 
-async function iniciar(){
- login.classList.add('hidden');
- painel.classList.remove('hidden');
- carregarClientes();
- carregarProdutos();
+async function logout() {
+  await supabaseClient.auth.signOut();
+  location.reload();
 }
 
-async function logout(){
- await supabaseClient.auth.signOut();
- location.reload();
-}
-
-async function criarCliente(){
- await supabaseClient.from('clientes').insert({
-  nome: cliente_nome.value,
-  slug: cliente_slug.value,
-  whatsapp: cliente_whatsapp.value,
-  ativo:true
- });
- carregarClientes();
-}
-
-async function carregarClientes(){
- const { data } = await supabaseClient.from('clientes').select('*');
- listaClientes.innerHTML = '<tr><th>Nome</th><th>Slug</th><th>WhatsApp</th></tr>';
- data.forEach(c=>{
-  listaClientes.innerHTML += `<tr><td>${c.nome}</td><td>${c.slug}</td><td>${c.whatsapp}</td></tr>`;
- });
-}
-
-async function criarProduto(){
- await supabaseClient.from('produtos').insert({
-  cliente_slug: produto_cliente.value,
-  nome: produto_nome.value,
-  descricao: produto_desc.value,
-  preco: produto_preco.value,
-  imagem: produto_img.value,
-  ativo:true
- });
- carregarProdutos();
-}
-
-async function carregarProdutos(){
- const { data } = await supabaseClient.from('produtos').select('*');
- listaProdutos.innerHTML = '<tr><th>Cliente</th><th>Produto</th><th>Preço</th></tr>';
- data.forEach(p=>{
-  listaProdutos.innerHTML += `<tr><td>${p.cliente_slug}</td><td>${p.nome}</td><td>R$ ${p.preco}</td></tr>`;
- });
-}
-
-supabaseClient.auth.getSession().then(({data})=>{
- if(data.session) iniciar();
+// Sessão persistente
+supabaseClient.auth.getSession().then(({ data }) => {
+  if (data.session) iniciarPainel();
 });
+
+// ===============================
+// PAINEL
+// ===============================
+function iniciarPainel() {
+  loginBox.classList.add('hidden');
+  painel.classList.remove('hidden');
+  carregarClientes();
+  carregarProdutos();
+}
+
+// ===============================
+// CLIENTES
+// ===============================
+async function criarCliente() {
+  await supabaseClient.from('clientes').insert({
+    nome: cliente_nome.value,
+    slug: cliente_slug.value,
+    whatsapp: cliente_whatsapp.value,
+    ativo: true
+  });
+
+  cliente_nome.value = '';
+  cliente_slug.value = '';
+  cliente_whatsapp.value = '';
+
+  carregarClientes();
+}
+
+async function carregarClientes() {
+  const { data } = await supabaseClient.from('clientes').select('*');
+  listaClientes.innerHTML =
+    '<tr><th>Nome</th><th>Slug</th><th>WhatsApp</th></tr>';
+
+  data?.forEach(c => {
+    listaClientes.innerHTML += `
+      <tr>
+        <td>${c.nome}</td>
+        <td>${c.slug}</td>
+        <td>${c.whatsapp}</td>
+      </tr>
+    `;
+  });
+}
+
+// ===============================
+// PRODUTOS
+// ===============================
+async function criarProduto() {
+  await supabaseClient.from('produtos').insert({
+    cliente_slug: produto_cliente.value,
+    nome: produto_nome.value,
+    descricao: produto_desc.value,
+    preco: Number(produto_preco.value),
+    imagem: produto_img.value,
+    ativo: true
+  });
+
+  produto_cliente.value = '';
+  produto_nome.value = '';
+  produto_desc.value = '';
+  produto_preco.value = '';
+  produto_img.value = '';
+
+  carregarProdutos();
+}
+
+async function carregarProdutos() {
+  const { data } = await supabaseClient.from('produtos').select('*');
+  listaProdutos.innerHTML =
+    '<tr><th>Cliente</th><th>Produto</th><th>Preço</th></tr>';
+
+  data?.forEach(p => {
+    listaProdutos.innerHTML += `
+      <tr>
+        <td>${p.cliente_slug}</td>
+        <td>${p.nome}</td>
+        <td>R$ ${Number(p.preco).toFixed(2)}</td>
+      </tr>
+    `;
+  });
+}
 </script>
+
 </body>
 </html>
