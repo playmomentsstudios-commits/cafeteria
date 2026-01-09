@@ -1,40 +1,40 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "./supabaseAdmin.js";
 
-/**
- * Valida o token do usuário (Bearer) e confirma se é admin.
- * Aqui admin é por email (rápido). Dá pra trocar por tabela/role depois.
- */
-export async function requireAdmin(req) {
-  const url = process.env.SUPABASE_URL;
-  const anonKey = process.env.SUPABASE_ANON_KEY;
-  const adminEmails = (process.env.ADMIN_EMAILS || "")
+function parseAdminEmails() {
+  const raw = process.env.ADMIN_EMAILS || "";
+  return raw
     .split(",")
     .map(s => s.trim().toLowerCase())
     .filter(Boolean);
+}
 
-  if (!url || !anonKey) throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY");
+export async function requireAdmin(req) {
+  try {
+    const authHeader = req.headers.authorization || "";
+    const match = authHeader.match(/^Bearer\s+(.+)$/i);
+    if (!match) return { ok: false, status: 401, error: "Missing Bearer token" };
 
-  const authHeader = req.headers.authorization || "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!token) {
-    return { ok: false, status: 401, error: "Missing Bearer token" };
+    const token = match[1].trim();
+    if (!token) return { ok: false, status: 401, error: "Missing Bearer token" };
+
+    const sb = supabaseAdmin();
+
+    // ✅ valida token no Supabase Auth
+    const { data, error } = await sb.auth.getUser(token);
+
+    if (error || !data?.user) {
+      return { ok: false, status: 401, error: "Invalid token" };
+    }
+
+    const email = (data.user.email || "").toLowerCase();
+    const allowed = parseAdminEmails();
+
+    if (!email || !allowed.includes(email)) {
+      return { ok: false, status: 403, error: "Not an admin" };
+    }
+
+    return { ok: true, status: 200, user: data.user };
+  } catch (e) {
+    return { ok: false, status: 500, error: e?.message || "Auth error" };
   }
-
-  // cria um client usando o token do usuário só para ler user info
-  const sbUser = createClient(url, anonKey, {
-    global: { headers: { Authorization: `Bearer ${token}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-
-  const { data, error } = await sbUser.auth.getUser();
-  if (error || !data?.user) {
-    return { ok: false, status: 401, error: "Invalid token" };
-  }
-
-  const email = (data.user.email || "").toLowerCase();
-  if (!adminEmails.includes(email)) {
-    return { ok: false, status: 403, error: "Not an admin" };
-  }
-
-  return { ok: true, user: data.user };
 }
