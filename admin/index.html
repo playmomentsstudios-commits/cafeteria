@@ -1,1376 +1,1290 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Painel Alfa – Cardápio Digital</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Painel Alfa — Cardápio Digital</title>
 
-  <!-- Supabase JS v2 (só para AUTH no front) -->
+  <!-- Supabase JS (browser) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg: #0b1220;
-      --surface: rgba(255,255,255,.06);
-      --card: rgba(255,255,255,.08);
-      --border: rgba(255,255,255,.12);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.65);
-      --brand: #5aa9ff;
-      --brand2: #2f7dff;
-      --danger: #ff5a7a;
-      --ok: #37d67a;
-      --shadow: 0 18px 50px rgba(0,0,0,.35);
-      --radius: 16px;
+      --bg:#071523;
+      --panel:rgba(255,255,255,.07);
+      --panel2:rgba(255,255,255,.10);
+      --stroke:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.70);
+      --danger:#ff4d4f;
+      --warn:#ffcc00;
+      --ok:#28d17c;
+      --brand:#2c6cff;
+      --brand2:#00d4ff;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --radius:18px;
+      --radius2:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
-    * { box-sizing: border-box; }
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
-      background: radial-gradient(1200px 600px at 20% 0%, rgba(90,169,255,.25), transparent 60%),
-                  radial-gradient(900px 600px at 80% 20%, rgba(55,214,122,.18), transparent 60%),
-                  var(--bg);
-      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(44,108,255,.25), transparent 60%),
+        radial-gradient(1000px 600px at 90% 20%, rgba(0,212,255,.18), transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(40,209,124,.12), transparent 60%),
+        linear-gradient(180deg, #06101b, #040a12);
+      min-height:100vh;
     }
 
-    .container{ max-width: 1180px; margin: 18px auto; padding: 0 14px 34px; }
-
-    header{
-      margin: 14px 0 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: var(--shadow);
+    a{color:inherit}
+    .wrap{max-width:1180px;margin:0 auto;padding:22px 18px 56px}
+    .top{
+      display:flex;align-items:stretch;justify-content:space-between;gap:16px;
+      padding:18px 18px;
+      border-radius:22px;
+      background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
     }
 
-    .header-top{
-      display:flex; gap:14px; justify-content: space-between; align-items:center;
-      flex-wrap:wrap;
+    .brand{
+      display:flex;gap:14px;align-items:center;min-width:280px;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:16px;
+      background:linear-gradient(135deg, rgba(44,108,255,.35), rgba(0,212,255,.20));
+      border:1px dashed rgba(255,255,255,.35);
+      display:grid;place-items:center;
+      font-weight:800;letter-spacing:.5px;
+      user-select:none;
+    }
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      line-height:1.1;
+    }
+    .brand p{
+      margin:4px 0 0;
+      font-size:12px;color:var(--muted)
     }
 
-    .brandbox{ display:flex; gap:12px; align-items:center; min-width: 240px; }
-    .logo-slot{
-      width:46px; height:46px; border-radius: 14px;
-      border: 1px dashed rgba(255,255,255,.28);
-      background: rgba(255,255,255,.06);
-      display:flex; align-items:center; justify-content:center;
-      color: var(--muted); font-weight: 900; user-select:none;
+    .pillrow{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end;
+      flex:1;
     }
-
-    .brandtext h1{ margin:0; font-size: 18px; letter-spacing: .2px; }
-    .brandtext .sub{ margin-top: 2px; font-size: 12px; color: var(--muted); }
-
-    .hdr-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
     .pill{
-      display:inline-flex; gap:8px; align-items:center;
-      padding:8px 10px; border-radius: 999px;
-      border: 1px solid var(--border); background: rgba(255,255,255,.06);
-      color: var(--text); font-size: 12px; white-space: nowrap;
+      display:flex;gap:8px;align-items:center;
+      padding:8px 12px;border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--stroke);
+      font-size:12px;color:var(--muted);
+      max-width:420px;
     }
-    .pill code{
-      color: rgba(255,255,255,.85);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 11px;
-    }
-
+    .pill b{color:var(--text);font-weight:700}
+    .pill code{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.82)}
     .btn{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: 850;
-      transition: transform .08s ease, background .15s ease, border .15s ease;
-    }
-    .btn:hover{ background: rgba(255,255,255,.09); }
-    .btn:active{ transform: translateY(1px); }
-    .btn.primary{
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
-      border-color: rgba(255,255,255,.15);
-      color: #06101f;
-    }
-    .btn.danger{
-      background: rgba(255,90,122,.14);
-      border-color: rgba(255,90,122,.35);
-      color: rgba(255,255,255,.92);
-    }
-    .btn.small{ padding: 8px 10px; border-radius: 14px; font-size: 12px; }
-    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
-
-    .summary{
-      display:grid; grid-template-columns: repeat(3, 1fr);
-      gap: 12px; margin-top: 14px;
-    }
-    @media (max-width: 860px){ .summary{ grid-template-columns: 1fr; } }
-
-    .sumcard{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      border-radius: var(--radius);
-      padding: 12px 14px;
-      display:flex; justify-content: space-between; align-items:center; gap:10px;
-      min-height: 64px;
-    }
-    .sumcard .label{ color: var(--muted); font-size: 12px; }
-    .sumcard .value{ font-size: 20px; font-weight: 950; }
-
-    .panel{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .hidden{ display:none; }
-    .muted{ color: var(--muted); font-size: 13px; }
-
-    .tabs{ margin-top: 16px; display:flex; justify-content: center; }
-    .seg{
-      display:flex; gap:0;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      border-radius: 999px;
-      overflow:hidden;
-      width: fit-content;
-    }
-    .seg button{
-      border:0; background: transparent;
-      color: var(--muted);
-      padding: 10px 18px;
+      appearance:none;border:1px solid var(--stroke);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      padding:9px 14px;border-radius:12px;
+      font-weight:700;font-size:13px;
       cursor:pointer;
-      font-weight: 950;
-      transition: background .15s ease, color .15s ease;
-      letter-spacing: .2px;
+      transition:transform .05s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      display:inline-flex;align-items:center;gap:8px;
     }
-    .seg button.active{ background: rgba(255,255,255,.12); color: var(--text); }
-    .seg button:hover{ background: rgba(255,255,255,.09); color: var(--text); }
-
-    .card{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-top: 14px;
+    .btn:hover{background:rgba(255,255,255,.12)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{
+      background:linear-gradient(135deg, rgba(44,108,255,.95), rgba(0,212,255,.55));
+      border-color:rgba(0,0,0,.0);
+      color:#06101b;
     }
+    .btn.danger{background:rgba(255,77,79,.12);border-color:rgba(255,77,79,.25)}
+    .btn.ghost{background:transparent}
+    .btn.small{padding:7px 10px;border-radius:10px;font-size:12px}
+    .btn.icon{padding:8px 10px}
+    .btn[disabled]{opacity:.55;cursor:not-allowed}
 
-    .row{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .row3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    @media (max-width: 900px){ .row,.row3{ grid-template-columns: 1fr; } }
-
-    label{ font-size: 12px; color: var(--muted); display:block; margin: 4px 0 6px; }
-
-    input, select, textarea{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.22);
-      color: var(--text);
-      outline: none;
-      transition: border .15s ease, background .15s ease;
+    .grid3{
+      margin-top:14px;
+      display:grid;grid-template-columns: 1fr 1fr 1fr;gap:12px;
     }
-    input::placeholder, textarea::placeholder{ color: rgba(255,255,255,.45); }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(90,169,255,.55);
-      background: rgba(0,0,0,.28);
+    .stat{
+      border-radius:18px;
+      background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      border:1px solid var(--stroke);
+      box-shadow:0 10px 30px rgba(0,0,0,.22);
+      padding:14px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      min-height:64px;
     }
-    textarea{ min-height: 96px; resize: vertical; }
-
-    .form-actions{ display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top: 12px; }
-
-    .table-wrap{
-      margin-top: 12px;
-      overflow:auto;
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.04);
-    }
-    table{ width:100%; border-collapse: collapse; min-width: 980px; }
-    th, td{
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      vertical-align: top;
-      font-size: 14px;
-    }
-    th{
-      position: sticky; top: 0;
-      background: rgba(0,0,0,.35);
-      color: rgba(255,255,255,.88);
-      font-size: 12px;
-      letter-spacing: .3px;
-      text-transform: uppercase;
-    }
-
-    code{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 12px;
-      color: rgba(255,255,255,.86);
-    }
-
-    .actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-
-    .tag{
-      display:inline-flex; align-items:center; gap:6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      font-size: 12px;
-      color: rgba(255,255,255,.88);
+    .stat .label{font-size:12px;color:var(--muted);margin-bottom:4px}
+    .stat .value{font-size:20px;font-weight:900}
+    .stat .tag{
+      font-size:11px;color:rgba(255,255,255,.75);
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.06);
+      padding:6px 10px;border-radius:999px;
       white-space:nowrap;
     }
-    .tag.ok{ border-color: rgba(55,214,122,.35); background: rgba(55,214,122,.10); }
-    .tag.off{ border-color: rgba(255,90,122,.35); background: rgba(255,90,122,.10); }
 
-    .switch{ position: relative; width: 46px; height: 26px; display:inline-block; }
-    .switch input{ display:none; }
-    .slider{
-      position:absolute; inset:0;
-      background: rgba(255,255,255,.14);
-      border:1px solid rgba(255,255,255,.16);
-      border-radius: 999px;
-      transition: .2s;
+    .tabsWrap{
+      margin-top:14px;
+      display:flex;justify-content:center;
+    }
+    .tabs{
+      display:flex;gap:8px;align-items:center;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--stroke);
+      padding:6px;border-radius:999px;
+      box-shadow:0 10px 30px rgba(0,0,0,.18);
+    }
+    .tab{
+      padding:9px 14px;border-radius:999px;
+      font-weight:800;font-size:13px;
       cursor:pointer;
+      border:1px solid transparent;
+      color:rgba(255,255,255,.82);
+      background:transparent;
+      transition:background .2s ease, color .2s ease;
     }
-    .slider:before{
-      content:"";
-      position:absolute;
-      width: 20px; height: 20px;
-      left: 3px; top: 2px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.85);
-      transition:.2s;
-    }
-    .switch input:checked + .slider{
-      background: rgba(55,214,122,.22);
-      border-color: rgba(55,214,122,.28);
-    }
-    .switch input:checked + .slider:before{
-      transform: translateX(20px);
-      background: rgba(255,255,255,.92);
+    .tab.active{
+      background:rgba(255,255,255,.14);
+      border-color:rgba(255,255,255,.14);
+      color:var(--text);
     }
 
-    .msg{
-      padding: 10px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.14);
-      margin-top: 12px;
-      background: rgba(255,255,255,.06);
-    }
-    .msg.ok{ border-color: rgba(55,214,122,.35); background: rgba(55,214,122,.10); }
-    .msg.err{ border-color: rgba(255,90,122,.35); background: rgba(255,90,122,.10); }
-
-    .modal-backdrop{
-      position: fixed; inset:0;
-      background: rgba(0,0,0,.55);
-      display:none;
-      align-items:center; justify-content:center;
-      padding: 16px; z-index: 9999;
-    }
-    .modal{
-      width: min(860px, 100%);
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(10,16,30,.92);
+    .panel{
+      margin-top:14px;
+      border-radius:22px;
+      background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
+      padding:16px;
       backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-      padding: 14px;
     }
-    .modal-header{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      margin-bottom: 10px;
+
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .col{flex:1;min-width:260px}
+    h2{margin:6px 0 4px;font-size:22px}
+    .sub{margin:0 0 12px;color:var(--muted);font-size:13px}
+
+    .form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      align-items:end;
     }
-    .modal-title{ font-weight: 950; letter-spacing: .2px; }
+    .form .full{grid-column:1/-1}
+    .field label{
+      display:block;font-size:12px;color:var(--muted);margin:0 0 6px;
+    }
+    .input, select, textarea{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      background:rgba(6,16,27,.55);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);
+      outline:none;
+      transition:border-color .2s ease, background .2s ease;
+    }
+    textarea{min-height:92px;resize:vertical}
+    .input:focus, select:focus, textarea:focus{
+      border-color:rgba(44,108,255,.65);
+      background:rgba(6,16,27,.70);
+    }
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
+    .hint code{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.85)}
+    .actions{
+      display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .split{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .search{
+      min-width:260px;flex:1;max-width:520px;
+      display:flex;gap:10px;align-items:center;
+    }
+
+    .alert{
+      border-radius:16px;
+      padding:12px 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:rgba(255,255,255,.90);
+      margin:12px 0 0;
+      display:none;
+    }
+    .alert.show{display:block}
+    .alert.err{border-color:rgba(255,77,79,.30);background:rgba(255,77,79,.10)}
+    .alert.ok{border-color:rgba(40,209,124,.30);background:rgba(40,209,124,.10)}
+    .alert.warn{border-color:rgba(255,204,0,.25);background:rgba(255,204,0,.10)}
+
+    table{
+      width:100%;
+      border-collapse:separate;border-spacing:0;
+      margin-top:10px;
+      overflow:hidden;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(6,16,27,.35);
+    }
+    thead th{
+      text-align:left;
+      font-size:12px;color:rgba(255,255,255,.75);
+      padding:12px 12px;
+      background:rgba(255,255,255,.06);
+      border-bottom:1px solid rgba(255,255,255,.10);
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:12px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      font-size:13px;
+      vertical-align:top;
+    }
+    tbody tr:last-child td{border-bottom:none}
+    .td-muted{color:rgba(255,255,255,.70);font-size:12px}
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      font-size:12px;font-weight:800;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+    }
+    .badge.on{border-color:rgba(40,209,124,.28);background:rgba(40,209,124,.10)}
+    .badge.off{border-color:rgba(255,77,79,.28);background:rgba(255,77,79,.10)}
+    .badge .dot{width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.35)}
+    .badge.on .dot{background:var(--ok)}
+    .badge.off .dot{background:var(--danger)}
+
+    .rowBtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+    .mono{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.75)}
+
+    .loginCard{
+      max-width:760px;margin:16px auto 0;
+      border-radius:22px;
+      background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+
+    .hidden{display:none!important}
+
+    @media (max-width: 980px){
+      .grid3{grid-template-columns:1fr}
+      .form{grid-template-columns:1fr}
+      .brand{min-width:auto}
+      .pillrow{justify-content:flex-start}
+    }
   </style>
 </head>
 
 <body>
-  <div class="container">
-
-    <header>
-      <div class="header-top">
-        <div class="brandbox">
-          <div class="logo-slot" title="Espaço para logo">LOGO</div>
-          <div class="brandtext">
-            <h1>Painel Alfa – Cardápio Digital</h1>
-            <div class="sub">Super Admin • CRUD seguro via Vercel (Service Role)</div>
-          </div>
-        </div>
-
-        <div class="hdr-actions">
-          <span class="pill"><b>Status:</b> <span id="statusUser">-</span></span>
-          <span class="pill"><b>API:</b> <code id="apiHost">-</code></span>
-          <button class="btn danger" id="btnLogout" type="button">Sair</button>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo" id="logoBox">LOGO</div>
+        <div>
+          <h1>Painel Alfa — Cardápio Digital</h1>
+          <p>Super Admin • CRUD seguro via Vercel (Service Role)</p>
         </div>
       </div>
 
-      <div class="summary">
-        <div class="sumcard">
-          <div><div class="label">Clientes</div><div class="value" id="countClientes">-</div></div>
-          <span class="tag">Total</span>
-        </div>
-        <div class="sumcard">
-          <div><div class="label">Categorias</div><div class="value" id="countCategorias">-</div></div>
-          <span class="tag">Total</span>
-        </div>
-        <div class="sumcard">
-          <div><div class="label">Produtos</div><div class="value" id="countProdutos">-</div></div>
-          <span class="tag">Total</span>
-        </div>
+      <div class="pillrow">
+        <div class="pill"><span>Status:</span> <b id="statusText">Deslogado</b></div>
+        <div class="pill"><span>API:</span> <code id="apiHost">—</code></div>
+        <button class="btn danger" id="btnLogout" disabled>🚪 Sair</button>
       </div>
+    </div>
 
+    <div class="grid3">
+      <div class="stat">
+        <div>
+          <div class="label">Clientes</div>
+          <div class="value" id="countClientes">—</div>
+        </div>
+        <div class="tag">Total</div>
+      </div>
+      <div class="stat">
+        <div>
+          <div class="label">Categorias</div>
+          <div class="value" id="countCategorias">—</div>
+        </div>
+        <div class="tag">Total</div>
+      </div>
+      <div class="stat">
+        <div>
+          <div class="label">Produtos</div>
+          <div class="value" id="countProdutos">—</div>
+        </div>
+        <div class="tag">Total</div>
+      </div>
+    </div>
+
+    <div class="tabsWrap">
       <div class="tabs">
-        <div class="seg">
-          <button class="active" data-tab="tabClientes" type="button">Clientes</button>
-          <button data-tab="tabCategorias" type="button">Categorias</button>
-          <button data-tab="tabProdutos" type="button">Produtos</button>
-        </div>
+        <button class="tab active" data-tab="clientes">Clientes</button>
+        <button class="tab" data-tab="categorias">Categorias</button>
+        <button class="tab" data-tab="produtos">Produtos</button>
       </div>
-    </header>
+    </div>
 
-    <!-- LOGIN -->
-    <section id="secLogin" class="panel">
-      <h2 style="margin:0 0 10px;">Login (Supabase Auth)</h2>
-      <div class="row">
-        <div>
+    <!-- Login -->
+    <div class="loginCard" id="loginCard">
+      <h2>Login</h2>
+      <p class="sub">Use um usuário do <b>Supabase Auth</b> (email/senha).</p>
+
+      <div class="form">
+        <div class="field">
           <label>Email</label>
-          <input type="email" id="loginEmail" placeholder="seuemail@dominio.com" autocomplete="email" />
+          <input class="input" id="loginEmail" type="email" placeholder="seuemail@email.com" autocomplete="username"/>
         </div>
-        <div>
+        <div class="field">
           <label>Senha</label>
-          <input type="password" id="loginSenha" placeholder="••••••••" autocomplete="current-password" />
+          <input class="input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <div class="actions full">
+          <button class="btn primary" id="btnLogin">🔐 Entrar</button>
         </div>
       </div>
 
-      <div class="form-actions">
-        <button class="btn primary" id="btnLogin" type="button">Entrar</button>
-      </div>
+      <div class="alert err" id="loginAlert"></div>
+      <div class="hint">Dica: se der erro, confira o <b>Site URL/Redirect URLs</b> no Supabase Auth e se seu usuário existe.</div>
+    </div>
 
-      <div id="loginMsg"></div>
-      <p class="muted">Depois de logar, o CRUD roda via Vercel com token (Bearer).</p>
-    </section>
-
-    <!-- ADMIN -->
-    <section id="secAdmin" class="panel hidden">
-      <div id="globalMsg"></div>
+    <!-- Conteúdo principal -->
+    <div class="panel hidden" id="mainPanel">
+      <div class="alert err" id="mainAlert"></div>
 
       <!-- CLIENTES -->
-      <section id="tabClientes">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;">
-            <div>
-              <h2 style="margin:0;">Cadastrar Cliente</h2>
-              <div class="muted">Crie a loja e gere o link publicado.</div>
-            </div>
-            <div class="tag">Aba Clientes</div>
+      <section id="sec-clientes">
+        <h2>Cadastrar Cliente</h2>
+        <p class="sub">Crie a loja e gere o link publicado.</p>
+
+        <div class="form" id="formCliente">
+          <input type="hidden" id="clienteEditSlug" value="">
+
+          <div class="field">
+            <label>Nome do negócio</label>
+            <input class="input" id="clienteNome" placeholder="ex: Cafeteria do João" />
           </div>
 
-          <div class="row" style="margin-top:12px;">
-            <div>
-              <label>Nome do negócio</label>
-              <input id="cliNome" placeholder="ex: Cafeteria do João" />
-            </div>
-            <div>
-              <label>Slug</label>
-              <input id="cliSlug" placeholder="ex: cafeteria-do-joao" />
-            </div>
+          <div class="field">
+            <label>Slug</label>
+            <input class="input" id="clienteSlug" placeholder="ex: cafeteria-do-joao" />
           </div>
 
-          <div class="row" style="margin-top:8px;">
-            <div>
-              <label>WhatsApp</label>
-              <input id="cliWhats" placeholder="ex: 5599999999999" />
-            </div>
-            <div>
-              <label>Status do cliente</label>
-              <select id="cliAtivo">
-                <option value="true">Ativo</option>
-                <option value="false">Inativo</option>
-              </select>
-            </div>
+          <div class="field">
+            <label>WhatsApp</label>
+            <input class="input" id="clienteWhats" placeholder="ex: 5599999999999" />
           </div>
 
-          <div class="form-actions">
-            <button class="btn primary" id="btnSalvarCliente" type="button">Salvar Cliente</button>
+          <div class="field">
+            <label>Status do cliente</label>
+            <select id="clienteAtivo">
+              <option value="true">Ativo</option>
+              <option value="false">Inativo</option>
+            </select>
           </div>
-          <div id="msgCliente"></div>
-          <div class="muted" style="margin-top:8px;">Link público: <code>?u=slug</code> (ex: <code>?u=cafeteria-do-joao</code>).</div>
+
+          <div class="field full">
+            <label>Logo (URL) — opcional</label>
+            <input class="input" id="clienteLogo" placeholder="https://.../logo.png" />
+            <div class="hint">O link público fica em <code>?u=slug</code> (ex: <code>?u=cafeteria-do-joao</code>).</div>
+          </div>
+
+          <div class="actions full">
+            <button class="btn ghost" id="btnClienteReset" type="button">↩️ Limpar</button>
+            <button class="btn primary" id="btnClienteSalvar" type="button">💾 Salvar Cliente</button>
+          </div>
         </div>
 
-        <div class="card">
-          <div class="row" style="align-items:end;">
-            <div>
-              <h2 style="margin:0;">Clientes cadastrados</h2>
-              <div class="muted">Ações: ver publicado, ativar/desativar, editar, duplicar ou excluir.</div>
-            </div>
-            <div>
-              <label>Buscar</label>
-              <input id="filtroCliente" placeholder="Buscar por nome/slug..." />
-            </div>
+        <div class="split">
+          <div>
+            <h2 style="margin-top:16px">Clientes cadastrados</h2>
+            <p class="sub">Ações: ver publicado, ativar/desativar, editar, duplicar ou excluir.</p>
           </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Slug</th>
-                  <th>WhatsApp</th>
-                  <th>Status</th>
-                  <th>Ativar</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="tbClientes"></tbody>
-            </table>
+          <div class="search">
+            <input class="input" id="buscaClientes" placeholder="Buscar por nome/slug..." />
+            <button class="btn" id="btnRecarregarClientes" type="button">🔄 Atualizar</button>
           </div>
         </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>NOME</th>
+              <th>SLUG</th>
+              <th>WHATSAPP</th>
+              <th>STATUS</th>
+              <th style="text-align:right">AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyClientes"></tbody>
+        </table>
       </section>
 
       <!-- CATEGORIAS -->
-      <section id="tabCategorias" class="hidden">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;">
-            <div>
-              <h2 style="margin:0;">Cadastrar Categoria</h2>
-              <div class="muted">Organize o cardápio em seções.</div>
-            </div>
-            <div class="tag">Aba Categorias</div>
+      <section id="sec-categorias" class="hidden">
+        <h2>Cadastrar Categoria</h2>
+        <p class="sub">Cadastre categorias por cliente e associe no produto (categoria_id).</p>
+
+        <div class="form" id="formCategoria">
+          <input type="hidden" id="categoriaEditId" value="">
+
+          <div class="field">
+            <label>Cliente dono</label>
+            <select id="categoriaCliente"></select>
           </div>
 
-          <div class="row3" style="margin-top:12px;">
-            <div>
-              <label>Cliente</label>
-              <select id="catCliente"></select>
-            </div>
-            <div>
-              <label>Nome da categoria</label>
-              <input id="catNome" placeholder="ex: Cuscuz, Bebidas, Doces" />
-            </div>
-            <div>
-              <label>Ordem</label>
-              <input id="catOrdem" type="number" placeholder="ex: 1" />
-            </div>
+          <div class="field">
+            <label>Nome</label>
+            <input class="input" id="categoriaNome" placeholder="ex: Cuscuz, Bebidas, Doces" />
           </div>
 
-          <div class="row" style="margin-top:8px;">
-            <div>
-              <label>Status</label>
-              <select id="catAtivo">
-                <option value="true">Ativa</option>
-                <option value="false">Inativa</option>
-              </select>
-            </div>
-            <div class="form-actions" style="justify-content:flex-end; align-items:end; margin-top:0;">
-              <button class="btn primary" id="btnSalvarCategoria" type="button">Salvar Categoria</button>
-            </div>
+          <div class="field">
+            <label>Ordem (opcional)</label>
+            <input class="input" id="categoriaOrdem" type="number" placeholder="ex: 1" />
           </div>
 
-          <div id="msgCategoria"></div>
-        </div>
-
-        <div class="card">
-          <div class="row3" style="align-items:end;">
-            <div>
-              <h2 style="margin:0;">Categorias cadastradas</h2>
-              <div class="muted">Filtre por cliente, edite/duplique/exclua.</div>
-            </div>
-            <div>
-              <label>Filtro por cliente</label>
-              <select id="filtroCatCliente"></select>
-            </div>
-            <div>
-              <label>Buscar</label>
-              <input id="filtroCategoria" placeholder="Buscar por nome..." />
-            </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="categoriaAtivo">
+              <option value="true">Ativa</option>
+              <option value="false">Inativa</option>
+            </select>
           </div>
 
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th>Nome</th>
-                  <th>Ordem</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="tbCategorias"></tbody>
-            </table>
+          <div class="actions full">
+            <button class="btn ghost" id="btnCategoriaReset" type="button">↩️ Limpar</button>
+            <button class="btn primary" id="btnCategoriaSalvar" type="button">💾 Salvar Categoria</button>
           </div>
         </div>
+
+        <div class="split">
+          <div>
+            <h2 style="margin-top:16px">Categorias cadastradas</h2>
+            <p class="sub">Ações: editar, duplicar ou excluir.</p>
+          </div>
+          <div class="search">
+            <input class="input" id="buscaCategorias" placeholder="Buscar por cliente/nome..." />
+            <button class="btn" id="btnRecarregarCategorias" type="button">🔄 Atualizar</button>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>CLIENTE</th>
+              <th>NOME</th>
+              <th>ORDEM</th>
+              <th>STATUS</th>
+              <th style="text-align:right">AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyCategorias"></tbody>
+        </table>
       </section>
 
       <!-- PRODUTOS -->
-      <section id="tabProdutos" class="hidden">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;">
-            <div>
-              <h2 style="margin:0;">Cadastrar Produto</h2>
-              <div class="muted">Produto com preço, imagem e descrição.</div>
-            </div>
-            <div class="tag">Aba Produtos</div>
+      <section id="sec-produtos" class="hidden">
+        <h2>Cadastrar Produto</h2>
+        <p class="sub">Produtos ficam vinculados ao cliente e à categoria.</p>
+
+        <div class="form" id="formProduto">
+          <input type="hidden" id="produtoEditId" value="">
+
+          <div class="field">
+            <label>Cliente</label>
+            <select id="produtoCliente"></select>
           </div>
 
-          <div class="row3" style="margin-top:12px;">
-            <div>
-              <label>Cliente</label>
-              <select id="prodCliente"></select>
-            </div>
-            <div>
-              <label>Categoria</label>
-              <select id="prodCategoria"></select>
-            </div>
-            <div>
-              <label>Nome do produto</label>
-              <input id="prodNome" placeholder="ex: Cuscuz da Baiana" />
-            </div>
+          <div class="field">
+            <label>Categoria</label>
+            <select id="produtoCategoria"></select>
           </div>
 
-          <div class="row3" style="margin-top:8px;">
-            <div>
-              <label>Preço</label>
-              <input id="prodPreco" type="number" step="0.01" placeholder="ex: 12.50" />
-            </div>
-            <div>
-              <label>Imagem (URL)</label>
-              <input id="prodImg" placeholder="opcional" />
-            </div>
-            <div>
-              <label>Status</label>
-              <select id="prodAtivo">
-                <option value="true">Ativo</option>
-                <option value="false">Inativo</option>
-              </select>
-            </div>
+          <div class="field">
+            <label>Nome</label>
+            <input class="input" id="produtoNome" placeholder="Nome do produto" />
           </div>
 
-          <div style="margin-top:8px;">
-            <label>Descrição</label>
-            <textarea id="prodDesc" placeholder="opcional"></textarea>
+          <div class="field">
+            <label>Preço (R$)</label>
+            <input class="input" id="produtoPreco" type="number" step="0.01" placeholder="ex: 12.50" />
           </div>
 
-          <div class="form-actions">
-            <button class="btn primary" id="btnSalvarProduto" type="button">Salvar Produto</button>
+          <div class="field full">
+            <label>Descrição (opcional)</label>
+            <textarea id="produtoDesc" placeholder="Descrição do produto..."></textarea>
           </div>
 
-          <div id="msgProduto"></div>
-        </div>
-
-        <div class="card">
-          <div class="row3" style="align-items:end;">
-            <div>
-              <h2 style="margin:0;">Produtos cadastrados</h2>
-              <div class="muted">Filtre por cliente, edite/duplique/exclua.</div>
-            </div>
-            <div>
-              <label>Filtro por cliente</label>
-              <select id="filtroProdCliente"></select>
-            </div>
-            <div>
-              <label>Buscar</label>
-              <input id="filtroProduto" placeholder="Buscar por nome..." />
-            </div>
+          <div class="field">
+            <label>Imagem (URL opcional)</label>
+            <input class="input" id="produtoImg" placeholder="https://.../foto.jpg" />
           </div>
 
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th>Categoria</th>
-                  <th>Produto</th>
-                  <th>Preço</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="tbProdutos"></tbody>
-            </table>
+          <div class="field">
+            <label>Ordem (opcional)</label>
+            <input class="input" id="produtoOrdem" type="number" placeholder="ex: 1" />
+          </div>
+
+          <div class="field">
+            <label>Status</label>
+            <select id="produtoAtivo">
+              <option value="true">Ativo</option>
+              <option value="false">Inativo</option>
+            </select>
+          </div>
+
+          <div class="actions full">
+            <button class="btn ghost" id="btnProdutoReset" type="button">↩️ Limpar</button>
+            <button class="btn primary" id="btnProdutoSalvar" type="button">💾 Salvar Produto</button>
           </div>
         </div>
+
+        <div class="split">
+          <div>
+            <h2 style="margin-top:16px">Produtos cadastrados</h2>
+            <p class="sub">Ações: editar, duplicar ou excluir.</p>
+          </div>
+          <div class="search">
+            <input class="input" id="buscaProdutos" placeholder="Buscar por cliente/categoria/nome..." />
+            <button class="btn" id="btnRecarregarProdutos" type="button">🔄 Atualizar</button>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>CLIENTE</th>
+              <th>CATEGORIA</th>
+              <th>NOME</th>
+              <th>PREÇO</th>
+              <th>STATUS</th>
+              <th style="text-align:right">AÇÕES</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyProdutos"></tbody>
+        </table>
       </section>
-    </section>
-
-  </div>
-
-  <!-- MODAL -->
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="modalTitle">Editar</div>
-        <button class="btn small" id="modalClose" type="button">Fechar</button>
-      </div>
-      <div id="modalBody"></div>
-      <div class="form-actions" style="margin-top:12px;">
-        <button class="btn small" id="modalCancel" type="button">Cancelar</button>
-        <button class="btn primary small" id="modalSave" type="button">Salvar</button>
-      </div>
-      <div id="modalMsg"></div>
     </div>
   </div>
 
 <script>
-  console.log("ADMIN (VERCEL) JS CARREGOU ✅");
+/* ==========================
+   CONFIG (EDITE AQUI)
+========================== */
+// Supabase do seu projeto
+const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
 
-  // ======================================
-  // CONFIG (AUTH no Supabase + CRUD na Vercel)
-  // ======================================
-  const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
+// Base da API Vercel (backend com service role)
+const VERCEL_BASE = "https://cafeteria-gamma-orpin.vercel.app";
 
-  // Base da API (Vercel)
-  // - Se você abrir este admin no domínio da Vercel, ele usa location.origin
-  // - Se abrir no GitHub Pages, ele usa seu domínio fixo da Vercel
-  const VERCEL_BASE = "https://cafeteria-gamma-orpin.vercel.app";
-  const API_BASE = (location.hostname.endsWith("vercel.app")) ? location.origin : VERCEL_BASE;
+// Se estiver abrindo pelo domínio da Vercel, usa ele mesmo (evita CORS)
+const API_BASE = (location.hostname.endsWith("vercel.app")) ? location.origin : VERCEL_BASE;
 
-  document.getElementById("apiHost").textContent = new URL(API_BASE).host;
+// Cliente supabase (browser)
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+});
 
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+/* ==========================
+   HELPERS
+========================== */
+const $ = (id) => document.getElementById(id);
+
+function showAlert(el, msg, type="err"){
+  el.classList.remove("err","ok","warn");
+  el.classList.add(type);
+  el.textContent = msg;
+  el.classList.add("show");
+}
+function hideAlert(el){ el.classList.remove("show"); el.textContent=""; }
+
+function slugify(str){
+  return String(str || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/(^-|-$)/g,"")
+    .trim();
+}
+
+function moneyBR(v){
+  const n = Number(v || 0);
+  return n.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+}
+
+// ✅ sempre usa Bearer token do supabase auth
+async function apiFetch(path, { method="GET", body } = {}) {
+  const { data } = await supabase.auth.getSession();
+  const token = data?.session?.access_token;
+  if (!token) throw new Error("Sem sessão. Faça login novamente.");
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: {
+      "Content-Type":"application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: body ? JSON.stringify(body) : undefined
   });
 
-  const $ = (id) => document.getElementById(id);
+  let json = {};
+  try { json = await res.json(); } catch {}
+  if (!res.ok) throw new Error(json?.error || `Erro HTTP ${res.status}`);
+  return json;
+}
 
-  function showMsg(el, type, text){
-    if(!el) return;
-    el.innerHTML = `<div class="msg ${type}">${text}</div>`;
+/* ==========================
+   STATE
+========================== */
+let state = {
+  session: null,
+  clientes: [],
+  categorias: [],
+  produtos: [],
+  activeTab: "clientes",
+};
+
+/* ==========================
+   UI: Tabs
+========================== */
+function setTab(tab){
+  state.activeTab = tab;
+
+  document.querySelectorAll(".tab").forEach(b=>{
+    b.classList.toggle("active", b.dataset.tab === tab);
+  });
+
+  $("sec-clientes").classList.toggle("hidden", tab !== "clientes");
+  $("sec-categorias").classList.toggle("hidden", tab !== "categorias");
+  $("sec-produtos").classList.toggle("hidden", tab !== "produtos");
+}
+
+/* ==========================
+   LOADERS
+========================== */
+async function refreshAll(){
+  hideAlert($("mainAlert"));
+  await Promise.allSettled([loadClientes(), loadCategorias(), loadProdutos()]);
+  hydrateSelects();
+  updateCounters();
+}
+
+function updateCounters(){
+  $("countClientes").textContent = state.clientes.length;
+  $("countCategorias").textContent = state.categorias.length;
+  $("countProdutos").textContent = state.produtos.length;
+}
+
+function hydrateSelects(){
+  // clientes select para categorias e produtos
+  const optsClientes = state.clientes
+    .slice()
+    .sort((a,b)=> (a.nome||"").localeCompare(b.nome||""))
+    .map(c=> `<option value="${c.slug}">${c.nome} (${c.slug})</option>`)
+    .join("");
+
+  $("categoriaCliente").innerHTML = `<option value="">Selecione...</option>` + optsClientes;
+  $("produtoCliente").innerHTML = `<option value="">Selecione...</option>` + optsClientes;
+
+  // categorias para produto (filtrado pelo cliente)
+  syncCategoriasByCliente();
+}
+
+function syncCategoriasByCliente(){
+  const clienteSlug = $("produtoCliente").value;
+  const cats = state.categorias
+    .filter(c => !clienteSlug || c.cliente_slug === clienteSlug)
+    .slice()
+    .sort((a,b)=> (Number(a.ordem||0)-Number(b.ordem||0)) || (a.nome||"").localeCompare(b.nome||""));
+
+  $("produtoCategoria").innerHTML =
+    `<option value="">Selecione...</option>` +
+    cats.map(c=> `<option value="${c.id}">${c.nome} (#${c.id})</option>`).join("");
+}
+
+/* ==========================
+   API: Load
+========================== */
+async function loadClientes(){
+  const { data } = await apiFetch("/api/admin/clientes");
+  state.clientes = Array.isArray(data) ? data : [];
+  renderClientes();
+}
+async function loadCategorias(){
+  const { data } = await apiFetch("/api/admin/categorias");
+  state.categorias = Array.isArray(data) ? data : [];
+  renderCategorias();
+}
+async function loadProdutos(){
+  const { data } = await apiFetch("/api/admin/produtos");
+  state.produtos = Array.isArray(data) ? data : [];
+  renderProdutos();
+}
+
+/* ==========================
+   RENDER: Clientes
+========================== */
+function renderClientes(){
+  const q = ($("buscaClientes").value || "").toLowerCase().trim();
+  const rows = state.clientes
+    .filter(c=>{
+      if(!q) return true;
+      return (c.nome||"").toLowerCase().includes(q) || (c.slug||"").toLowerCase().includes(q);
+    })
+    .slice()
+    .sort((a,b)=> (a.nome||"").localeCompare(b.nome||""));
+
+  const html = rows.map(c=>{
+    const badge = c.ativo ? `<span class="badge on"><span class="dot"></span>Ativo</span>` : `<span class="badge off"><span class="dot"></span>Inativo</span>`;
+    const publicUrl = `${location.origin.replace(/\/admin\/?$/,"/")}?u=${encodeURIComponent(c.slug)}`; // funciona no GH pages
+    return `
+      <tr>
+        <td><b>${escapeHtml(c.nome||"")}</b></td>
+        <td><span class="mono">${escapeHtml(c.slug||"")}</span></td>
+        <td class="td-muted">${escapeHtml(c.whatsapp||"")}</td>
+        <td>${badge}</td>
+        <td style="text-align:right">
+          <div class="rowBtns">
+            <button class="btn small" onclick="viewPublic('${escapeJs(c.slug)}')">🔗 Ver</button>
+            <button class="btn small" onclick="toggleCliente('${escapeJs(c.slug)}', ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
+            <button class="btn small" onclick="editCliente('${escapeJs(c.slug)}')">✏️ Editar</button>
+            <button class="btn small" onclick="duplicateCliente('${escapeJs(c.slug)}')">📄 Duplicar</button>
+            <button class="btn small danger" onclick="deleteCliente('${escapeJs(c.slug)}')">🗑️ Excluir</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  $("tbodyClientes").innerHTML = html || `<tr><td colspan="5" class="td-muted">Nenhum cliente encontrado.</td></tr>`;
+}
+
+/* ==========================
+   RENDER: Categorias
+========================== */
+function clienteNome(slug){
+  const c = state.clientes.find(x=>x.slug===slug);
+  return c ? c.nome : slug;
+}
+
+function renderCategorias(){
+  const q = ($("buscaCategorias").value || "").toLowerCase().trim();
+  const rows = state.categorias
+    .filter(c=>{
+      if(!q) return true;
+      return (c.nome||"").toLowerCase().includes(q) || (c.cliente_slug||"").toLowerCase().includes(q) || (clienteNome(c.cliente_slug)||"").toLowerCase().includes(q);
+    })
+    .slice()
+    .sort((a,b)=> (a.cliente_slug||"").localeCompare(b.cliente_slug||"") || (Number(a.ordem||0)-Number(b.ordem||0)) || (a.nome||"").localeCompare(b.nome||""));
+
+  const html = rows.map(c=>{
+    const badge = c.ativo ? `<span class="badge on"><span class="dot"></span>Ativa</span>` : `<span class="badge off"><span class="dot"></span>Inativa</span>`;
+    return `
+      <tr>
+        <td><span class="mono">#${c.id}</span></td>
+        <td><b>${escapeHtml(clienteNome(c.cliente_slug))}</b><div class="td-muted mono">${escapeHtml(c.cliente_slug||"")}</div></td>
+        <td>${escapeHtml(c.nome||"")}</td>
+        <td class="td-muted">${Number(c.ordem||0)}</td>
+        <td>${badge}</td>
+        <td style="text-align:right">
+          <div class="rowBtns">
+            <button class="btn small" onclick="editCategoria(${c.id})">✏️ Editar</button>
+            <button class="btn small" onclick="duplicateCategoria(${c.id})">📄 Duplicar</button>
+            <button class="btn small danger" onclick="deleteCategoria(${c.id})">🗑️ Excluir</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  $("tbodyCategorias").innerHTML = html || `<tr><td colspan="6" class="td-muted">Nenhuma categoria encontrada.</td></tr>`;
+}
+
+/* ==========================
+   RENDER: Produtos
+========================== */
+function categoriaNome(id){
+  const c = state.categorias.find(x=>Number(x.id)===Number(id));
+  return c ? c.nome : `#${id}`;
+}
+
+function renderProdutos(){
+  const q = ($("buscaProdutos").value || "").toLowerCase().trim();
+  const rows = state.produtos
+    .filter(p=>{
+      if(!q) return true;
+      const cNome = clienteNome(p.cliente_slug||"");
+      const catNome = categoriaNome(p.categoria_id);
+      return (p.nome||"").toLowerCase().includes(q) ||
+        (p.cliente_slug||"").toLowerCase().includes(q) ||
+        (cNome||"").toLowerCase().includes(q) ||
+        (catNome||"").toLowerCase().includes(q);
+    })
+    .slice()
+    .sort((a,b)=>
+      (a.cliente_slug||"").localeCompare(b.cliente_slug||"") ||
+      (Number(a.ordem||0)-Number(b.ordem||0)) ||
+      (a.nome||"").localeCompare(b.nome||"")
+    );
+
+  const html = rows.map(p=>{
+    const badge = p.ativo ? `<span class="badge on"><span class="dot"></span>Ativo</span>` : `<span class="badge off"><span class="dot"></span>Inativo</span>`;
+    return `
+      <tr>
+        <td><span class="mono">#${p.id}</span></td>
+        <td><b>${escapeHtml(clienteNome(p.cliente_slug))}</b><div class="td-muted mono">${escapeHtml(p.cliente_slug||"")}</div></td>
+        <td>${escapeHtml(categoriaNome(p.categoria_id))}<div class="td-muted mono">#${p.categoria_id}</div></td>
+        <td>
+          <b>${escapeHtml(p.nome||"")}</b>
+          ${p.descricao ? `<div class="td-muted">${escapeHtml(p.descricao)}</div>` : ""}
+        </td>
+        <td>${moneyBR(p.preco)}</td>
+        <td>${badge}</td>
+        <td style="text-align:right">
+          <div class="rowBtns">
+            <button class="btn small" onclick="editProduto(${p.id})">✏️ Editar</button>
+            <button class="btn small" onclick="duplicateProduto(${p.id})">📄 Duplicar</button>
+            <button class="btn small danger" onclick="deleteProduto(${p.id})">🗑️ Excluir</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  $("tbodyProdutos").innerHTML = html || `<tr><td colspan="7" class="td-muted">Nenhum produto encontrado.</td></tr>`;
+}
+
+/* ==========================
+   CRUD: Clientes
+========================== */
+function resetClienteForm(){
+  $("clienteEditSlug").value = "";
+  $("clienteNome").value = "";
+  $("clienteSlug").value = "";
+  $("clienteWhats").value = "";
+  $("clienteAtivo").value = "true";
+  $("clienteLogo").value = "";
+  $("btnClienteSalvar").textContent = "💾 Salvar Cliente";
+}
+
+async function saveCliente(){
+  hideAlert($("mainAlert"));
+  const nome = $("clienteNome").value.trim();
+  const slugInput = $("clienteSlug").value.trim();
+  const slug = slugify(slugInput || nome);
+  const whatsapp = $("clienteWhats").value.trim();
+  const ativo = $("clienteAtivo").value === "true";
+  const logo_url = $("clienteLogo").value.trim() || null;
+
+  if(!nome || !slug || !whatsapp){
+    showAlert($("mainAlert"), "Preencha nome, slug e whatsapp.", "warn");
+    return;
   }
-  function clearMsg(el){ if(el) el.innerHTML = ""; }
 
-  function setBtnLoading(btn, loading, text){
-    if(!btn) return;
-    if(loading){
-      btn.disabled = true;
-      btn.dataset._old = btn.textContent;
-      btn.textContent = text || "Salvando...";
-    } else {
-      btn.disabled = false;
-      btn.textContent = btn.dataset._old || btn.textContent;
-      delete btn.dataset._old;
-    }
-  }
+  const editingSlug = $("clienteEditSlug").value.trim();
 
-  function slugify(str){
-    return String(str || "")
-      .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-  }
-  function brl(v){
-    return Number(v || 0).toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
-  }
-  function tagAtivo(v){
-    return v ? `<span class="tag ok">Ativo</span>` : `<span class="tag off">Inativo</span>`;
-  }
-  function escapeHtml(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-  function escapeAttr(s){ return escapeHtml(s).replaceAll("\n"," "); }
+  $("btnClienteSalvar").disabled = true;
+  $("btnClienteSalvar").textContent = "Salvando...";
 
-  function publicBaseUrl(){
-    const url = new URL(location.href);
-    url.pathname = url.pathname.replace(/\/admin\/?$/, "/");
-    url.search = "";
-    url.hash = "";
-    return url.toString();
-  }
-  function openPublished(slug){
-    const base = publicBaseUrl();
-    window.open(`${base}?u=${encodeURIComponent(slug)}`, "_blank");
-  }
-  window.openPublished = openPublished;
-
-  // ======================================
-  // API helper (com Bearer token)
-  // ======================================
-  async function getToken(){
-    const { data } = await supabaseClient.auth.getSession();
-    const token = data?.session?.access_token;
-    if(!token) throw new Error("Sem sessão. Faça login novamente.");
-    return token;
-  }
-
-  async function apiFetch(path, { method="GET", body } = {}){
-    const token = await getToken();
-
-    const res = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: body ? JSON.stringify(body) : undefined
-    });
-
-    const json = await res.json().catch(() => ({}));
-
-    if(!res.ok){
-      const msg = json?.error || `Erro HTTP ${res.status}`;
-      throw new Error(msg);
-    }
-    return json;
-  }
-
-  // ======================================
-  // STATE
-  // ======================================
-  let CLIENTES = [];
-  let CATEGORIAS = [];
-  let PRODUTOS = [];
-
-  // ======================================
-  // AUTH
-  // ======================================
-  async function login(){
-    clearMsg($("loginMsg"));
-    const email = $("loginEmail").value.trim();
-    const password = $("loginSenha").value;
-    if(!email || !password){
-      showMsg($("loginMsg"), "err", "Preencha email e senha.");
-      return;
-    }
-    const btn = $("btnLogin");
-    setBtnLoading(btn, true, "Entrando...");
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    setBtnLoading(btn, false);
-    if(error) showMsg($("loginMsg"), "err", error.message || "Erro no login");
-  }
-
-  async function logout(){
-    await supabaseClient.auth.signOut();
-    location.reload();
-  }
-
-  $("btnLogin").addEventListener("click", login);
-  $("btnLogout").addEventListener("click", logout);
-
-  supabaseClient.auth.onAuthStateChange(async (_, session) => {
-    if(session){
-      $("secLogin").classList.add("hidden");
-      $("secAdmin").classList.remove("hidden");
-      $("statusUser").textContent = session.user.email;
-      await refreshAll();
+  try{
+    if(!editingSlug){
+      await apiFetch("/api/admin/clientes", { method:"POST", body:{ nome, slug, whatsapp, ativo, logo_url }});
+      showAlert($("mainAlert"), "Cliente criado com sucesso.", "ok");
     }else{
-      $("secAdmin").classList.add("hidden");
-      $("secLogin").classList.remove("hidden");
+      // para manter simples, slug não muda no PATCH (é a chave)
+      await apiFetch("/api/admin/clientes", { method:"PATCH", body:{ slug: editingSlug, nome, whatsapp, ativo, logo_url }});
+      showAlert($("mainAlert"), "Cliente atualizado com sucesso.", "ok");
     }
+    await refreshAll();
+    resetClienteForm();
+  }catch(e){
+    showAlert($("mainAlert"), e.message || "Erro ao salvar cliente.", "err");
+  }finally{
+    $("btnClienteSalvar").disabled = false;
+    $("btnClienteSalvar").textContent = "💾 Salvar Cliente";
+  }
+}
+
+window.viewPublic = function(slug){
+  const base = location.origin.replace(/\/admin\/?$/,"/"); // GH pages
+  const url = `${base}?u=${encodeURIComponent(slug)}`;
+  window.open(url, "_blank");
+}
+
+window.toggleCliente = async function(slug, nextValue){
+  hideAlert($("mainAlert"));
+  try{
+    await apiFetch("/api/admin/clientes", { method:"PATCH", body:{ slug, ativo: !!nextValue }});
+    await refreshAll();
+    showAlert($("mainAlert"), `Cliente ${nextValue ? "ativado" : "desativado"}.`, "ok");
+  }catch(e){
+    showAlert($("mainAlert"), e.message || "Erro ao alterar status.", "err");
+  }
+}
+
+window.editCliente = function(slug){
+  const c = state.clientes.find(x=>x.slug===slug);
+  if(!c) return;
+  $("clienteEditSlug").value = c.slug;
+  $("clienteNome").value = c.nome || "";
+  $("clienteSlug").value = c.slug || "";
+  $("clienteWhats").value = c.whatsapp || "";
+  $("clienteAtivo").value = (c.ativo ? "true" : "false");
+  $("clienteLogo").value = c.logo_url || "";
+  $("btnClienteSalvar").textContent = "✅ Atualizar Cliente";
+  window.scrollTo({ top: $("sec-clientes").offsetTop - 10, behavior:"smooth" });
+}
+
+window.duplicateCliente = function(slug){
+  const c = state.clientes.find(x=>x.slug===slug);
+  if(!c) return;
+  resetClienteForm();
+  $("clienteNome").value = (c.nome || "") + " (cópia)";
+  $("clienteSlug").value = (c.slug || "") + "-copia";
+  $("clienteWhats").value = c.whatsapp || "";
+  $("clienteAtivo").value = (c.ativo ? "true" : "false");
+  $("clienteLogo").value = c.logo_url || "";
+  window.scrollTo({ top: $("sec-clientes").offsetTop - 10, behavior:"smooth" });
+}
+
+window.deleteCliente = async function(slug){
+  hideAlert($("mainAlert"));
+  if(!confirm(`Excluir o cliente "${slug}"? Isso remove o registro do cliente.\n\nObs: categorias/produtos relacionados podem impedir a exclusão se houver FK.`)) return;
+  try{
+    await apiFetch("/api/admin/clientes", { method:"DELETE", body:{ slug }});
+    await refreshAll();
+    showAlert($("mainAlert"), "Cliente excluído.", "ok");
+  }catch(e){
+    showAlert($("mainAlert"), e.message || "Erro ao excluir cliente.", "err");
+  }
+}
+
+/* ==========================
+   CRUD: Categorias
+========================== */
+function resetCategoriaForm(){
+  $("categoriaEditId").value = "";
+  $("categoriaCliente").value = "";
+  $("categoriaNome").value = "";
+  $("categoriaOrdem").value = "";
+  $("categoriaAtivo").value = "true";
+  $("btnCategoriaSalvar").textContent = "💾 Salvar Categoria";
+}
+
+async function saveCategoria(){
+  hideAlert($("mainAlert"));
+  const cliente_slug = $("categoriaCliente").value.trim();
+  const nome = $("categoriaNome").value.trim();
+  const ordem = Number($("categoriaOrdem").value || 0);
+  const ativo = $("categoriaAtivo").value === "true";
+  const editId = $("categoriaEditId").value.trim();
+
+  if(!cliente_slug || !nome){
+    showAlert($("mainAlert"), "Selecione um cliente e informe o nome da categoria.", "warn");
+    return;
+  }
+
+  $("btnCategoriaSalvar").disabled = true;
+  $("btnCategoriaSalvar").textContent = "Salvando...";
+
+  try{
+    if(!editId){
+      await apiFetch("/api/admin/categorias", { method:"POST", body:{ cliente_slug, nome, ordem, ativo }});
+      showAlert($("mainAlert"), "Categoria criada com sucesso.", "ok");
+    }else{
+      await apiFetch("/api/admin/categorias", { method:"PATCH", body:{ id:Number(editId), cliente_slug, nome, ordem, ativo }});
+      showAlert($("mainAlert"), "Categoria atualizada com sucesso.", "ok");
+    }
+    await refreshAll();
+    resetCategoriaForm();
+  }catch(e){
+    showAlert($("mainAlert"), e.message || "Erro ao salvar categoria.", "err");
+  }finally{
+    $("btnCategoriaSalvar").disabled = false;
+    $("btnCategoriaSalvar").textContent = "💾 Salvar Categoria";
+  }
+}
+
+window.editCategoria = function(id){
+  const c = state.categorias.find(x=>Number(x.id)===Number(id));
+  if(!c) return;
+  $("categoriaEditId").value = c.id;
+  $("categoriaCliente").value = c.cliente_slug || "";
+  $("categoriaNome").value = c.nome || "";
+  $("categoriaOrdem").value = Number(c.ordem||0);
+  $("categoriaAtivo").value = (c.ativo ? "true" : "false");
+  $("btnCategoriaSalvar").textContent = "✅ Atualizar Categoria";
+  setTab("categorias");
+  window.scrollTo({ top: $("sec-categorias").offsetTop - 10, behavior:"smooth" });
+}
+
+window.duplicateCategoria = function(id){
+  const c = state.categorias.find(x=>Number(x.id)===Number(id));
+  if(!c) return;
+  resetCategoriaForm();
+  $("categoriaCliente").value = c.cliente_slug || "";
+  $("categoriaNome").value = (c.nome || "") + " (cópia)";
+  $("categoriaOrdem").value = Number(c.ordem||0);
+  $("categoriaAtivo").value = (c.ativo ? "true" : "false");
+  setTab("categorias");
+  window.scrollTo({ top: $("sec-categorias").offsetTop - 10, behavior:"smooth" });
+}
+
+window.deleteCategoria = async function(id){
+  hideAlert($("mainAlert"));
+  if(!confirm(`Excluir categoria #${id}?`)) return;
+  try{
+    await apiFetch("/api/admin/categorias", { method:"DELETE", body:{ id:Number(id) }});
+    await refreshAll();
+    showAlert($("mainAlert"), "Categoria excluída.", "ok");
+  }catch(e){
+    showAlert($("mainAlert"), e.message || "Erro ao excluir categoria.", "err");
+  }
+}
+
+/* ==========================
+   CRUD: Produtos
+========================== */
+function resetProdutoForm(){
+  $("produtoEditId").value = "";
+  $("produtoCliente").value = "";
+  syncCategoriasByCliente();
+  $("produtoCategoria").value = "";
+  $("produtoNome").value = "";
+  $("produtoPreco").value = "";
+  $("produtoDesc").value = "";
+  $("produtoImg").value = "";
+  $("produtoOrdem").value = "";
+  $("produtoAtivo").value = "true";
+  $("btnProdutoSalvar").textContent = "💾 Salvar Produto";
+}
+
+async function saveProduto(){
+  hideAlert($("mainAlert"));
+
+  const cliente_slug = $("produtoCliente").value.trim();
+  const categoria_id = Number($("produtoCategoria").value);
+  const nome = $("produtoNome").value.trim();
+  const preco = Number($("produtoPreco").value || 0);
+  const descricao = $("produtoDesc").value.trim();
+  const imagem = $("produtoImg").value.trim() || null;
+  const ordem = Number($("produtoOrdem").value || 0);
+  const ativo = $("produtoAtivo").value === "true";
+  const editId = $("produtoEditId").value.trim();
+
+  if(!cliente_slug || !categoria_id || !nome){
+    showAlert($("mainAlert"), "Selecione cliente/categoria e informe o nome do produto.", "warn");
+    return;
+  }
+
+  $("btnProdutoSalvar").disabled = true;
+  $("btnProdutoSalvar").textContent = "Salvando...";
+
+  try{
+    const body = { cliente_slug, categoria_id, nome, preco, descricao, imagem, ordem, ativo };
+
+    if(!editId){
+      await apiFetch("/api/admin/produtos", { method:"POST", body });
+      showAlert($("mainAlert"), "Produto criado com sucesso.", "ok");
+    }else{
+      await apiFetch("/api/admin/produtos", { method:"PATCH", body:{ id:Number(editId), ...body }});
+      showAlert($("mainAlert"), "Produto atualizado com sucesso.", "ok");
+    }
+
+    await refreshAll();
+    resetProdutoForm();
+  }catch(e){
+    showAlert($("mainAlert"), e.message || "Erro ao salvar produto.", "err");
+  }finally{
+    $("btnProdutoSalvar").disabled = false;
+    $("btnProdutoSalvar").textContent = "💾 Salvar Produto";
+  }
+}
+
+window.editProduto = function(id){
+  const p = state.produtos.find(x=>Number(x.id)===Number(id));
+  if(!p) return;
+  $("produtoEditId").value = p.id;
+  $("produtoCliente").value = p.cliente_slug || "";
+  syncCategoriasByCliente();
+  $("produtoCategoria").value = String(p.categoria_id || "");
+  $("produtoNome").value = p.nome || "";
+  $("produtoPreco").value = Number(p.preco||0);
+  $("produtoDesc").value = p.descricao || "";
+  $("produtoImg").value = p.imagem || "";
+  $("produtoOrdem").value = Number(p.ordem||0);
+  $("produtoAtivo").value = (p.ativo ? "true" : "false");
+  $("btnProdutoSalvar").textContent = "✅ Atualizar Produto";
+  setTab("produtos");
+  window.scrollTo({ top: $("sec-produtos").offsetTop - 10, behavior:"smooth" });
+}
+
+window.duplicateProduto = function(id){
+  const p = state.produtos.find(x=>Number(x.id)===Number(id));
+  if(!p) return;
+  resetProdutoForm();
+  $("produtoCliente").value = p.cliente_slug || "";
+  syncCategoriasByCliente();
+  $("produtoCategoria").value = String(p.categoria_id || "");
+  $("produtoNome").value = (p.nome || "") + " (cópia)";
+  $("produtoPreco").value = Number(p.preco||0);
+  $("produtoDesc").value = p.descricao || "";
+  $("produtoImg").value = p.imagem || "";
+  $("produtoOrdem").value = Number(p.ordem||0);
+  $("produtoAtivo").value = (p.ativo ? "true" : "false");
+  setTab("produtos");
+  window.scrollTo({ top: $("sec-produtos").offsetTop - 10, behavior:"smooth" });
+}
+
+window.deleteProduto = async function(id){
+  hideAlert($("mainAlert"));
+  if(!confirm(`Excluir produto #${id}?`)) return;
+  try{
+    await apiFetch("/api/admin/produtos", { method:"DELETE", body:{ id:Number(id) }});
+    await refreshAll();
+    showAlert($("mainAlert"), "Produto excluído.", "ok");
+  }catch(e){
+    showAlert($("mainAlert"), e.message || "Erro ao excluir produto.", "err");
+  }
+}
+
+/* ==========================
+   AUTH / BOOT
+========================== */
+async function setLoggedUI(session){
+  state.session = session;
+
+  $("apiHost").textContent = (new URL(API_BASE)).host;
+
+  if(!session){
+    $("statusText").textContent = "Deslogado";
+    $("btnLogout").disabled = true;
+    $("loginCard").classList.remove("hidden");
+    $("mainPanel").classList.add("hidden");
+    $("countClientes").textContent = "—";
+    $("countCategorias").textContent = "—";
+    $("countProdutos").textContent = "—";
+    return;
+  }
+
+  $("statusText").textContent = session.user?.email || "Logado";
+  $("btnLogout").disabled = false;
+  $("loginCard").classList.add("hidden");
+  $("mainPanel").classList.remove("hidden");
+
+  await refreshAll();
+}
+
+async function doLogin(){
+  hideAlert($("loginAlert"));
+
+  const email = $("loginEmail").value.trim();
+  const password = $("loginPass").value;
+
+  if(!email || !password){
+    showAlert($("loginAlert"), "Preencha email e senha.", "warn");
+    return;
+  }
+
+  $("btnLogin").disabled = true;
+  $("btnLogin").textContent = "Entrando...";
+
+  try{
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if(error) throw error;
+    await setLoggedUI(data.session);
+  }catch(e){
+    showAlert($("loginAlert"), e?.message || "Falha no login.", "err");
+  }finally{
+    $("btnLogin").disabled = false;
+    $("btnLogin").textContent = "🔐 Entrar";
+  }
+}
+
+async function doLogout(){
+  hideAlert($("mainAlert"));
+  await supabase.auth.signOut();
+  await setLoggedUI(null);
+}
+
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function escapeJs(s){
+  return String(s ?? "").replaceAll("\\","\\\\").replaceAll("'","\\'");
+}
+
+/* ==========================
+   EVENTS
+========================== */
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.addEventListener("click", ()=> setTab(btn.dataset.tab));
+});
+
+$("btnLogin").addEventListener("click", doLogin);
+$("btnLogout").addEventListener("click", doLogout);
+
+$("btnClienteReset").addEventListener("click", resetClienteForm);
+$("btnClienteSalvar").addEventListener("click", saveCliente);
+$("buscaClientes").addEventListener("input", renderClientes);
+$("btnRecarregarClientes").addEventListener("click", ()=> loadClientes().then(()=>{hydrateSelects();updateCounters();}));
+
+$("btnCategoriaReset").addEventListener("click", resetCategoriaForm);
+$("btnCategoriaSalvar").addEventListener("click", saveCategoria);
+$("buscaCategorias").addEventListener("input", renderCategorias);
+$("btnRecarregarCategorias").addEventListener("click", ()=> loadCategorias().then(()=>{hydrateSelects();updateCounters();}));
+
+$("btnProdutoReset").addEventListener("click", resetProdutoForm);
+$("btnProdutoSalvar").addEventListener("click", saveProduto);
+$("buscaProdutos").addEventListener("input", renderProdutos);
+$("btnRecarregarProdutos").addEventListener("click", ()=> loadProdutos().then(()=>{hydrateSelects();updateCounters();}));
+
+$("produtoCliente").addEventListener("change", syncCategoriasByCliente);
+
+// auto slug
+$("clienteNome").addEventListener("input", ()=>{
+  if($("clienteEditSlug").value) return; // não altera em edição
+  const v = $("clienteNome").value;
+  if(!v) return;
+  $("clienteSlug").value = slugify(v);
+});
+
+/* ==========================
+   INIT
+========================== */
+(async function init(){
+  $("apiHost").textContent = (new URL(API_BASE)).host;
+
+  const { data } = await supabase.auth.getSession();
+  await setLoggedUI(data.session);
+
+  supabase.auth.onAuthStateChange(async (_event, session) => {
+    await setLoggedUI(session);
   });
-
-  // Tabs
-  document.querySelectorAll(".seg button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".seg button").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const tab = btn.dataset.tab;
-      ["tabClientes","tabCategorias","tabProdutos"].forEach(id => $(id).classList.add("hidden"));
-      $(tab).classList.remove("hidden");
-    });
-  });
-
-  async function refreshAll(){
-    clearMsg($("globalMsg"));
-    try{
-      await Promise.all([loadClientes(true), loadCategorias(true), loadProdutos(true)]);
-      await loadCategoriasSelectProduto();
-    }catch(err){
-      console.error(err);
-      showMsg($("globalMsg"), "err", err.message || String(err));
-    }
-  }
-
-  // ======================================
-  // LOAD (via Vercel)
-  // ======================================
-  async function loadClientes(){
-    const { data } = await apiFetch("/api/admin/clientes", { method:"GET" });
-    CLIENTES = data || [];
-    $("countClientes").textContent = CLIENTES.length;
-
-    // popular selects
-    const optBase = `<option value="">Selecione o cliente</option>`;
-    const opts = CLIENTES.map(c => `<option value="${escapeAttr(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`).join("");
-
-    $("catCliente").innerHTML = optBase + opts;
-    $("prodCliente").innerHTML = optBase + opts;
-    $("filtroCatCliente").innerHTML = `<option value="">Todos os clientes</option>` + opts;
-    $("filtroProdCliente").innerHTML = `<option value="">Todos os clientes</option>` + opts;
-
-    renderClientes();
-  }
-
-  async function loadCategorias(){
-    const { data } = await apiFetch("/api/admin/categorias", { method:"GET" });
-    CATEGORIAS = data || [];
-    $("countCategorias").textContent = CATEGORIAS.length;
-    renderCategorias();
-  }
-
-  async function loadProdutos(){
-    const { data } = await apiFetch("/api/admin/produtos", { method:"GET" });
-    PRODUTOS = data || [];
-    $("countProdutos").textContent = PRODUTOS.length;
-    renderProdutos();
-  }
-
-  // ======================================
-  // CLIENTES
-  // ======================================
-  $("cliNome").addEventListener("input", () => {
-    if(!$("cliSlug").value.trim()) $("cliSlug").value = slugify($("cliNome").value);
-  });
-
-  $("filtroCliente").addEventListener("input", renderClientes);
-  $("btnSalvarCliente").addEventListener("click", salvarCliente);
-
-  async function salvarCliente(){
-    clearMsg($("msgCliente"));
-    const nome = $("cliNome").value.trim();
-    const slug = slugify($("cliSlug").value.trim());
-    const whatsapp = $("cliWhats").value.trim();
-    const ativo = $("cliAtivo").value === "true";
-
-    if(!nome || !slug || !whatsapp){
-      showMsg($("msgCliente"), "err", "Preencha nome, slug e WhatsApp.");
-      return;
-    }
-
-    const btn = $("btnSalvarCliente");
-    setBtnLoading(btn, true);
-
-    try{
-      await apiFetch("/api/admin/clientes", {
-        method: "POST",
-        body: { nome, slug, whatsapp, ativo }
-      });
-
-      showMsg($("msgCliente"), "ok", "Cliente criado!");
-      $("cliNome").value=""; $("cliSlug").value=""; $("cliWhats").value="";
-      $("cliAtivo").value="true";
-      await refreshAll();
-    }catch(err){
-      console.error(err);
-      showMsg($("msgCliente"), "err", err.message || String(err));
-    }finally{
-      setBtnLoading(btn, false);
-    }
-  }
-
-  function renderClientes(){
-    const q = ($("filtroCliente").value || "").trim().toLowerCase();
-    const rows = CLIENTES
-      .filter(c => !q || (c.nome||"").toLowerCase().includes(q) || (c.slug||"").toLowerCase().includes(q))
-      .map(c => {
-        const isAtivo = (c.ativo === undefined) ? true : !!c.ativo;
-        return `
-          <tr>
-            <td><b>${escapeHtml(c.nome)}</b></td>
-            <td><code>${escapeHtml(c.slug)}</code></td>
-            <td>${escapeHtml(c.whatsapp||"")}</td>
-            <td>${tagAtivo(isAtivo)}</td>
-            <td>
-              <label class="switch" title="Ativar/Desativar">
-                <input type="checkbox" ${isAtivo ? "checked":""}
-                  onchange="toggleClienteAtivo('${escapeAttr(c.slug)}', this.checked)">
-                <span class="slider"></span>
-              </label>
-            </td>
-            <td>
-              <div class="actions">
-                <button class="btn small" type="button" onclick="openPublished('${escapeAttr(c.slug)}')">Ver publicado</button>
-                <button class="btn primary small" type="button" onclick="openEditCliente('${escapeAttr(c.slug)}')">Editar</button>
-                <button class="btn small" type="button" onclick="duplicateCliente('${escapeAttr(c.slug)}')">Duplicar</button>
-                <button class="btn danger small" type="button" onclick="deleteCliente('${escapeAttr(c.slug)}')">Excluir</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join("");
-
-    $("tbClientes").innerHTML = rows || `<tr><td colspan="6" class="muted">Nenhum cliente.</td></tr>`;
-  }
-
-  window.toggleClienteAtivo = async (slug, ativo) => {
-    try{
-      await apiFetch("/api/admin/clientes", { method:"PATCH", body: { slug, ativo } });
-      CLIENTES = CLIENTES.map(c => c.slug === slug ? ({...c, ativo}) : c);
-      renderClientes();
-    }catch(err){
-      console.error(err);
-      showMsg($("globalMsg"), "err", "Falha ao atualizar status: " + (err.message || String(err)));
-      await loadClientes();
-    }
-  };
-
-  // ======================================
-  // MODAL infra
-  // ======================================
-  let MODAL_CTX = null;
-
-  $("modalClose").addEventListener("click", closeModal);
-  $("modalCancel").addEventListener("click", closeModal);
-  $("modalBackdrop").addEventListener("click", (e) => { if(e.target.id==="modalBackdrop") closeModal(); });
-
-  function openModal(title, bodyHtml, onSave){
-    MODAL_CTX = { onSave };
-    $("modalTitle").textContent = title;
-    $("modalBody").innerHTML = bodyHtml;
-    $("modalMsg").innerHTML = "";
-    $("modalBackdrop").style.display = "flex";
-    $("modalSave").onclick = async () => {
-      $("modalMsg").innerHTML = "";
-      try{ await MODAL_CTX.onSave(); }
-      catch(err){ showMsg($("modalMsg"), "err", err.message || String(err)); }
-    };
-  }
-  function closeModal(){
-    $("modalBackdrop").style.display = "none";
-    MODAL_CTX = null;
-  }
-
-  window.openEditCliente = (slug) => {
-    const c = CLIENTES.find(x => x.slug === slug);
-    if(!c) return;
-    const ativoAtual = (c.ativo === undefined) ? true : !!c.ativo;
-
-    openModal(
-      `Editar Cliente (${c.slug})`,
-      `
-        <div class="row">
-          <div>
-            <label>Nome</label>
-            <input id="m_cliNome" value="${escapeAttr(c.nome)}" />
-          </div>
-          <div>
-            <label>WhatsApp</label>
-            <input id="m_cliWhats" value="${escapeAttr(c.whatsapp || "")}" />
-          </div>
-        </div>
-        <div class="row" style="margin-top:8px;">
-          <div>
-            <label>Status</label>
-            <select id="m_cliAtivo">
-              <option value="true" ${ativoAtual ? "selected":""}>Ativo</option>
-              <option value="false" ${!ativoAtual ? "selected":""}>Inativo</option>
-            </select>
-          </div>
-          <div class="muted" style="display:flex; align-items:end;">
-            Obs: o slug não é editado aqui (evita quebrar links). Se quiser, eu habilito depois com migração.
-          </div>
-        </div>
-      `,
-      async () => {
-        const nome = $("m_cliNome").value.trim();
-        const whatsapp = $("m_cliWhats").value.trim();
-        const ativo = $("m_cliAtivo").value === "true";
-        if(!nome || !whatsapp) throw new Error("Preencha nome e WhatsApp.");
-
-        await apiFetch("/api/admin/clientes", { method:"PATCH", body: { slug, nome, whatsapp, ativo } });
-        showMsg($("modalMsg"), "ok", "Cliente atualizado!");
-        await refreshAll();
-      }
-    );
-  };
-
-  window.duplicateCliente = async (slug) => {
-    const c = CLIENTES.find(x => x.slug === slug);
-    if(!c) return;
-
-    let base = slugify(c.slug + "-copia");
-    let trySlug = base;
-    let i = 2;
-    while(CLIENTES.some(x => x.slug === trySlug)) trySlug = `${base}-${i++}`;
-
-    if(!confirm(`Duplicar cliente "${c.nome}" para slug "${trySlug}"?`)) return;
-
-    try{
-      await apiFetch("/api/admin/clientes", {
-        method:"POST",
-        body: { nome: c.nome + " (cópia)", slug: trySlug, whatsapp: c.whatsapp, ativo: !!c.ativo }
-      });
-      await refreshAll();
-    }catch(err){
-      alert(err.message || String(err));
-    }
-  };
-
-  window.deleteCliente = async (slug) => {
-    const c = CLIENTES.find(x => x.slug === slug);
-    if(!c) return;
-
-    if(!confirm(`Excluir cliente "${c.nome}"?\n\nIsso vai apagar categorias e produtos ligados a ele.`)) return;
-
-    try{
-      await apiFetch("/api/admin/clientes", { method:"DELETE", body:{ slug } });
-      await refreshAll();
-    }catch(err){
-      alert(err.message || String(err));
-    }
-  };
-
-  // ======================================
-  // CATEGORIAS
-  // ======================================
-  $("btnSalvarCategoria").addEventListener("click", salvarCategoria);
-  $("filtroCatCliente").addEventListener("change", renderCategorias);
-  $("filtroCategoria").addEventListener("input", renderCategorias);
-
-  async function salvarCategoria(){
-    clearMsg($("msgCategoria"));
-    const cliente_slug = $("catCliente").value;
-    const nome = $("catNome").value.trim();
-    const ordem = Number($("catOrdem").value || 0);
-    const ativo = $("catAtivo").value === "true";
-
-    if(!cliente_slug || !nome){
-      showMsg($("msgCategoria"), "err", "Selecione o cliente e informe o nome.");
-      return;
-    }
-
-    const btn = $("btnSalvarCategoria");
-    setBtnLoading(btn, true);
-
-    try{
-      await apiFetch("/api/admin/categorias", { method:"POST", body:{ cliente_slug, nome, ordem, ativo } });
-      showMsg($("msgCategoria"), "ok", "Categoria criada!");
-      $("catNome").value=""; $("catOrdem").value=""; $("catAtivo").value="true";
-      await refreshAll();
-    }catch(err){
-      console.error(err);
-      showMsg($("msgCategoria"), "err", err.message || String(err));
-    }finally{
-      setBtnLoading(btn, false);
-    }
-  }
-
-  function renderCategorias(){
-    const cliente = $("filtroCatCliente").value;
-    const q = ($("filtroCategoria").value || "").trim().toLowerCase();
-
-    const rows = CATEGORIAS
-      .filter(c => (!cliente || c.cliente_slug === cliente))
-      .filter(c => (!q || (c.nome||"").toLowerCase().includes(q)))
-      .map(c => `
-        <tr>
-          <td>${escapeHtml(c.cliente_slug)}</td>
-          <td><b>${escapeHtml(c.nome)}</b></td>
-          <td>${Number(c.ordem||0)}</td>
-          <td>${tagAtivo(!!c.ativo)}</td>
-          <td>
-            <div class="actions">
-              <button class="btn primary small" type="button" onclick="openEditCategoria(${c.id})">Editar</button>
-              <button class="btn small" type="button" onclick="duplicateCategoria(${c.id})">Duplicar</button>
-              <button class="btn danger small" type="button" onclick="deleteCategoria(${c.id})">Excluir</button>
-            </div>
-          </td>
-        </tr>
-      `).join("");
-
-    $("tbCategorias").innerHTML = rows || `<tr><td colspan="5" class="muted">Nenhuma categoria.</td></tr>`;
-  }
-
-  window.openEditCategoria = (id) => {
-    const c = CATEGORIAS.find(x => Number(x.id) === Number(id));
-    if(!c) return;
-
-    openModal(
-      `Editar Categoria (#${c.id})`,
-      `
-        <div class="row">
-          <div>
-            <label>Cliente (slug)</label>
-            <input id="m_catCliente" value="${escapeAttr(c.cliente_slug)}" />
-          </div>
-          <div>
-            <label>Nome</label>
-            <input id="m_catNome" value="${escapeAttr(c.nome)}" />
-          </div>
-        </div>
-        <div class="row" style="margin-top:8px;">
-          <div>
-            <label>Ordem</label>
-            <input id="m_catOrdem" type="number" value="${Number(c.ordem||0)}" />
-          </div>
-          <div>
-            <label>Status</label>
-            <select id="m_catAtivo">
-              <option value="true" ${c.ativo ? "selected":""}>Ativa</option>
-              <option value="false" ${!c.ativo ? "selected":""}>Inativa</option>
-            </select>
-          </div>
-        </div>
-      `,
-      async () => {
-        const cliente_slug = $("m_catCliente").value.trim();
-        const nome = $("m_catNome").value.trim();
-        const ordem = Number($("m_catOrdem").value||0);
-        const ativo = $("m_catAtivo").value === "true";
-        if(!cliente_slug || !nome) throw new Error("Preencha cliente e nome.");
-
-        await apiFetch("/api/admin/categorias", { method:"PATCH", body:{ id: c.id, cliente_slug, nome, ordem, ativo } });
-        showMsg($("modalMsg"), "ok", "Categoria atualizada!");
-        await refreshAll();
-      }
-    );
-  };
-
-  window.duplicateCategoria = async (id) => {
-    const c = CATEGORIAS.find(x => Number(x.id) === Number(id));
-    if(!c) return;
-    if(!confirm(`Duplicar categoria "${c.nome}"?`)) return;
-
-    try{
-      await apiFetch("/api/admin/categorias", {
-        method:"POST",
-        body:{ cliente_slug: c.cliente_slug, nome: c.nome + " (cópia)", ordem: Number(c.ordem||0) + 1, ativo: !!c.ativo }
-      });
-      await refreshAll();
-    }catch(err){ alert(err.message || String(err)); }
-  };
-
-  window.deleteCategoria = async (id) => {
-    const c = CATEGORIAS.find(x => Number(x.id) === Number(id));
-    if(!c) return;
-    if(!confirm(`Excluir categoria "${c.nome}"? (produtos ligados serão removidos)`)) return;
-
-    try{
-      await apiFetch("/api/admin/categorias", { method:"DELETE", body:{ id: c.id } });
-      await refreshAll();
-    }catch(err){ alert(err.message || String(err)); }
-  };
-
-  // ======================================
-  // PRODUTOS
-  // ======================================
-  $("prodCliente").addEventListener("change", loadCategoriasSelectProduto);
-  $("btnSalvarProduto").addEventListener("click", salvarProduto);
-  $("filtroProdCliente").addEventListener("change", renderProdutos);
-  $("filtroProduto").addEventListener("input", renderProdutos);
-
-  async function loadCategoriasSelectProduto(){
-    const slug = $("prodCliente").value;
-    $("prodCategoria").innerHTML = `<option value="">Selecione a categoria</option>`;
-    if(!slug) return;
-
-    const cats = CATEGORIAS.filter(c => c.cliente_slug === slug).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
-    const opts = cats.map(c => `<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join("");
-    $("prodCategoria").innerHTML = `<option value="">Selecione a categoria</option>` + opts;
-  }
-
-  async function salvarProduto(){
-    clearMsg($("msgProduto"));
-
-    const cliente_slug = $("prodCliente").value;
-    const categoria_id = $("prodCategoria").value;
-    const nome = $("prodNome").value.trim();
-    const preco = Number($("prodPreco").value || 0);
-    const imagem = $("prodImg").value.trim() || null;
-    const ativo = $("prodAtivo").value === "true";
-    const descricao = $("prodDesc").value.trim();
-
-    if(!cliente_slug || !categoria_id || !nome || !preco){
-      showMsg($("msgProduto"), "err", "Preencha cliente, categoria, nome e preço.");
-      return;
-    }
-
-    const btn = $("btnSalvarProduto");
-    setBtnLoading(btn, true);
-
-    try{
-      await apiFetch("/api/admin/produtos", {
-        method:"POST",
-        body:{
-          cliente_slug,
-          categoria_id: Number(categoria_id),
-          nome,
-          descricao,
-          preco,
-          imagem,
-          ativo,
-          ordem: 0
-        }
-      });
-
-      showMsg($("msgProduto"), "ok", "Produto criado!");
-      $("prodNome").value=""; $("prodPreco").value=""; $("prodImg").value=""; $("prodAtivo").value="true"; $("prodDesc").value="";
-      await refreshAll();
-    }catch(err){
-      console.error(err);
-      showMsg($("msgProduto"), "err", err.message || String(err));
-    }finally{
-      setBtnLoading(btn, false);
-    }
-  }
-
-  function nomeCategoriaById(id){
-    const c = CATEGORIAS.find(x => String(x.id) === String(id));
-    return c ? c.nome : "-";
-  }
-
-  function renderProdutos(){
-    const cliente = $("filtroProdCliente").value;
-    const q = ($("filtroProduto").value || "").trim().toLowerCase();
-
-    const rows = PRODUTOS
-      .filter(p => (!cliente || p.cliente_slug === cliente))
-      .filter(p => (!q || (p.nome||"").toLowerCase().includes(q)))
-      .map(p => `
-        <tr>
-          <td>${escapeHtml(p.cliente_slug)}</td>
-          <td>${escapeHtml(nomeCategoriaById(p.categoria_id))} <span class="muted">(#${p.categoria_id})</span></td>
-          <td>
-            <b>${escapeHtml(p.nome)}</b>
-            <div class="muted">${escapeHtml((p.descricao||"").slice(0,80))}${(p.descricao||"").length>80?"…":""}</div>
-          </td>
-          <td>${brl(p.preco)}</td>
-          <td>${tagAtivo(!!p.ativo)}</td>
-          <td>
-            <div class="actions">
-              <button class="btn primary small" type="button" onclick="openEditProduto(${p.id})">Editar</button>
-              <button class="btn small" type="button" onclick="duplicateProduto(${p.id})">Duplicar</button>
-              <button class="btn danger small" type="button" onclick="deleteProduto(${p.id})">Excluir</button>
-            </div>
-          </td>
-        </tr>
-      `).join("");
-
-    $("tbProdutos").innerHTML = rows || `<tr><td colspan="6" class="muted">Nenhum produto.</td></tr>`;
-  }
-
-  window.openEditProduto = (id) => {
-    const p = PRODUTOS.find(x => Number(x.id) === Number(id));
-    if(!p) return;
-
-    const cats = CATEGORIAS
-      .filter(c => c.cliente_slug === p.cliente_slug)
-      .sort((a,b)=>(a.ordem||0)-(b.ordem||0));
-
-    const catOpts = cats.map(c => `<option value="${c.id}" ${Number(c.id)===Number(p.categoria_id)?"selected":""}>${escapeHtml(c.nome)}</option>`).join("");
-
-    openModal(
-      `Editar Produto (#${p.id})`,
-      `
-        <div class="row3">
-          <div>
-            <label>Cliente (slug)</label>
-            <input id="m_prodCliente" value="${escapeAttr(p.cliente_slug)}" />
-          </div>
-          <div>
-            <label>Categoria</label>
-            <select id="m_prodCategoria">${catOpts || `<option value="${p.categoria_id}">#${p.categoria_id}</option>`}</select>
-          </div>
-          <div>
-            <label>Status</label>
-            <select id="m_prodAtivo">
-              <option value="true" ${p.ativo ? "selected":""}>Ativo</option>
-              <option value="false" ${!p.ativo ? "selected":""}>Inativo</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:8px;">
-          <div>
-            <label>Nome</label>
-            <input id="m_prodNome" value="${escapeAttr(p.nome)}" />
-          </div>
-          <div>
-            <label>Preço</label>
-            <input id="m_prodPreco" type="number" step="0.01" value="${Number(p.preco||0)}" />
-          </div>
-        </div>
-
-        <div style="margin-top:8px;">
-          <label>Imagem (URL)</label>
-          <input id="m_prodImg" value="${escapeAttr(p.imagem || "")}" />
-        </div>
-
-        <div style="margin-top:8px;">
-          <label>Descrição</label>
-          <textarea id="m_prodDesc">${escapeHtml(p.descricao || "")}</textarea>
-        </div>
-      `,
-      async () => {
-        const cliente_slug = $("m_prodCliente").value.trim();
-        const categoria_id = Number($("m_prodCategoria").value);
-        const ativo = $("m_prodAtivo").value === "true";
-        const nome = $("m_prodNome").value.trim();
-        const preco = Number($("m_prodPreco").value||0);
-        const imagem = $("m_prodImg").value.trim() || null;
-        const descricao = $("m_prodDesc").value.trim();
-
-        if(!cliente_slug || !categoria_id || !nome || !preco) throw new Error("Preencha cliente, categoria, nome e preço.");
-
-        await apiFetch("/api/admin/produtos", {
-          method:"PATCH",
-          body:{ id: p.id, cliente_slug, categoria_id, ativo, nome, preco, imagem, descricao }
-        });
-
-        showMsg($("modalMsg"), "ok", "Produto atualizado!");
-        await refreshAll();
-      }
-    );
-  };
-
-  window.duplicateProduto = async (id) => {
-    const p = PRODUTOS.find(x => Number(x.id) === Number(id));
-    if(!p) return;
-    if(!confirm(`Duplicar produto "${p.nome}"?`)) return;
-
-    try{
-      await apiFetch("/api/admin/produtos", {
-        method:"POST",
-        body:{
-          cliente_slug: p.cliente_slug,
-          categoria_id: p.categoria_id,
-          nome: p.nome + " (cópia)",
-          descricao: p.descricao || "",
-          preco: Number(p.preco || 0),
-          imagem: p.imagem || null,
-          ativo: !!p.ativo,
-          ordem: Number(p.ordem || 0) + 1
-        }
-      });
-      await refreshAll();
-    }catch(err){ alert(err.message || String(err)); }
-  };
-
-  window.deleteProduto = async (id) => {
-    const p = PRODUTOS.find(x => Number(x.id) === Number(id));
-    if(!p) return;
-    if(!confirm(`Excluir produto "${p.nome}"?`)) return;
-
-    try{
-      await apiFetch("/api/admin/produtos", { method:"DELETE", body:{ id: p.id } });
-      await refreshAll();
-    }catch(err){ alert(err.message || String(err)); }
-  };
-
-  // Auto session
-  (async () => {
-    const { data } = await supabaseClient.auth.getSession();
-    if(data?.session){
-      $("secLogin").classList.add("hidden");
-      $("secAdmin").classList.remove("hidden");
-      $("statusUser").textContent = data.session.user.email;
-      await refreshAll();
-    }
-  })();
+})();
 </script>
-
 </body>
 </html>
