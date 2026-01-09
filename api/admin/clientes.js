@@ -6,30 +6,33 @@ function json(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
+function applyCors(req, res) {
+  const allowed = new Set([
+    "https://playmomentsstudios-commits.github.io",
+    "https://cafeteria-gamma-orpin.vercel.app",
+    "https://cafeteria-jq10uha2x-felipes-projects-7335b3b6.vercel.app"
+  ]);
+
+  const origin = req.headers.origin;
+  if (origin && allowed.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+  }
+
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return true;
+  }
+  return false;
+}
+
 export default async function handler(req, res) {
   try {
-    // ✅ CORS (GitHub Pages -> Vercel)
-    const allowed = new Set([
-      "https://playmomentsstudios-commits.github.io",
-      "https://cafeteria-gamma-orpin.vercel.app",
-      "https://cafeteria-jq10uha2x-felipes-projects-7335b3b6.vercel.app",
-    ]);
+    if (applyCors(req, res)) return;
 
-    const origin = req.headers.origin;
-    if (origin && allowed.has(origin)) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Vary", "Origin");
-    }
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
-
-    // Preflight
-    if (req.method === "OPTIONS") {
-      res.status(204).end();
-      return;
-    }
-
-    // Auth admin
     const auth = await requireAdmin(req);
     if (!auth.ok) return json(res, auth.status, { error: auth.error });
 
@@ -52,7 +55,7 @@ export default async function handler(req, res) {
         slug: body.slug?.trim(),
         whatsapp: body.whatsapp?.trim(),
         ativo: body.ativo ?? true,
-        logo_url: body.logo_url ?? null,
+        logo_url: body.logo_url ?? null
       };
 
       if (!payload.nome || !payload.slug || !payload.whatsapp) {
