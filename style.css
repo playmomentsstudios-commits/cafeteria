@@ -1,35 +1,90 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    background-color: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f6f6f6;
     color: #333;
 }
 
+/* ===== HEADER ===== */
 header {
-    background-color: #e63946;
-    color: white;
-    padding: 20px;
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #e63946, #d62828);
+    color: #fff;
+    padding: 18px 15px;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    z-index: 10;
 }
 
+header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+.subtitulo {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+/* ===== CARDÁPIO ===== */
 #cardapio {
-    padding: 15px;
-    max-width: 600px;
+    max-width: 720px;
     margin: 0 auto;
+    padding: 15px;
 }
 
+/* ===== PRODUTO ===== */
 .produto-card {
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    gap: 12px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+    transition: transform 0.15s ease;
 }
 
-.produto-info h3 { margin: 0; font-size: 1.1rem; }
-.produto-info p { margin: 5px 0 0; color: #666; font-size: 0.9rem; }
-.preco { font-weight: bold; color: #2b9348; font-size: 1.1rem; }
+.produto-card:hover {
+    transform: scale(1.01);
+}
+
+.produto-info h3 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.produto-info p {
+    margin: 6px 0 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.preco {
+    font-weight: bold;
+    font-size: 1.15rem;
+    color: #2b9348;
+    white-space: nowrap;
+}
+
+/* ===== LOADER ===== */
+.loader {
+    text-align: center;
+    padding: 40px;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    text-align: center;
+    padding: 15px;
+    font-size: 0.75rem;
+    color: #777;
+}
