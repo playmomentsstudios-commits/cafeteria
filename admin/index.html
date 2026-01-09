@@ -2,760 +2,244 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Painel Admin • Cardápio Digital</title>
+  <title>Painel Admin – Cardápio Digital</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Supabase JS v2 (OBRIGATÓRIO) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    :root{
-      --bg:#f4f4f4;
-      --card:#ffffff;
-      --text:#111827;
-      --muted:#6b7280;
-      --brand:#1d3557;
-      --ok:#0f766e;
-      --err:#b91c1c;
-      --border:#e5e7eb;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Arial, sans-serif;background:var(--bg);color:var(--text)}
-    header{background:var(--brand);color:#fff;padding:16px;text-align:center}
-    main{max-width:1200px;margin:auto;padding:20px}
-    .card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-    h2{margin:0 0 10px 0}
-    p.small{margin:6px 0 0 0;color:var(--muted);font-size:13px}
-    input, select, button, textarea{
-      width:100%;
-      padding:10px;
-      margin:6px 0;
-      border-radius:8px;
-      border:1px solid #cfd3d8;
-      font-size:14px;
-      background:#fff;
+    header {
+      background: #1f3a5f;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
     }
-    textarea{min-height:88px;resize:vertical}
-    button{
-      background:var(--brand);
-      color:#fff;
-      border:none;
-      cursor:pointer;
-      font-weight:700;
+    main {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
     }
-    button.secondary{background:#111827}
-    button.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand)}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-    .col-12{grid-column:span 12}
-    .col-6{grid-column:span 6}
-    .col-4{grid-column:span 4}
-    .col-3{grid-column:span 3}
-    .col-2{grid-column:span 2}
-    @media (max-width: 900px){
-      .col-6,.col-4,.col-3,.col-2{grid-column:span 12}
+    h2 {
+      margin-top: 30px;
     }
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .row > *{flex:1}
-    .table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
-    .table th,.table td{padding:10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
-    .table th{color:#111827;font-weight:800;background:#f9fafb}
-    .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid var(--border);color:var(--muted)}
-    .actions button{width:auto;padding:8px 10px;margin:0 6px 0 0}
-    .status{
-      padding:10px 12px;
-      border-radius:10px;
-      margin:10px 0 0 0;
-      border:1px solid var(--border);
-      background:#f9fafb;
-      color:var(--muted);
-      font-size:14px;
-      display:none;
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
     }
-    .status.ok{border-color:rgba(15,118,110,.35);background:rgba(15,118,110,.08);color:var(--ok)}
-    .status.err{border-color:rgba(185,28,28,.35);background:rgba(185,28,28,.08);color:var(--err)}
-    .pill{
-      display:flex;gap:8px;align-items:center;flex-wrap:wrap;
-      padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#fff
+    button {
+      background: #1f3a5f;
+      color: #fff;
+      border: none;
+      cursor: pointer;
     }
-    .pill b{color:#111827}
-    .pill span{color:var(--muted)}
-    .divider{height:1px;background:var(--border);margin:12px 0}
-    .muted{color:var(--muted)}
-    .hidden{display:none}
-    a{color:var(--brand);text-decoration:none;font-weight:700}
+    button:hover {
+      opacity: 0.9;
+    }
+    .erro {
+      background: #ffd6d6;
+      color: #900;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .ok {
+      background: #d6ffd6;
+      color: #060;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1 style="margin:0">Painel Admin – Cardápio Digital</h1>
-  </header>
 
-  <main>
+<header>
+  <h1>Painel Admin – Cardápio Digital</h1>
+</header>
 
-    <!-- LOGIN -->
-    <div class="card" id="loginBox">
-      <h2>Login</h2>
-      <div class="grid">
-        <div class="col-6">
-          <input id="email" type="email" placeholder="E-mail" />
-        </div>
-        <div class="col-6">
-          <input id="password" type="password" placeholder="Senha" />
-        </div>
-        <div class="col-12">
-          <button onclick="login()">Entrar</button>
-          <div id="statusLogin" class="status"></div>
-          <p class="small">Dica: use um usuário do Supabase Auth (email/senha).</p>
-        </div>
-      </div>
-    </div>
+<main>
 
-    <!-- ADMIN -->
-    <div id="adminPanel" class="hidden">
+  <!-- LOGIN -->
+  <section id="login">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginSenha" placeholder="Senha" />
+    <button onclick="login()">Entrar</button>
+    <div id="loginMsg"></div>
+  </section>
 
-      <div class="card">
-        <div class="pill">
-          <b>Status:</b>
-          <span id="sessionInfo">Autenticando...</span>
-          <span class="tag" id="envTag">Supabase</span>
-          <span class="tag" id="clientesCount">Clientes: -</span>
-          <span class="tag" id="categoriasCount">Categorias: -</span>
-          <span class="tag" id="produtosCount">Produtos: -</span>
-        </div>
-        <p class="small">Aqui você cadastra clientes, categorias e produtos. O site público usa <b>?u=slug</b>.</p>
-      </div>
+  <!-- ADMIN -->
+  <section id="admin" class="hidden">
 
-      <!-- CLIENTES -->
-      <div class="card">
-        <h2>Cadastrar Cliente</h2>
-        <div class="grid">
-          <div class="col-4">
-            <input id="cliente_nome" placeholder="Nome do negócio (ex: Cafeteria do João)" />
-          </div>
-          <div class="col-4">
-            <input id="cliente_slug" placeholder="Slug (ex: cafeteria-do-joao)" />
-            <p class="small">O slug vira a URL: <span class="muted">/?u=seu-slug</span></p>
-          </div>
-          <div class="col-4">
-            <input id="cliente_whatsapp" placeholder="WhatsApp (ex: 5599999999999)" />
-          </div>
-          <div class="col-12">
-            <button onclick="criarCliente()">Salvar Cliente</button>
-            <div id="statusCliente" class="status"></div>
-          </div>
-        </div>
+    <p><b>Status:</b> Logado</p>
+    <button onclick="logout()">Sair</button>
 
-        <div class="divider"></div>
+    <!-- CLIENTE -->
+    <h2>Cadastrar Cliente</h2>
+    <input id="cliNome" placeholder="Nome do negócio" />
+    <input id="cliSlug" placeholder="Slug (ex: cafeteria)" />
+    <input id="cliWhats" placeholder="WhatsApp (55999999999)" />
+    <button onclick="salvarCliente()">Salvar Cliente</button>
+    <div id="msgCliente"></div>
 
-        <h2>Clientes Cadastrados</h2>
-        <table class="table" id="listaClientes"></table>
-      </div>
+    <!-- CATEGORIA -->
+    <h2>Cadastrar Categoria</h2>
+    <select id="catCliente"></select>
+    <input id="catNome" placeholder="Nome da categoria" />
+    <input id="catOrdem" placeholder="Ordem (ex: 1)" type="number" />
+    <button onclick="salvarCategoria()">Salvar Categoria</button>
+    <div id="msgCategoria"></div>
 
-      <!-- CATEGORIAS -->
-      <div class="card">
-        <h2>Categorias</h2>
-        <p class="small">O site público renderiza produtos por categoria usando <b>categoria_id</b>. Então cadastre as categorias e associe no produto.</p>
+    <!-- PRODUTO -->
+    <h2>Cadastrar Produto</h2>
+    <select id="prodCliente" onchange="carregarCategoriasProduto()"></select>
+    <select id="prodCategoria"></select>
+    <input id="prodNome" placeholder="Nome do produto" />
+    <input id="prodDesc" placeholder="Descrição" />
+    <input id="prodPreco" placeholder="Preço (12.50)" type="number" step="0.01" />
+    <input id="prodImg" placeholder="URL da imagem (opcional)" />
+    <button onclick="salvarProduto()">Salvar Produto</button>
+    <div id="msgProduto"></div>
 
-        <div class="grid">
-          <div class="col-4">
-            <select id="categoria_cliente_select"></select>
-            <p class="small">Cliente dono da categoria</p>
-          </div>
-          <div class="col-4">
-            <input id="categoria_nome" placeholder="Nome da categoria (ex: Cuscuz, Bebidas, Doces)" />
-          </div>
-          <div class="col-2">
-            <input id="categoria_ordem" type="number" placeholder="Ordem (ex: 1)" />
-          </div>
-          <div class="col-2">
-            <select id="categoria_ativo">
-              <option value="true">Ativa</option>
-              <option value="false">Inativa</option>
-            </select>
-          </div>
-          <div class="col-12">
-            <button onclick="criarCategoria()">Salvar Categoria</button>
-            <div id="statusCategoria" class="status"></div>
-          </div>
-        </div>
+  </section>
 
-        <div class="divider"></div>
-
-        <h2>Categorias Cadastradas</h2>
-        <div class="row">
-          <div style="flex:2">
-            <select id="filtro_categoria_cliente" onchange="carregarCategorias()"></select>
-          </div>
-          <div style="flex:1">
-            <button class="ghost" onclick="carregarCategorias()">Atualizar Lista</button>
-          </div>
-        </div>
-        <table class="table" id="listaCategorias"></table>
-      </div>
-
-      <!-- PRODUTOS -->
-      <div class="card">
-        <h2>Cadastrar Produto</h2>
-        <div class="grid">
-          <div class="col-4">
-            <select id="produto_cliente_select" onchange="onClienteProdutoChange()"></select>
-            <p class="small">Selecione o cliente</p>
-          </div>
-          <div class="col-4">
-            <select id="produto_categoria_select"></select>
-            <p class="small">Selecione a categoria</p>
-          </div>
-          <div class="col-4">
-            <input id="produto_nome" placeholder="Nome do produto" />
-          </div>
-
-          <div class="col-6">
-            <textarea id="produto_desc" placeholder="Descrição (opcional)"></textarea>
-          </div>
-          <div class="col-3">
-            <input id="produto_preco" type="number" step="0.01" placeholder="Preço (ex: 12.50)" />
-          </div>
-          <div class="col-3">
-            <input id="produto_img" placeholder="URL da imagem (opcional)" />
-          </div>
-
-          <div class="col-12">
-            <button onclick="criarProduto()">Salvar Produto</button>
-            <div id="statusProduto" class="status"></div>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <h2>Produtos Cadastrados</h2>
-        <div class="row">
-          <div style="flex:2">
-            <select id="filtro_produto_cliente" onchange="carregarProdutos()"></select>
-          </div>
-          <div style="flex:1">
-            <button class="ghost" onclick="carregarProdutos()">Atualizar Lista</button>
-          </div>
-        </div>
-        <table class="table" id="listaProdutos"></table>
-      </div>
-
-      <div class="card">
-        <button class="secondary" onclick="logout()">Sair</button>
-      </div>
-
-    </div>
-
-  </main>
+</main>
 
 <script>
-  // ===============================
-  // SUPABASE CONFIG
-  // ===============================
-  // Mantive suas variáveis do arquivo original.
-  const SUPABASE_URL = 'https://rgsnmxspyyywouhcdwkj.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+/* ===============================
+   SUPABASE CONFIG
+================================ */
+const SUPABASE_URL = "https://rgsnmxspyyywouhcdwkj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
 
-  // ===============================
-  // ELEMENTOS
-  // ===============================
-  const loginBox = document.getElementById('loginBox');
-  const adminPanel = document.getElementById('adminPanel');
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-  const email = document.getElementById('email');
-  const password = document.getElementById('password');
+/* ===============================
+   AUTH
+================================ */
+async function login() {
+  const email = loginEmail.value;
+  const password = loginSenha.value;
 
-  const statusLogin = document.getElementById('statusLogin');
-  const statusCliente = document.getElementById('statusCliente');
-  const statusCategoria = document.getElementById('statusCategoria');
-  const statusProduto = document.getElementById('statusProduto');
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
 
-  const sessionInfo = document.getElementById('sessionInfo');
-  const clientesCount = document.getElementById('clientesCount');
-  const categoriasCount = document.getElementById('categoriasCount');
-  const produtosCount = document.getElementById('produtosCount');
-
-  const cliente_nome = document.getElementById('cliente_nome');
-  const cliente_slug = document.getElementById('cliente_slug');
-  const cliente_whatsapp = document.getElementById('cliente_whatsapp');
-  const listaClientes = document.getElementById('listaClientes');
-
-  const categoria_cliente_select = document.getElementById('categoria_cliente_select');
-  const categoria_nome = document.getElementById('categoria_nome');
-  const categoria_ordem = document.getElementById('categoria_ordem');
-  const categoria_ativo = document.getElementById('categoria_ativo');
-  const filtro_categoria_cliente = document.getElementById('filtro_categoria_cliente');
-  const listaCategorias = document.getElementById('listaCategorias');
-
-  const produto_cliente_select = document.getElementById('produto_cliente_select');
-  const produto_categoria_select = document.getElementById('produto_categoria_select');
-  const produto_nome = document.getElementById('produto_nome');
-  const produto_desc = document.getElementById('produto_desc');
-  const produto_preco = document.getElementById('produto_preco');
-  const produto_img = document.getElementById('produto_img');
-  const filtro_produto_cliente = document.getElementById('filtro_produto_cliente');
-  const listaProdutos = document.getElementById('listaProdutos');
-
-  // Cache simples
-  let cacheClientes = [];
-  let cacheCategorias = [];
-  let cacheCategoriasByCliente = new Map(); // slug -> categorias
-
-  // ===============================
-  // HELPERS
-  // ===============================
-  function showStatus(el, msg, type){
-    if(!el) return;
-    el.classList.remove('ok','err');
-    el.style.display = 'block';
-    if(type === 'ok') el.classList.add('ok');
-    if(type === 'err') el.classList.add('err');
-    el.textContent = msg;
+  if (error) {
+    loginMsg.innerHTML = `<div class="erro">${error.message}</div>`;
   }
-  function clearStatus(el){
-    if(!el) return;
-    el.style.display = 'none';
-    el.textContent = '';
-    el.classList.remove('ok','err');
+}
+
+async function logout() {
+  await supabaseClient.auth.signOut();
+  location.reload();
+}
+
+supabaseClient.auth.onAuthStateChange((_, session) => {
+  if (session) {
+    login.classList.add("hidden");
+    admin.classList.remove("hidden");
+    carregarClientes();
   }
-  function slugify(text){
-    return (text || '')
-      .toString()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g,'')
-      .replace(/\s+/g,'-')
-      .replace(/-+/g,'-');
-  }
-  function moneyBRL(value){
-    const n = Number(value || 0);
-    return n.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-  }
+});
 
-  // ===============================
-  // AUTH
-  // ===============================
-  async function login(){
-    clearStatus(statusLogin);
-    const em = email.value.trim();
-    const pw = password.value;
-    if(!em || !pw){
-      showStatus(statusLogin, 'Informe e-mail e senha.', 'err');
-      return;
-    }
-    const { error } = await supabaseClient.auth.signInWithPassword({ email: em, password: pw });
-    if(error){
-      showStatus(statusLogin, error.message || 'Erro no login.', 'err');
-      return;
-    }
-    await initAfterLogin();
-  }
-
-  async function logout(){
-    await supabaseClient.auth.signOut();
-    adminPanel.classList.add('hidden');
-    loginBox.style.display = 'block';
-    sessionInfo.textContent = 'Deslogado';
-  }
-
-  async function initAfterLogin(){
-    const { data } = await supabaseClient.auth.getSession();
-    const session = data?.session;
-    if(!session){
-      adminPanel.classList.add('hidden');
-      loginBox.style.display = 'block';
-      sessionInfo.textContent = 'Sem sessão';
-      return;
-    }
-
-    loginBox.style.display = 'none';
-    adminPanel.classList.remove('hidden');
-    sessionInfo.textContent = `Logado: ${session.user.email}`;
-
-    // Carrega tudo
-    await carregarClientes();
-    await carregarCategorias();
-    await carregarProdutos();
-  }
-
-  // ===============================
-  // CLIENTES
-  // ===============================
-  async function criarCliente(){
-    clearStatus(statusCliente);
-
-    const nome = cliente_nome.value.trim();
-    let slug = cliente_slug.value.trim();
-    const whatsapp = cliente_whatsapp.value.trim();
-
-    if(!nome){
-      showStatus(statusCliente, 'Informe o nome do cliente.', 'err');
-      return;
-    }
-
-    if(!slug){
-      slug = slugify(nome);
-      cliente_slug.value = slug;
-    }
-
-    const payload = { nome, slug, whatsapp, ativo: true };
-    const { error } = await supabaseClient.from('clientes').insert(payload);
-
-    if(error){
-      showStatus(statusCliente, error.message || 'Erro ao salvar cliente.', 'err');
-      return;
-    }
-
-    showStatus(statusCliente, 'Cliente salvo com sucesso!', 'ok');
-
-    cliente_nome.value = '';
-    cliente_slug.value = '';
-    cliente_whatsapp.value = '';
-
-    await carregarClientes();
-  }
-
-  async function carregarClientes(){
-    const { data, error } = await supabaseClient
-      .from('clientes')
-      .select('*')
-      .order('nome', { ascending:true });
-
-    if(error){
-      showStatus(statusCliente, error.message || 'Erro ao carregar clientes.', 'err');
-      return;
-    }
-
-    cacheClientes = data || [];
-    clientesCount.textContent = `Clientes: ${cacheClientes.length}`;
-
-    // Tabela
-    listaClientes.innerHTML = `
-      <tr>
-        <th>Nome</th>
-        <th>Slug</th>
-        <th>WhatsApp</th>
-        <th>Ações</th>
-      </tr>
-    `;
-    cacheClientes.forEach(c => {
-      listaClientes.innerHTML += `
-        <tr>
-          <td>${escapeHtml(c.nome || '')}</td>
-          <td><span class="tag">${escapeHtml(c.slug || '')}</span></td>
-          <td>${escapeHtml(c.whatsapp || '')}</td>
-          <td class="actions">
-            <a href="../?u=${encodeURIComponent(c.slug || '')}" target="_blank">
-              <button>👁 Ver no Site</button>
-            </a>
-          </td>
-        </tr>
-      `;
+/* ===============================
+   CLIENTES
+================================ */
+async function salvarCliente() {
+  const { error } = await supabaseClient
+    .from("clientes")
+    .insert({
+      nome: cliNome.value,
+      slug: cliSlug.value,
+      whatsapp: cliWhats.value
     });
 
-    // Selects (cliente)
-    fillClienteSelects();
-  }
+  msgCliente.innerHTML = error
+    ? `<div class="erro">${error.message}</div>`
+    : `<div class="ok">Cliente salvo</div>`;
 
-  function fillClienteSelects(){
-    const opts = ['<option value="">Selecione um cliente</option>']
-      .concat(cacheClientes.map(c => `<option value="${escapeAttr(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`))
-      .join('');
+  carregarClientes();
+}
 
-    categoria_cliente_select.innerHTML = opts;
-    produto_cliente_select.innerHTML = opts;
-    filtro_categoria_cliente.innerHTML = '<option value="">(Todos os clientes)</option>' + cacheClientes.map(c => `<option value="${escapeAttr(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`).join('');
-    filtro_produto_cliente.innerHTML = '<option value="">(Todos os clientes)</option>' + cacheClientes.map(c => `<option value="${escapeAttr(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`).join('');
+async function carregarClientes() {
+  const { data } = await supabaseClient.from("clientes").select("*");
 
-    // tenta manter seleção atual
-    if(!produto_cliente_select.value && cacheClientes[0]) produto_cliente_select.value = cacheClientes[0].slug;
-    if(!categoria_cliente_select.value && cacheClientes[0]) categoria_cliente_select.value = cacheClientes[0].slug;
-
-    onClienteProdutoChange();
-  }
-
-  // ===============================
-  // CATEGORIAS
-  // ===============================
-  async function criarCategoria(){
-    clearStatus(statusCategoria);
-
-    const cliente_slug = categoria_cliente_select.value;
-    const nome = categoria_nome.value.trim();
-    const ordem = Number(categoria_ordem.value || 0);
-    const ativo = (categoria_ativo.value === 'true');
-
-    if(!cliente_slug){
-      showStatus(statusCategoria, 'Selecione um cliente para a categoria.', 'err');
-      return;
-    }
-    if(!nome){
-      showStatus(statusCategoria, 'Informe o nome da categoria.', 'err');
-      return;
-    }
-
-    const payload = { cliente_slug, nome, ordem, ativo };
-    const { error } = await supabaseClient.from('categorias').insert(payload);
-
-    if(error){
-      showStatus(statusCategoria, error.message || 'Erro ao salvar categoria.', 'err');
-      return;
-    }
-
-    showStatus(statusCategoria, 'Categoria salva com sucesso!', 'ok');
-
-    categoria_nome.value = '';
-    categoria_ordem.value = '';
-
-    await carregarCategorias();
-    await onClienteProdutoChange(); // atualiza select de categoria do produto
-  }
-
-  async function carregarCategorias(){
-    clearStatus(statusCategoria);
-
-    const filtroCliente = filtro_categoria_cliente.value;
-    let query = supabaseClient
-      .from('categorias')
-      .select('*')
-      .order('cliente_slug', { ascending:true })
-      .order('ordem', { ascending:true })
-      .order('nome', { ascending:true });
-
-    if(filtroCliente){
-      query = query.eq('cliente_slug', filtroCliente);
-    }
-
-    const { data, error } = await query;
-
-    if(error){
-      showStatus(statusCategoria, error.message || 'Erro ao carregar categorias.', 'err');
-      return;
-    }
-
-    cacheCategorias = data || [];
-    categoriasCount.textContent = `Categorias: ${cacheCategorias.length}`;
-
-    // index por cliente
-    cacheCategoriasByCliente = new Map();
-    for(const cat of cacheCategorias){
-      const key = cat.cliente_slug || '';
-      if(!cacheCategoriasByCliente.has(key)) cacheCategoriasByCliente.set(key, []);
-      cacheCategoriasByCliente.get(key).push(cat);
-    }
-
-    // tabela
-    listaCategorias.innerHTML = `
-      <tr>
-        <th>Cliente</th>
-        <th>Categoria</th>
-        <th>Ordem</th>
-        <th>Status</th>
-      </tr>
-    `;
-    cacheCategorias.forEach(cat => {
-      listaCategorias.innerHTML += `
-        <tr>
-          <td><span class="tag">${escapeHtml(cat.cliente_slug || '')}</span></td>
-          <td>${escapeHtml(cat.nome || '')}</td>
-          <td>${Number(cat.ordem || 0)}</td>
-          <td>${cat.ativo ? '<span class="tag">Ativa</span>' : '<span class="tag">Inativa</span>'}</td>
-        </tr>
-      `;
+  [catCliente, prodCliente].forEach(sel => {
+    sel.innerHTML = "<option value=''>Selecione</option>";
+    data.forEach(c => {
+      sel.innerHTML += `<option value="${c.slug}">${c.nome}</option>`;
     });
-  }
+  });
+}
 
-  async function onClienteProdutoChange(){
-    const clienteSlug = produto_cliente_select.value;
-    await fillCategoriasSelectForCliente(clienteSlug);
-  }
-
-  async function fillCategoriasSelectForCliente(clienteSlug){
-    // garante categorias carregadas
-    if(!cacheCategorias || cacheCategorias.length === 0){
-      // tenta carregar (sem filtro) uma vez
-      const { data } = await supabaseClient
-        .from('categorias')
-        .select('*')
-        .order('ordem', { ascending:true })
-        .order('nome', { ascending:true });
-      cacheCategorias = data || [];
-      cacheCategoriasByCliente = new Map();
-      for(const cat of cacheCategorias){
-        const key = cat.cliente_slug || '';
-        if(!cacheCategoriasByCliente.has(key)) cacheCategoriasByCliente.set(key, []);
-        cacheCategoriasByCliente.get(key).push(cat);
-      }
-      categoriasCount.textContent = `Categorias: ${cacheCategorias.length}`;
-    }
-
-    const cats = (clienteSlug && cacheCategoriasByCliente.get(clienteSlug)) ? cacheCategoriasByCliente.get(clienteSlug) : [];
-    const activeCats = cats.filter(c => c.ativo !== false);
-
-    if(!clienteSlug){
-      produto_categoria_select.innerHTML = '<option value="">Selecione um cliente primeiro</option>';
-      return;
-    }
-
-    if(activeCats.length === 0){
-      produto_categoria_select.innerHTML = '<option value="">(Sem categorias ativas)</option>';
-      return;
-    }
-
-    produto_categoria_select.innerHTML =
-      '<option value="">Selecione uma categoria</option>' +
-      activeCats.map(c => `<option value="${escapeAttr(String(c.id))}">${escapeHtml(c.nome)} (ordem ${Number(c.ordem || 0)})</option>`).join('');
-  }
-
-  // ===============================
-  // PRODUTOS
-  // ===============================
-  async function criarProduto(){
-    clearStatus(statusProduto);
-
-    const cliente_slug = produto_cliente_select.value;
-    const categoria_id = produto_categoria_select.value ? Number(produto_categoria_select.value) : null;
-    const nome = produto_nome.value.trim();
-    const descricao = produto_desc.value.trim();
-    const preco = Number(produto_preco.value);
-    const imagem = produto_img.value.trim();
-
-    if(!cliente_slug){
-      showStatus(statusProduto, 'Selecione um cliente.', 'err');
-      return;
-    }
-    if(!categoria_id){
-      showStatus(statusProduto, 'Selecione uma categoria.', 'err');
-      return;
-    }
-    if(!nome){
-      showStatus(statusProduto, 'Informe o nome do produto.', 'err');
-      return;
-    }
-    if(!Number.isFinite(preco) || preco <= 0){
-      showStatus(statusProduto, 'Informe um preço válido.', 'err');
-      return;
-    }
-
-    const payload = {
-      cliente_slug,
-      categoria_id,
-      nome,
-      descricao,
-      preco,
-      imagem: imagem || null,
+/* ===============================
+   CATEGORIAS
+================================ */
+async function salvarCategoria() {
+  const { error } = await supabaseClient
+    .from("categorias")
+    .insert({
+      cliente_slug: catCliente.value,
+      nome: catNome.value,
+      ordem: Number(catOrdem.value),
       ativo: true
-    };
-
-    const { error } = await supabaseClient.from('produtos').insert(payload);
-
-    if(error){
-      showStatus(statusProduto, error.message || 'Erro ao salvar produto.', 'err');
-      return;
-    }
-
-    showStatus(statusProduto, 'Produto salvo com sucesso!', 'ok');
-
-    produto_nome.value = '';
-    produto_desc.value = '';
-    produto_preco.value = '';
-    produto_img.value = '';
-
-    await carregarProdutos();
-  }
-
-  async function carregarProdutos(){
-    clearStatus(statusProduto);
-
-    const filtroCliente = filtro_produto_cliente.value;
-
-    let query = supabaseClient
-      .from('produtos')
-      .select('*')
-      .order('cliente_slug', { ascending:true })
-      .order('nome', { ascending:true });
-
-    if(filtroCliente){
-      query = query.eq('cliente_slug', filtroCliente);
-    }
-
-    const { data, error } = await query;
-
-    if(error){
-      showStatus(statusProduto, error.message || 'Erro ao carregar produtos.', 'err');
-      return;
-    }
-
-    const produtos = data || [];
-    produtosCount.textContent = `Produtos: ${produtos.length}`;
-
-    // mapeia categorias por id -> nome
-    const catMap = new Map((cacheCategorias || []).map(c => [Number(c.id), c]));
-
-    listaProdutos.innerHTML = `
-      <tr>
-        <th>Cliente</th>
-        <th>Categoria</th>
-        <th>Produto</th>
-        <th>Preço</th>
-        <th>Ações</th>
-      </tr>
-    `;
-
-    produtos.forEach(p => {
-      const cat = p.categoria_id ? catMap.get(Number(p.categoria_id)) : null;
-      const catName = cat?.nome ? cat.nome : (p.categoria_id ? `#${p.categoria_id}` : '-');
-
-      listaProdutos.innerHTML += `
-        <tr>
-          <td><span class="tag">${escapeHtml(p.cliente_slug || '')}</span></td>
-          <td>${escapeHtml(catName)}</td>
-          <td>${escapeHtml(p.nome || '')}</td>
-          <td>${moneyBRL(p.preco)}</td>
-          <td class="actions">
-            <a href="../?u=${encodeURIComponent(p.cliente_slug || '')}" target="_blank">
-              <button>👁 Ver no Site</button>
-            </a>
-          </td>
-        </tr>
-      `;
-    });
-  }
-
-  // ===============================
-  // SEGURANÇA BÁSICA (escape)
-  // ===============================
-  function escapeHtml(str){
-    return String(str ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-  function escapeAttr(str){
-    return escapeHtml(str).replace(/`/g,'&#096;');
-  }
-
-  // ===============================
-  // INIT
-  // ===============================
-  (async function(){
-    // auto-preenche slug quando digitar nome (se slug vazio)
-    cliente_nome.addEventListener('input', () => {
-      if(!cliente_slug.value.trim()){
-        cliente_slug.value = slugify(cliente_nome.value);
-      }
     });
 
-    const { data } = await supabaseClient.auth.getSession();
-    if(data?.session){
-      await initAfterLogin();
-    }else{
-      sessionInfo.textContent = 'Deslogado';
-    }
-  })();
+  msgCategoria.innerHTML = error
+    ? `<div class="erro">${error.message}</div>`
+    : `<div class="ok">Categoria salva</div>`;
+}
+
+async function carregarCategoriasProduto() {
+  const slug = prodCliente.value;
+  const { data } = await supabaseClient
+    .from("categorias")
+    .select("*")
+    .eq("cliente_slug", slug);
+
+  prodCategoria.innerHTML = "<option value=''>Selecione</option>";
+  data.forEach(c => {
+    prodCategoria.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+  });
+}
+
+/* ===============================
+   PRODUTOS
+================================ */
+async function salvarProduto() {
+  const { error } = await supabaseClient
+    .from("produtos")
+    .insert({
+      cliente_slug: prodCliente.value,
+      categoria_id: prodCategoria.value,
+      nome: prodNome.value,
+      descricao: prodDesc.value,
+      preco: Number(prodPreco.value),
+      imagem: prodImg.value,
+      ativo: true
+    });
+
+  msgProduto.innerHTML = error
+    ? `<div class="erro">${error.message}</div>`
+    : `<div class="ok">Produto salvo</div>`;
+}
 </script>
 
 </body>
