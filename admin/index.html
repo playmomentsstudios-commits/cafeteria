@@ -13,7 +13,6 @@
       --bg: #0b1220;
       --surface: rgba(255,255,255,.06);
       --card: rgba(255,255,255,.08);
-      --card2: rgba(255,255,255,.10);
       --border: rgba(255,255,255,.12);
       --text: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.65);
@@ -38,16 +37,15 @@
     .container{
       max-width: 1180px;
       margin: 18px auto;
-      padding: 0 14px 32px;
+      padding: 0 14px 34px;
     }
 
-    /* Header */
     header{
       margin: 14px 0 18px;
       background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 14px;
+      padding: 16px;
       box-shadow: var(--shadow);
     }
 
@@ -67,8 +65,8 @@
     }
 
     .logo-slot{
-      width:44px; height:44px;
-      border-radius: 12px;
+      width:46px; height:46px;
+      border-radius: 14px;
       border: 1px dashed rgba(255,255,255,.28);
       background: rgba(255,255,255,.06);
       display:flex; align-items:center; justify-content:center;
@@ -119,9 +117,9 @@
       background: rgba(255,255,255,.06);
       color: var(--text);
       padding: 10px 12px;
-      border-radius: 12px;
+      border-radius: 14px;
       cursor: pointer;
-      font-weight: 800;
+      font-weight: 850;
       transition: transform .08s ease, background .15s ease, border .15s ease;
     }
     .btn:hover{ background: rgba(255,255,255,.09); }
@@ -137,16 +135,15 @@
       border-color: rgba(255,90,122,.35);
       color: rgba(255,255,255,.92);
     }
-    .btn.small{ padding: 8px 10px; border-radius: 12px; font-size: 12px; }
+    .btn.small{ padding: 8px 10px; border-radius: 14px; font-size: 12px; }
 
     .btn[disabled]{ opacity:.6; cursor:not-allowed; }
 
-    /* Summary cards */
     .summary{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      margin-top: 12px;
+      margin-top: 14px;
     }
     @media (max-width: 860px){ .summary{ grid-template-columns: 1fr; } }
 
@@ -154,30 +151,29 @@
       border: 1px solid var(--border);
       background: rgba(255,255,255,.06);
       border-radius: var(--radius);
-      padding: 12px;
+      padding: 12px 14px;
       display:flex;
       justify-content: space-between;
       align-items:center;
       gap:10px;
+      min-height: 64px;
     }
     .sumcard .label{ color: var(--muted); font-size: 12px; }
     .sumcard .value{ font-size: 20px; font-weight: 950; }
 
-    /* Layout sections */
     .panel{
       border: 1px solid var(--border);
       background: rgba(255,255,255,.06);
       border-radius: var(--radius);
-      padding: 14px;
+      padding: 16px;
       box-shadow: var(--shadow);
     }
 
     .hidden{ display:none; }
     .muted{ color: var(--muted); font-size: 13px; }
 
-    /* Segmented tabs (fila horizontal) */
     .tabs{
-      margin-top: 14px;
+      margin-top: 16px;
       display:flex;
       justify-content: center;
     }
@@ -194,10 +190,11 @@
       border:0;
       background: transparent;
       color: var(--muted);
-      padding: 10px 16px;
+      padding: 10px 18px;
       cursor:pointer;
-      font-weight: 900;
+      font-weight: 950;
       transition: background .15s ease, color .15s ease;
+      letter-spacing: .2px;
     }
     .seg button.active{
       background: rgba(255,255,255,.12);
@@ -205,20 +202,19 @@
     }
     .seg button:hover{ background: rgba(255,255,255,.09); color: var(--text); }
 
-    /* Forms modern */
     .card{
       border: 1px solid var(--border);
       background: rgba(255,255,255,.06);
       border-radius: var(--radius);
-      padding: 14px;
-      margin-top: 12px;
+      padding: 16px;
+      margin-top: 14px;
     }
 
     .row{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .row3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     @media (max-width: 900px){ .row,.row3{ grid-template-columns: 1fr; } }
 
-    label{ font-size: 12px; color: var(--muted); display:block; margin-top: 2px; }
+    label{ font-size: 12px; color: var(--muted); display:block; margin: 4px 0 6px; }
 
     input, select, textarea{
       width:100%;
@@ -235,11 +231,10 @@
       border-color: rgba(90,169,255,.55);
       background: rgba(0,0,0,.28);
     }
-    textarea{ min-height: 92px; resize: vertical; }
+    textarea{ min-height: 96px; resize: vertical; }
 
-    .form-actions{ display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+    .form-actions{ display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top: 12px; }
 
-    /* Table */
     .table-wrap{
       margin-top: 12px;
       overflow:auto;
@@ -250,7 +245,7 @@
     table{
       width:100%;
       border-collapse: collapse;
-      min-width: 940px;
+      min-width: 980px;
     }
     th, td{
       padding: 12px;
@@ -267,6 +262,7 @@
       letter-spacing: .3px;
       text-transform: uppercase;
     }
+
     code{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 12px;
@@ -295,13 +291,7 @@
     .tag.ok{ border-color: rgba(55,214,122,.35); background: rgba(55,214,122,.10); }
     .tag.off{ border-color: rgba(255,90,122,.35); background: rgba(255,90,122,.10); }
 
-    /* Switch */
-    .switch{
-      position: relative;
-      width: 46px;
-      height: 26px;
-      display:inline-block;
-    }
+    .switch{ position: relative; width: 46px; height: 26px; display:inline-block; }
     .switch input{ display:none; }
     .slider{
       position:absolute; inset:0;
@@ -314,10 +304,8 @@
     .slider:before{
       content:"";
       position:absolute;
-      width: 20px;
-      height: 20px;
-      left: 3px;
-      top: 2px;
+      width: 20px; height: 20px;
+      left: 3px; top: 2px;
       border-radius: 999px;
       background: rgba(255,255,255,.85);
       transition:.2s;
@@ -331,18 +319,16 @@
       background: rgba(255,255,255,.92);
     }
 
-    /* Messages */
     .msg{
       padding: 10px 12px;
       border-radius: 14px;
       border:1px solid rgba(255,255,255,.14);
-      margin-top: 10px;
+      margin-top: 12px;
       background: rgba(255,255,255,.06);
     }
     .msg.ok{ border-color: rgba(55,214,122,.35); background: rgba(55,214,122,.10); }
     .msg.err{ border-color: rgba(255,90,122,.35); background: rgba(255,90,122,.10); }
 
-    /* Modal */
     .modal-backdrop{
       position: fixed;
       inset:0;
@@ -371,10 +357,7 @@
       border-bottom: 1px solid rgba(255,255,255,.10);
       margin-bottom: 10px;
     }
-    .modal-title{
-      font-weight: 950;
-      letter-spacing: .2px;
-    }
+    .modal-title{ font-weight: 950; letter-spacing: .2px; }
   </style>
 </head>
 
@@ -460,26 +443,26 @@
       <!-- CLIENTES -->
       <section id="tabClientes">
         <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:10px; flex-wrap:wrap;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;">
             <div>
               <h2 style="margin:0;">Cadastrar Cliente</h2>
-              <div class="muted">Crie a loja e já gere o link publicado.</div>
+              <div class="muted">Crie a loja e gere o link publicado.</div>
             </div>
             <div class="tag">Aba Clientes</div>
           </div>
 
-          <div class="row" style="margin-top:8px;">
+          <div class="row" style="margin-top:12px;">
             <div>
               <label>Nome do negócio</label>
               <input id="cliNome" placeholder="ex: Cafeteria do João" />
             </div>
-             <div>
+            <div>
               <label>Slug</label>
               <input id="cliSlug" placeholder="ex: cafeteria-do-joao" />
             </div>
           </div>
 
-          <div class="row" style="margin-top:2px;">
+          <div class="row" style="margin-top:8px;">
             <div>
               <label>WhatsApp</label>
               <input id="cliWhats" placeholder="ex: 5599999999999" />
@@ -497,7 +480,7 @@
             <button class="btn primary" id="btnSalvarCliente" type="button">Salvar Cliente</button>
           </div>
           <div id="msgCliente"></div>
-          <div class="muted">Dica: o link público usa <code>?u=slug</code> (ex: <code>?u=cafeteria-do-joao</code>).</div>
+          <div class="muted" style="margin-top:8px;">Dica: link público usa <code>?u=slug</code> (ex: <code>?u=cafeteria-do-joao</code>).</div>
         </div>
 
         <div class="card">
@@ -533,7 +516,7 @@
       <!-- CATEGORIAS -->
       <section id="tabCategorias" class="hidden">
         <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:10px; flex-wrap:wrap;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;">
             <div>
               <h2 style="margin:0;">Cadastrar Categoria</h2>
               <div class="muted">Organize o cardápio em seções.</div>
@@ -541,7 +524,7 @@
             <div class="tag">Aba Categorias</div>
           </div>
 
-          <div class="row3" style="margin-top:8px;">
+          <div class="row3" style="margin-top:12px;">
             <div>
               <label>Cliente</label>
               <select id="catCliente"></select>
@@ -556,7 +539,7 @@
             </div>
           </div>
 
-          <div class="row" style="margin-top:2px;">
+          <div class="row" style="margin-top:8px;">
             <div>
               <label>Status</label>
               <select id="catAtivo">
@@ -564,7 +547,7 @@
                 <option value="false">Inativa</option>
               </select>
             </div>
-            <div class="form-actions" style="justify-content:flex-end; align-items:end;">
+            <div class="form-actions" style="justify-content:flex-end; align-items:end; margin-top:0;">
               <button class="btn primary" id="btnSalvarCategoria" type="button">Salvar Categoria</button>
             </div>
           </div>
@@ -608,7 +591,7 @@
       <!-- PRODUTOS -->
       <section id="tabProdutos" class="hidden">
         <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:10px; flex-wrap:wrap;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;">
             <div>
               <h2 style="margin:0;">Cadastrar Produto</h2>
               <div class="muted">Produto com preço, imagem e descrição.</div>
@@ -616,7 +599,7 @@
             <div class="tag">Aba Produtos</div>
           </div>
 
-          <div class="row3" style="margin-top:8px;">
+          <div class="row3" style="margin-top:12px;">
             <div>
               <label>Cliente</label>
               <select id="prodCliente"></select>
@@ -631,7 +614,7 @@
             </div>
           </div>
 
-          <div class="row3" style="margin-top:2px;">
+          <div class="row3" style="margin-top:8px;">
             <div>
               <label>Preço</label>
               <input id="prodPreco" type="number" step="0.01" placeholder="ex: 12.50" />
@@ -649,7 +632,7 @@
             </div>
           </div>
 
-          <div style="margin-top:2px;">
+          <div style="margin-top:8px;">
             <label>Descrição</label>
             <textarea id="prodDesc" placeholder="opcional"></textarea>
           </div>
@@ -788,14 +771,12 @@
   }
 
   function publicBaseUrl(){
-    // GitHub Pages: .../cafeteria/admin/  -> .../cafeteria/
     const url = new URL(location.href);
     url.pathname = url.pathname.replace(/\/admin\/?$/, "/");
     url.search = "";
     url.hash = "";
     return url.toString();
   }
-
   function openPublished(slug){
     const base = publicBaseUrl();
     window.open(`${base}?u=${encodeURIComponent(slug)}`, "_blank");
@@ -809,7 +790,7 @@
   let PRODUTOS = [];
 
   // ===============================
-  // AUTH
+  // AUTH + INIT
   // ===============================
   if($("sbHost")) $("sbHost").textContent = new URL(SUPABASE_URL).host;
 
@@ -848,23 +829,17 @@
     }
   });
 
-  // ===============================
-  // TABS (segmented)
-  // ===============================
+  // Tabs
   document.querySelectorAll(".seg button").forEach(btn => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".seg button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-
       const tab = btn.dataset.tab;
       ["tabClientes","tabCategorias","tabProdutos"].forEach(id => $(id).classList.add("hidden"));
       $(tab).classList.remove("hidden");
     });
   });
 
-  // ===============================
-  // REFRESH
-  // ===============================
   async function refreshAll(){
     clearMsg($("globalMsg"));
     await loadClientes(true);
@@ -899,14 +874,12 @@
     setBtnLoading(btn, true);
 
     try{
-      // tenta salvar com campo "ativo" (se não existir, o erro vai aparecer e você cria a coluna)
       const { error } = await supabaseClient.from("clientes").insert({ nome, slug, whatsapp, ativo });
       if(error) throw error;
 
       showMsg($("msgCliente"), "ok", "Cliente criado!");
       $("cliNome").value=""; $("cliSlug").value=""; $("cliWhats").value="";
       $("cliAtivo").value="true";
-
       await refreshAll();
     }catch(err){
       console.error(err);
@@ -917,7 +890,6 @@
   }
 
   async function loadClientes(silent=false){
-    // Seleciona tudo (inclui ativo se existir)
     const { data, error } = await supabaseClient.from("clientes").select("*").order("nome");
     if(error){
       console.error(error);
@@ -945,8 +917,8 @@
     const rows = CLIENTES
       .filter(c => !q || (c.nome||"").toLowerCase().includes(q) || (c.slug||"").toLowerCase().includes(q))
       .map(c => {
-        const isAtivo = (c.ativo === undefined) ? true : !!c.ativo; // se ainda não tem coluna, assume ativo
-        const switchDisabled = (c.ativo === undefined); // se não tem coluna, bloqueia switch e orienta criar
+        const isAtivo = (c.ativo === undefined) ? true : !!c.ativo;
+        const switchDisabled = (c.ativo === undefined);
 
         return `
           <tr>
@@ -976,12 +948,12 @@
     $("tbClientes").innerHTML = rows || `<tr><td colspan="6" class="muted">Nenhum cliente.</td></tr>`;
   }
 
-  // toggle ativo
+  window.openPublished = openPublished;
+
   window.toggleClienteAtivo = async (slug, ativo) => {
     try{
       const { error } = await supabaseClient.from("clientes").update({ ativo }).eq("slug", slug);
       if(error) throw error;
-      // atualiza cache local sem recarregar tudo
       CLIENTES = CLIENTES.map(c => c.slug === slug ? ({...c, ativo}) : c);
       renderClientes();
     }catch(err){
@@ -989,6 +961,105 @@
       showMsg($("globalMsg"), "err", "Falha ao atualizar status do cliente: " + (err.message || String(err)));
       await loadClientes(true);
     }
+  };
+
+  window.openEditCliente = (slug) => {
+    const c = CLIENTES.find(x => x.slug === slug);
+    if(!c) return;
+
+    const ativoAtual = (c.ativo === undefined) ? true : !!c.ativo;
+
+    openModal(
+      `Editar Cliente (${c.slug})`,
+      `
+        <div class="row">
+          <div>
+            <label>Nome</label>
+            <input id="m_cliNome" value="${escapeAttr(c.nome)}" />
+          </div>
+          <div>
+            <label>Slug</label>
+            <input id="m_cliSlug" value="${escapeAttr(c.slug)}" />
+            <div class="muted" style="margin-top:6px;">Se mudar slug, vamos atualizar categorias/produtos desse cliente.</div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <div>
+            <label>WhatsApp</label>
+            <input id="m_cliWhats" value="${escapeAttr(c.whatsapp || "")}" />
+          </div>
+          <div>
+            <label>Status</label>
+            <select id="m_cliAtivo">
+              <option value="true" ${ativoAtual ? "selected":""}>Ativo</option>
+              <option value="false" ${!ativoAtual ? "selected":""}>Inativo</option>
+            </select>
+          </div>
+        </div>
+      `,
+      async () => {
+        const nome = $("m_cliNome").value.trim();
+        const novoSlug = slugify($("m_cliSlug").value.trim());
+        const whatsapp = $("m_cliWhats").value.trim();
+        const ativo = $("m_cliAtivo").value === "true";
+
+        if(!nome || !novoSlug || !whatsapp) throw new Error("Preencha nome, slug e WhatsApp.");
+
+        const { error } = await supabaseClient.from("clientes")
+          .update({ nome, slug: novoSlug, whatsapp, ativo })
+          .eq("slug", slug);
+        if(error) throw error;
+
+        if(novoSlug !== slug){
+          const e1 = await supabaseClient.from("categorias").update({ cliente_slug: novoSlug }).eq("cliente_slug", slug);
+          if(e1.error) throw e1.error;
+          const e2 = await supabaseClient.from("produtos").update({ cliente_slug: novoSlug }).eq("cliente_slug", slug);
+          if(e2.error) throw e2.error;
+        }
+
+        showMsg($("modalMsg"), "ok", "Cliente atualizado!");
+        await refreshAll();
+      }
+    );
+  };
+
+  window.duplicateCliente = async (slug) => {
+    const c = CLIENTES.find(x => x.slug === slug);
+    if(!c) return;
+
+    let base = slugify(c.slug + "-copia");
+    let trySlug = base;
+    let i = 2;
+    while(CLIENTES.some(x => x.slug === trySlug)) trySlug = `${base}-${i++}`;
+
+    if(!confirm(`Duplicar cliente "${c.nome}" para slug "${trySlug}"?`)) return;
+
+    const ativo = (c.ativo === undefined) ? true : !!c.ativo;
+
+    const { error } = await supabaseClient.from("clientes").insert({
+      nome: c.nome + " (cópia)",
+      slug: trySlug,
+      whatsapp: c.whatsapp,
+      ativo
+    });
+    if(error) return alert("Erro: " + error.message);
+
+    await refreshAll();
+  };
+
+  window.deleteCliente = async (slug) => {
+    const c = CLIENTES.find(x => x.slug === slug);
+    if(!c) return;
+
+    if(!confirm(`Excluir cliente "${c.nome}"?\n\nIsso tentará apagar também categorias e produtos desse cliente.`)) return;
+
+    await supabaseClient.from("produtos").delete().eq("cliente_slug", slug);
+    await supabaseClient.from("categorias").delete().eq("cliente_slug", slug);
+
+    const { error } = await supabaseClient.from("clientes").delete().eq("slug", slug);
+    if(error) return alert("Erro: " + error.message);
+
+    await refreshAll();
   };
 
   // ===============================
@@ -1199,111 +1270,8 @@
   }
 
   // ===============================
-  // ACTIONS (Editar/Duplicar/Excluir)
+  // EDIT/DUP/DEL (Categorias e Produtos)
   // ===============================
-  window.openPublished = openPublished;
-
-  window.openEditCliente = (slug) => {
-    const c = CLIENTES.find(x => x.slug === slug);
-    if(!c) return;
-
-    const ativoAtual = (c.ativo === undefined) ? true : !!c.ativo;
-
-    openModal(
-      `Editar Cliente (${c.slug})`,
-      `
-        <div class="row">
-          <div>
-            <label>Nome</label>
-            <input id="m_cliNome" value="${escapeAttr(c.nome)}" />
-          </div>
-          <div>
-            <label>Slug</label>
-            <input id="m_cliSlug" value="${escapeAttr(c.slug)}" />
-            <div class="muted">Se mudar slug, vamos atualizar categorias/produtos desse cliente.</div>
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>WhatsApp</label>
-            <input id="m_cliWhats" value="${escapeAttr(c.whatsapp || "")}" />
-          </div>
-          <div>
-            <label>Status</label>
-            <select id="m_cliAtivo">
-              <option value="true" ${ativoAtual ? "selected":""}>Ativo</option>
-              <option value="false" ${!ativoAtual ? "selected":""}>Inativo</option>
-            </select>
-          </div>
-        </div>
-      `,
-      async () => {
-        const nome = $("m_cliNome").value.trim();
-        const novoSlug = slugify($("m_cliSlug").value.trim());
-        const whatsapp = $("m_cliWhats").value.trim();
-        const ativo = $("m_cliAtivo").value === "true";
-
-        if(!nome || !novoSlug || !whatsapp) throw new Error("Preencha nome, slug e WhatsApp.");
-
-        const { error } = await supabaseClient.from("clientes")
-          .update({ nome, slug: novoSlug, whatsapp, ativo })
-          .eq("slug", slug);
-
-        if(error) throw error;
-
-        if(novoSlug !== slug){
-          const e1 = await supabaseClient.from("categorias").update({ cliente_slug: novoSlug }).eq("cliente_slug", slug);
-          if(e1.error) throw e1.error;
-
-          const e2 = await supabaseClient.from("produtos").update({ cliente_slug: novoSlug }).eq("cliente_slug", slug);
-          if(e2.error) throw e2.error;
-        }
-
-        showMsg($("modalMsg"), "ok", "Cliente atualizado!");
-        await refreshAll();
-      }
-    );
-  };
-
-  window.duplicateCliente = async (slug) => {
-    const c = CLIENTES.find(x => x.slug === slug);
-    if(!c) return;
-
-    let base = slugify(c.slug + "-copia");
-    let trySlug = base;
-    let i = 2;
-    while(CLIENTES.some(x => x.slug === trySlug)) trySlug = `${base}-${i++}`;
-
-    if(!confirm(`Duplicar cliente "${c.nome}" para slug "${trySlug}"?`)) return;
-
-    const ativo = (c.ativo === undefined) ? true : !!c.ativo;
-
-    const { error } = await supabaseClient.from("clientes").insert({
-      nome: c.nome + " (cópia)",
-      slug: trySlug,
-      whatsapp: c.whatsapp,
-      ativo
-    });
-    if(error) return alert("Erro: " + error.message);
-
-    await refreshAll();
-  };
-
-  window.deleteCliente = async (slug) => {
-    const c = CLIENTES.find(x => x.slug === slug);
-    if(!c) return;
-
-    if(!confirm(`Excluir cliente "${c.nome}"?\n\nIsso tentará apagar também categorias e produtos desse cliente.`)) return;
-
-    await supabaseClient.from("produtos").delete().eq("cliente_slug", slug);
-    await supabaseClient.from("categorias").delete().eq("cliente_slug", slug);
-
-    const { error } = await supabaseClient.from("clientes").delete().eq("slug", slug);
-    if(error) return alert("Erro: " + error.message);
-
-    await refreshAll();
-  };
-
   window.openEditCategoria = (id) => {
     const c = CATEGORIAS.find(x => Number(x.id) === Number(id));
     if(!c) return;
@@ -1321,7 +1289,7 @@
             <input id="m_catNome" value="${escapeAttr(c.nome)}" />
           </div>
         </div>
-        <div class="row">
+        <div class="row" style="margin-top:8px;">
           <div>
             <label>Ordem</label>
             <input id="m_catOrdem" type="number" value="${Number(c.ordem||0)}" />
@@ -1346,7 +1314,6 @@
         const { error } = await supabaseClient.from("categorias")
           .update({ cliente_slug, nome, ordem, ativo })
           .eq("id", c.id);
-
         if(error) throw error;
 
         showMsg($("modalMsg"), "ok", "Categoria atualizada!");
@@ -1417,7 +1384,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="margin-top:8px;">
           <div>
             <label>Nome</label>
             <input id="m_prodNome" value="${escapeAttr(p.nome)}" />
@@ -1428,12 +1395,12 @@
           </div>
         </div>
 
-        <div>
+        <div style="margin-top:8px;">
           <label>Imagem (URL)</label>
           <input id="m_prodImg" value="${escapeAttr(p.imagem || "")}" />
         </div>
 
-        <div>
+        <div style="margin-top:8px;">
           <label>Descrição</label>
           <textarea id="m_prodDesc">${escapeHtml(p.descricao || "")}</textarea>
         </div>
@@ -1452,7 +1419,6 @@
         const { error } = await supabaseClient.from("produtos")
           .update({ cliente_slug, categoria_id, ativo, nome, preco, imagem, descricao })
           .eq("id", p.id);
-
         if(error) throw error;
 
         showMsg($("modalMsg"), "ok", "Produto atualizado!");
@@ -1494,7 +1460,7 @@
   };
 
   // ===============================
-  // INITIAL
+  // START: auto-login session
   // ===============================
   (async () => {
     const { data } = await supabaseClient.auth.getSession();
@@ -1506,5 +1472,6 @@
     }
   })();
 </script>
+
 </body>
 </html>
