@@ -10,347 +10,715 @@
 
   <style>
     :root{
-      --brand:#1f3a5f;
-      --bg:#f5f5f5;
-      --card:#fff;
-      --border:#e7e7e7;
-      --muted:#6b7280;
-      --danger:#b00020;
-      --ok:#0a7a2f;
+      --bg: #0b1220;
+      --surface: rgba(255,255,255,.06);
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.10);
+      --border: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.65);
+      --brand: #5aa9ff;
+      --brand2: #2f7dff;
+      --danger: #ff5a7a;
+      --ok: #37d67a;
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+      --radius: 16px;
     }
-    body{ font-family: Arial, sans-serif; background:var(--bg); margin:0; }
-    header{ background:var(--brand); color:#fff; padding:16px; text-align:center; }
-    main{ max-width:1100px; margin:18px auto; background:var(--card); padding:18px; border-radius:12px; box-shadow: 0 8px 24px rgba(0,0,0,.05); }
-    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-    .pill{ background:#f1f5f9; border:1px solid var(--border); padding:6px 10px; border-radius:999px; font-size:12px; color:#111; }
-    .muted{ color:var(--muted); font-size:13px; }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(90,169,255,.25), transparent 60%),
+                  radial-gradient(900px 600px at 80% 20%, rgba(55,214,122,.18), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    .container{
+      max-width: 1180px;
+      margin: 18px auto;
+      padding: 0 14px 32px;
+    }
+
+    /* Header */
+    header{
+      margin: 14px 0 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .header-top{
+      display:flex;
+      gap:14px;
+      justify-content: space-between;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .brandbox{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      min-width: 240px;
+    }
+
+    .logo-slot{
+      width:44px; height:44px;
+      border-radius: 12px;
+      border: 1px dashed rgba(255,255,255,.28);
+      background: rgba(255,255,255,.06);
+      display:flex; align-items:center; justify-content:center;
+      color: var(--muted);
+      font-weight: 900;
+      user-select:none;
+    }
+
+    .brandtext h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: .2px;
+    }
+    .brandtext .sub{
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hdr-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .pill code{
+      color: rgba(255,255,255,.85);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+    }
+
+    .btn{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .08s ease, background .15s ease, border .15s ease;
+    }
+    .btn:hover{ background: rgba(255,255,255,.09); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border-color: rgba(255,255,255,.15);
+      color: #06101f;
+    }
+    .btn.primary:hover{ filter: brightness(1.02); }
+    .btn.danger{
+      background: rgba(255,90,122,.14);
+      border-color: rgba(255,90,122,.35);
+      color: rgba(255,255,255,.92);
+    }
+    .btn.small{ padding: 8px 10px; border-radius: 12px; font-size: 12px; }
+
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
+
+    /* Summary cards */
+    .summary{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 860px){ .summary{ grid-template-columns: 1fr; } }
+
+    .sumcard{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      padding: 12px;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .sumcard .label{ color: var(--muted); font-size: 12px; }
+    .sumcard .value{ font-size: 20px; font-weight: 950; }
+
+    /* Layout sections */
+    .panel{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
     .hidden{ display:none; }
+    .muted{ color: var(--muted); font-size: 13px; }
 
-    /* Tabs */
-    .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
-    .tab-btn{
+    /* Segmented tabs (fila horizontal) */
+    .tabs{
+      margin-top: 14px;
+      display:flex;
+      justify-content: center;
+    }
+    .seg{
+      display:flex;
+      gap:0;
       border:1px solid var(--border);
-      background:#fff;
-      padding:10px 12px;
-      border-radius:10px;
+      background: rgba(255,255,255,.05);
+      border-radius: 999px;
+      overflow:hidden;
+      width: fit-content;
+    }
+    .seg button{
+      border:0;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 16px;
       cursor:pointer;
-      font-weight:700;
-      color:#111;
+      font-weight: 900;
+      transition: background .15s ease, color .15s ease;
     }
-    .tab-btn.active{
-      background:var(--brand);
-      color:#fff;
-      border-color:var(--brand);
+    .seg button.active{
+      background: rgba(255,255,255,.12);
+      color: var(--text);
     }
+    .seg button:hover{ background: rgba(255,255,255,.09); color: var(--text); }
 
-    /* Forms */
-    h2{ margin:18px 0 8px; }
+    /* Forms modern */
     .card{
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:14px;
-      background:#fff;
-      margin-top:10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-top: 12px;
     }
-    .row{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    .row3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
-    @media (max-width: 860px){ .row,.row3{ grid-template-columns:1fr; } }
-    input, select, textarea, button{
-      width:100%;
-      padding:10px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      box-sizing:border-box;
-      margin:6px 0;
-      font-size:14px;
-    }
-    textarea{ min-height: 88px; resize:vertical; }
-    button.primary{
-      background:var(--brand);
-      color:#fff;
-      border:none;
-      font-weight:800;
-      cursor:pointer;
-    }
-    button.primary:hover{ opacity:.94; }
-    button.ghost{
-      background:#fff;
-      border:1px solid var(--border);
-      cursor:pointer;
-      font-weight:700;
-    }
-    button.danger{
-      background:#fff;
-      border:1px solid #ffb3b3;
-      color:var(--danger);
-      font-weight:800;
-      cursor:pointer;
-    }
-    button[disabled]{ opacity:.6; cursor:not-allowed; }
 
-    /* Tables */
-    .table-wrap{ overflow:auto; border:1px solid var(--border); border-radius:12px; margin-top:10px; }
-    table{ width:100%; border-collapse:collapse; min-width: 880px; }
-    th, td{ padding:10px; border-bottom:1px solid var(--border); vertical-align:top; }
-    th{ text-align:left; background:#f8fafc; font-size:13px; color:#111; position:sticky; top:0; }
-    td{ font-size:14px; }
-    .actions{ display:flex; gap:8px; flex-wrap:wrap; }
-    .btn-sm{
-      width:auto;
-      padding:7px 10px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background:#fff;
-      cursor:pointer;
-      font-weight:800;
-      font-size:12px;
+    .row{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media (max-width: 900px){ .row,.row3{ grid-template-columns: 1fr; } }
+
+    label{ font-size: 12px; color: var(--muted); display:block; margin-top: 2px; }
+
+    input, select, textarea{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline: none;
+      transition: border .15s ease, transform .08s ease, background .15s ease;
     }
-    .btn-sm.primary{ background:var(--brand); color:#fff; border-color:var(--brand); }
-    .btn-sm.danger{ border-color:#ffb3b3; color:var(--danger); }
+    input::placeholder, textarea::placeholder{ color: rgba(255,255,255,.45); }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(90,169,255,.55);
+      background: rgba(0,0,0,.28);
+    }
+    textarea{ min-height: 92px; resize: vertical; }
+
+    .form-actions{ display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+
+    /* Table */
+    .table-wrap{
+      margin-top: 12px;
+      overflow:auto;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.04);
+    }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      min-width: 940px;
+    }
+    th, td{
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th{
+      position: sticky;
+      top: 0;
+      background: rgba(0,0,0,.35);
+      color: rgba(255,255,255,.88);
+      font-size: 12px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+    }
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,.86);
+    }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
     .tag{
-      display:inline-block;
-      padding:2px 8px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      font-size:12px;
-      color:#111;
-      background:#fff;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-size: 12px;
+      color: rgba(255,255,255,.88);
+      white-space:nowrap;
     }
-    .tag.ok{ border-color:#b7ffb7; color:var(--ok); background:#f0fff4; }
-    .tag.off{ border-color:#ffd6d6; color:var(--danger); background:#fff5f5; }
+    .tag.ok{ border-color: rgba(55,214,122,.35); background: rgba(55,214,122,.10); }
+    .tag.off{ border-color: rgba(255,90,122,.35); background: rgba(255,90,122,.10); }
+
+    /* Switch */
+    .switch{
+      position: relative;
+      width: 46px;
+      height: 26px;
+      display:inline-block;
+    }
+    .switch input{ display:none; }
+    .slider{
+      position:absolute; inset:0;
+      background: rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.16);
+      border-radius: 999px;
+      transition: .2s;
+      cursor:pointer;
+    }
+    .slider:before{
+      content:"";
+      position:absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 2px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.85);
+      transition:.2s;
+    }
+    .switch input:checked + .slider{
+      background: rgba(55,214,122,.22);
+      border-color: rgba(55,214,122,.28);
+    }
+    .switch input:checked + .slider:before{
+      transform: translateX(20px);
+      background: rgba(255,255,255,.92);
+    }
 
     /* Messages */
-    .msg{ padding:10px; border-radius:12px; border:1px solid var(--border); margin-top:10px; }
-    .msg.ok{ background:#f0fff4; border-color:#b7ffb7; color:var(--ok); }
-    .msg.err{ background:#fff5f5; border-color:#ffd6d6; color:var(--danger); }
+    .msg{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      margin-top: 10px;
+      background: rgba(255,255,255,.06);
+    }
+    .msg.ok{ border-color: rgba(55,214,122,.35); background: rgba(55,214,122,.10); }
+    .msg.err{ border-color: rgba(255,90,122,.35); background: rgba(255,90,122,.10); }
 
     /* Modal */
     .modal-backdrop{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.35);
+      position: fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
       display:none;
-      align-items:center; justify-content:center;
-      padding:16px;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
       z-index: 9999;
     }
     .modal{
-      width:min(820px, 100%);
-      background:#fff;
-      border-radius:16px;
-      border:1px solid var(--border);
-      box-shadow: 0 12px 40px rgba(0,0,0,.18);
-      padding:16px;
+      width: min(860px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(10,16,30,.92);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      padding: 14px;
     }
     .modal-header{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      border-bottom:1px solid var(--border);
-      padding-bottom:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      margin-bottom: 10px;
     }
-    .modal-title{ font-weight:900; }
+    .modal-title{
+      font-weight: 950;
+      letter-spacing: .2px;
+    }
   </style>
 </head>
 
 <body>
-<header>
-  <h1>Painel Alfa – Cardápio Digital</h1>
-</header>
+  <div class="container">
 
-<main>
-  <!-- LOGIN -->
-  <section id="secLogin">
-    <h2>Login</h2>
-    <div class="row">
-      <input type="email" id="loginEmail" placeholder="Email" autocomplete="email" />
-      <input type="password" id="loginSenha" placeholder="Senha" autocomplete="current-password" />
-    </div>
-    <button class="primary" id="btnLogin" type="button">Entrar</button>
-    <div id="loginMsg"></div>
-    <p class="muted">Use um usuário do Supabase Auth (email/senha).</p>
-  </section>
-
-  <!-- ADMIN -->
-  <section id="secAdmin" class="hidden">
-    <div class="topbar">
-      <div>
-        <span class="pill"><b>Status:</b> <span id="statusUser">-</span></span>
-        <span class="pill"><b>Supabase:</b> <code id="sbHost">-</code></span>
-        <span class="pill"><b>Clientes:</b> <span id="countClientes">-</span></span>
-        <span class="pill"><b>Categorias:</b> <span id="countCategorias">-</span></span>
-        <span class="pill"><b>Produtos:</b> <span id="countProdutos">-</span></span>
-      </div>
-      <button class="primary" id="btnLogout" type="button" style="width:auto;padding:10px 14px;">Sair</button>
-    </div>
-
-    <div id="globalMsg"></div>
-
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="tabClientes" type="button">Clientes</button>
-      <button class="tab-btn" data-tab="tabCategorias" type="button">Categorias</button>
-      <button class="tab-btn" data-tab="tabProdutos" type="button">Produtos</button>
-    </div>
-
-    <!-- TAB CLIENTES -->
-    <section id="tabClientes">
-      <div class="card">
-        <h2>Cadastrar Cliente</h2>
-        <div class="row">
-          <input id="cliNome" placeholder="Nome do negócio (ex: Cafeteria do João)" />
-          <input id="cliSlug" placeholder="Slug (ex: cafeteria-do-joao)" />
-        </div>
-        <input id="cliWhats" placeholder="WhatsApp (ex: 5599999999999)" />
-        <button class="primary" id="btnSalvarCliente" type="button">Salvar Cliente</button>
-        <div id="msgCliente"></div>
-      </div>
-
-      <div class="card">
-        <div class="row">
-          <div>
-            <h2 style="margin:0 0 6px;">Clientes cadastrados</h2>
-            <div class="muted">Ações: editar, duplicar ou excluir.</div>
-          </div>
-          <div>
-            <input id="filtroCliente" placeholder="Buscar por nome/slug..." />
+    <header>
+      <div class="header-top">
+        <div class="brandbox">
+          <div class="logo-slot" title="Espaço para logo">LOGO</div>
+          <div class="brandtext">
+            <h1>Painel Alfa – Cardápio Digital</h1>
+            <div class="sub">Super Admin • Gerencie clientes, categorias e produtos</div>
           </div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Slug</th>
-                <th>WhatsApp</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tbClientes"></tbody>
-          </table>
+
+        <div class="hdr-actions">
+          <span class="pill"><b>Status:</b> <span id="statusUser">-</span></span>
+          <span class="pill"><b>Supabase:</b> <code id="sbHost">-</code></span>
+          <button class="btn danger" id="btnLogout" type="button">Sair</button>
         </div>
       </div>
+
+      <div class="summary">
+        <div class="sumcard">
+          <div>
+            <div class="label">Clientes</div>
+            <div class="value" id="countClientes">-</div>
+          </div>
+          <span class="tag">Total</span>
+        </div>
+        <div class="sumcard">
+          <div>
+            <div class="label">Categorias</div>
+            <div class="value" id="countCategorias">-</div>
+          </div>
+          <span class="tag">Total</span>
+        </div>
+        <div class="sumcard">
+          <div>
+            <div class="label">Produtos</div>
+            <div class="value" id="countProdutos">-</div>
+          </div>
+          <span class="tag">Total</span>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="seg">
+          <button class="active" data-tab="tabClientes" type="button">Clientes</button>
+          <button data-tab="tabCategorias" type="button">Categorias</button>
+          <button data-tab="tabProdutos" type="button">Produtos</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- LOGIN -->
+    <section id="secLogin" class="panel">
+      <h2 style="margin:0 0 10px;">Login</h2>
+      <div class="row">
+        <div>
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="seuemail@dominio.com" autocomplete="email" />
+        </div>
+        <div>
+          <label>Senha</label>
+          <input type="password" id="loginSenha" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn primary" id="btnLogin" type="button">Entrar</button>
+      </div>
+
+      <div id="loginMsg"></div>
+      <p class="muted">Use um usuário do Supabase Auth (email/senha).</p>
     </section>
 
-    <!-- TAB CATEGORIAS -->
-    <section id="tabCategorias" class="hidden">
-      <div class="card">
-        <h2>Cadastrar Categoria</h2>
-        <p class="muted" style="margin-top:-6px;">
-          O site público renderiza produtos por categoria usando <code>categoria_id</code>.
-        </p>
-        <div class="row3">
-          <select id="catCliente"></select>
-          <input id="catNome" placeholder="Nome (ex: Cuscuz, Bebidas, Doces)" />
-          <input id="catOrdem" type="number" placeholder="Ordem (ex: 1)" />
-        </div>
-        <div class="row">
-          <select id="catAtivo">
-            <option value="true">Ativa</option>
-            <option value="false">Inativa</option>
-          </select>
-          <button class="primary" id="btnSalvarCategoria" type="button">Salvar Categoria</button>
-        </div>
-        <div id="msgCategoria"></div>
-      </div>
+    <!-- ADMIN -->
+    <section id="secAdmin" class="panel hidden">
+      <div id="globalMsg"></div>
 
-      <div class="card">
-        <div class="row3">
-          <div>
-            <h2 style="margin:0 0 6px;">Categorias cadastradas</h2>
-            <div class="muted">Filtre por cliente e use ações.</div>
+      <!-- CLIENTES -->
+      <section id="tabClientes">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:10px; flex-wrap:wrap;">
+            <div>
+              <h2 style="margin:0;">Cadastrar Cliente</h2>
+              <div class="muted">Crie a loja e já gere o link publicado.</div>
+            </div>
+            <div class="tag">Aba Clientes</div>
           </div>
-          <select id="filtroCatCliente"></select>
-          <input id="filtroCategoria" placeholder="Buscar por nome..." />
+
+          <div class="row" style="margin-top:8px;">
+            <div>
+              <label>Nome do negócio</label>
+              <input id="cliNome" placeholder="ex: Cafeteria do João" />
+            </div>
+a             <div>
+              <label>Slug</label>
+              <input id="cliSlug" placeholder="ex: cafeteria-do-joao" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:2px;">
+            <div>
+              <label>WhatsApp</label>
+              <input id="cliWhats" placeholder="ex: 5599999999999" />
+            </div>
+            <div>
+              <label>Status do cliente</label>
+              <select id="cliAtivo">
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn primary" id="btnSalvarCliente" type="button">Salvar Cliente</button>
+          </div>
+          <div id="msgCliente"></div>
+          <div class="muted">Dica: o link público usa <code>?u=slug</code> (ex: <code>?u=cafeteria-do-joao</code>).</div>
         </div>
 
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Nome</th>
-                <th>Ordem</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tbCategorias"></tbody>
-          </table>
+        <div class="card">
+          <div class="row" style="align-items:end;">
+            <div>
+              <h2 style="margin:0;">Clientes cadastrados</h2>
+              <div class="muted">Ações: ver publicado, ativar/desativar, editar, duplicar ou excluir.</div>
+            </div>
+            <div>
+              <label>Buscar</label>
+              <input id="filtroCliente" placeholder="Buscar por nome/slug..." />
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Slug</th>
+                  <th>WhatsApp</th>
+                  <th>Status</th>
+                  <th>Ativar</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbClientes"></tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <!-- CATEGORIAS -->
+      <section id="tabCategorias" class="hidden">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:10px; flex-wrap:wrap;">
+            <div>
+              <h2 style="margin:0;">Cadastrar Categoria</h2>
+              <div class="muted">Organize o cardápio em seções.</div>
+            </div>
+            <div class="tag">Aba Categorias</div>
+          </div>
+
+          <div class="row3" style="margin-top:8px;">
+            <div>
+              <label>Cliente</label>
+              <select id="catCliente"></select>
+            </div>
+            <div>
+              <label>Nome da categoria</label>
+              <input id="catNome" placeholder="ex: Cuscuz, Bebidas, Doces" />
+            </div>
+            <div>
+              <label>Ordem</label>
+              <input id="catOrdem" type="number" placeholder="ex: 1" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:2px;">
+            <div>
+              <label>Status</label>
+              <select id="catAtivo">
+                <option value="true">Ativa</option>
+                <option value="false">Inativa</option>
+              </select>
+            </div>
+            <div class="form-actions" style="justify-content:flex-end; align-items:end;">
+              <button class="btn primary" id="btnSalvarCategoria" type="button">Salvar Categoria</button>
+            </div>
+          </div>
+
+          <div id="msgCategoria"></div>
+        </div>
+
+        <div class="card">
+          <div class="row3" style="align-items:end;">
+            <div>
+              <h2 style="margin:0;">Categorias cadastradas</h2>
+              <div class="muted">Filtre por cliente, edite/duplique/exclua.</div>
+            </div>
+            <div>
+              <label>Filtro por cliente</label>
+              <select id="filtroCatCliente"></select>
+            </div>
+            <div>
+              <label>Buscar</label>
+              <input id="filtroCategoria" placeholder="Buscar por nome..." />
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Nome</th>
+                  <th>Ordem</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbCategorias"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUTOS -->
+      <section id="tabProdutos" class="hidden">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:10px; flex-wrap:wrap;">
+            <div>
+              <h2 style="margin:0;">Cadastrar Produto</h2>
+              <div class="muted">Produto com preço, imagem e descrição.</div>
+            </div>
+            <div class="tag">Aba Produtos</div>
+          </div>
+
+          <div class="row3" style="margin-top:8px;">
+            <div>
+              <label>Cliente</label>
+              <select id="prodCliente"></select>
+            </div>
+            <div>
+              <label>Categoria</label>
+              <select id="prodCategoria"></select>
+            </div>
+            <div>
+              <label>Nome do produto</label>
+              <input id="prodNome" placeholder="ex: Cuscuz da Baiana" />
+            </div>
+          </div>
+
+          <div class="row3" style="margin-top:2px;">
+            <div>
+              <label>Preço</label>
+              <input id="prodPreco" type="number" step="0.01" placeholder="ex: 12.50" />
+            </div>
+            <div>
+              <label>Imagem (URL)</label>
+              <input id="prodImg" placeholder="opcional" />
+            </div>
+            <div>
+              <label>Status</label>
+              <select id="prodAtivo">
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:2px;">
+            <label>Descrição</label>
+            <textarea id="prodDesc" placeholder="opcional"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn primary" id="btnSalvarProduto" type="button">Salvar Produto</button>
+          </div>
+
+          <div id="msgProduto"></div>
+        </div>
+
+        <div class="card">
+          <div class="row3" style="align-items:end;">
+            <div>
+              <h2 style="margin:0;">Produtos cadastrados</h2>
+              <div class="muted">Filtre por cliente, edite/duplique/exclua.</div>
+            </div>
+            <div>
+              <label>Filtro por cliente</label>
+              <select id="filtroProdCliente"></select>
+            </div>
+            <div>
+              <label>Buscar</label>
+              <input id="filtroProduto" placeholder="Buscar por nome..." />
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Categoria</th>
+                  <th>Produto</th>
+                  <th>Preço</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbProdutos"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </section>
 
-    <!-- TAB PRODUTOS -->
-    <section id="tabProdutos" class="hidden">
-      <div class="card">
-        <h2>Cadastrar Produto</h2>
-        <div class="row3">
-          <select id="prodCliente"></select>
-          <select id="prodCategoria"></select>
-          <input id="prodNome" placeholder="Nome do produto" />
-        </div>
-        <div class="row3">
-          <input id="prodPreco" type="number" step="0.01" placeholder="Preço (ex: 12.50)" />
-          <input id="prodImg" placeholder="URL da imagem (opcional)" />
-          <select id="prodAtivo">
-            <option value="true">Ativo</option>
-            <option value="false">Inativo</option>
-          </select>
-        </div>
-        <textarea id="prodDesc" placeholder="Descrição (opcional)"></textarea>
-        <button class="primary" id="btnSalvarProduto" type="button">Salvar Produto</button>
-        <div id="msgProduto"></div>
-      </div>
-
-      <div class="card">
-        <div class="row3">
-          <div>
-            <h2 style="margin:0 0 6px;">Produtos cadastrados</h2>
-            <div class="muted">Filtre por cliente, edite/duplique/exclua.</div>
-          </div>
-          <select id="filtroProdCliente"></select>
-          <input id="filtroProduto" placeholder="Buscar por nome..." />
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Categoria</th>
-                <th>Produto</th>
-                <th>Preço</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tbProdutos"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-  </section>
-</main>
-
-<!-- MODAL -->
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modalTitle">Editar</div>
-      <button class="ghost" id="modalClose" type="button" style="width:auto;">Fechar</button>
-    </div>
-    <div id="modalBody"></div>
-    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap;">
-      <button class="ghost" id="modalCancel" type="button" style="width:auto;">Cancelar</button>
-      <button class="primary" id="modalSave" type="button" style="width:auto;">Salvar alterações</button>
-    </div>
-    <div id="modalMsg"></div>
   </div>
-</div>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Editar</div>
+        <button class="btn small" id="modalClose" type="button">Fechar</button>
+      </div>
+      <div id="modalBody"></div>
+      <div class="form-actions" style="margin-top:12px;">
+        <button class="btn small" id="modalCancel" type="button">Cancelar</button>
+        <button class="btn primary small" id="modalSave" type="button">Salvar</button>
+      </div>
+      <div id="modalMsg"></div>
+    </div>
+  </div>
 
 <script>
   console.log("ADMIN JS CARREGOU ✅");
 
   // ===============================
-  // SUPABASE CONFIG (CORRIGIDA)
+  // SUPABASE CONFIG
   // ===============================
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
   const SUPABASE_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
@@ -410,9 +778,35 @@
     return escapeHtml(s).replaceAll("\n"," ");
   }
 
-  function showGlobalErr(text){
-    showMsg($("globalMsg"), "err", text);
+  function bindSafe(id, event, fn){
+    const el = $(id);
+    if(!el){
+      console.warn(`Elemento #${id} não encontrado`);
+      return;
+    }
+    el.addEventListener(event, fn);
   }
+
+  function publicBaseUrl(){
+    // GitHub Pages: .../cafeteria/admin/  -> .../cafeteria/
+    const url = new URL(location.href);
+    url.pathname = url.pathname.replace(/\/admin\/?$/, "/");
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  }
+
+  function openPublished(slug){
+    const base = publicBaseUrl();
+    window.open(`${base}?u=${encodeURIComponent(slug)}`, "_blank");
+  }
+
+  // ===============================
+  // STATE
+  // ===============================
+  let CLIENTES = [];
+  let CATEGORIAS = [];
+  let PRODUTOS = [];
 
   // ===============================
   // AUTH
@@ -439,15 +833,6 @@
     location.reload();
   }
 
-  function bindSafe(id, event, fn){
-    const el = $(id);
-    if(!el){
-      console.warn(`Elemento #${id} não encontrado`);
-      return;
-    }
-    el.addEventListener(event, fn);
-  }
-
   bindSafe("btnLogin", "click", login);
   bindSafe("btnLogout", "click", logout);
 
@@ -464,12 +849,13 @@
   });
 
   // ===============================
-  // TABS
+  // TABS (segmented)
   // ===============================
-  document.querySelectorAll(".tab-btn").forEach(btn => {
+  document.querySelectorAll(".seg button").forEach(btn => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".seg button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
+
       const tab = btn.dataset.tab;
       ["tabClientes","tabCategorias","tabProdutos"].forEach(id => $(id).classList.add("hidden"));
       $(tab).classList.remove("hidden");
@@ -477,14 +863,7 @@
   });
 
   // ===============================
-  // STATE
-  // ===============================
-  let CLIENTES = [];
-  let CATEGORIAS = [];
-  let PRODUTOS = [];
-
-  // ===============================
-  // LOAD ALL
+  // REFRESH
   // ===============================
   async function refreshAll(){
     clearMsg($("globalMsg"));
@@ -494,16 +873,14 @@
   }
 
   // ===============================
-  // CLIENTES - CREATE
+  // CLIENTES
   // ===============================
   bindSafe("cliNome", "input", () => {
     if(!$("cliSlug").value.trim()) $("cliSlug").value = slugify($("cliNome").value);
   });
 
-  bindSafe("btnSalvarCliente", "click", async () => {
-    console.log("Clique em Salvar Cliente ✅");
-    await salvarCliente();
-  });
+  bindSafe("btnSalvarCliente", "click", salvarCliente);
+  bindSafe("filtroCliente", "input", () => renderClientes());
 
   async function salvarCliente(){
     clearMsg($("msgCliente"));
@@ -511,6 +888,7 @@
     const nome = $("cliNome").value.trim();
     const slug = slugify($("cliSlug").value.trim());
     const whatsapp = $("cliWhats").value.trim();
+    const ativo = $("cliAtivo").value === "true";
 
     if(!nome || !slug || !whatsapp){
       showMsg($("msgCliente"), "err", "Preencha nome, slug e WhatsApp.");
@@ -521,27 +899,29 @@
     setBtnLoading(btn, true);
 
     try{
-      const { error } = await supabaseClient.from("clientes").insert({ nome, slug, whatsapp });
+      // tenta salvar com campo "ativo" (se não existir, o erro vai aparecer e você cria a coluna)
+      const { error } = await supabaseClient.from("clientes").insert({ nome, slug, whatsapp, ativo });
       if(error) throw error;
 
       showMsg($("msgCliente"), "ok", "Cliente criado!");
       $("cliNome").value=""; $("cliSlug").value=""; $("cliWhats").value="";
+      $("cliAtivo").value="true";
+
       await refreshAll();
     }catch(err){
       console.error(err);
-      showMsg($("msgCliente"), "err", (err && err.message) ? err.message : String(err));
+      showMsg($("msgCliente"), "err", err.message || String(err));
     }finally{
       setBtnLoading(btn, false);
     }
   }
 
-  bindSafe("filtroCliente", "input", () => renderClientes());
-
   async function loadClientes(silent=false){
+    // Seleciona tudo (inclui ativo se existir)
     const { data, error } = await supabaseClient.from("clientes").select("*").order("nome");
     if(error){
       console.error(error);
-      if(!silent) showMsg($("msgCliente"), "err", "Erro ao carregar clientes: " + error.message);
+      if(!silent) showMsg($("globalMsg"), "err", "Erro ao carregar clientes: " + error.message);
       return;
     }
     CLIENTES = data || [];
@@ -561,32 +941,62 @@
 
   function renderClientes(){
     const q = ($("filtroCliente").value || "").trim().toLowerCase();
+
     const rows = CLIENTES
       .filter(c => !q || (c.nome||"").toLowerCase().includes(q) || (c.slug||"").toLowerCase().includes(q))
-      .map(c => `
-        <tr>
-          <td><b>${escapeHtml(c.nome)}</b></td>
-          <td><code>${escapeHtml(c.slug)}</code></td>
-          <td>${escapeHtml(c.whatsapp||"")}</td>
-          <td>
-            <div class="actions">
-              <button class="btn-sm primary" type="button" onclick="openEditCliente('${c.slug}')">Editar</button>
-              <button class="btn-sm" type="button" onclick="duplicateCliente('${c.slug}')">Duplicar</button>
-              <button class="btn-sm danger" type="button" onclick="deleteCliente('${c.slug}')">Excluir</button>
-            </div>
-          </td>
-        </tr>
-      `).join("");
-    $("tbClientes").innerHTML = rows || `<tr><td colspan="4" class="muted">Nenhum cliente.</td></tr>`;
+      .map(c => {
+        const isAtivo = (c.ativo === undefined) ? true : !!c.ativo; // se ainda não tem coluna, assume ativo
+        const switchDisabled = (c.ativo === undefined); // se não tem coluna, bloqueia switch e orienta criar
+
+        return `
+          <tr>
+            <td><b>${escapeHtml(c.nome)}</b></td>
+            <td><code>${escapeHtml(c.slug)}</code></td>
+            <td>${escapeHtml(c.whatsapp||"")}</td>
+            <td>${tagAtivo(isAtivo)}</td>
+            <td>
+              <label class="switch" title="${switchDisabled ? "Crie a coluna clientes.ativo (boolean)" : "Ativar/Desativar"}">
+                <input type="checkbox" ${isAtivo ? "checked":""} ${switchDisabled ? "disabled":""}
+                  onchange="toggleClienteAtivo('${escapeAttr(c.slug)}', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </td>
+            <td>
+              <div class="actions">
+                <button class="btn small" type="button" onclick="openPublished('${escapeAttr(c.slug)}')">Ver publicado</button>
+                <button class="btn primary small" type="button" onclick="openEditCliente('${escapeAttr(c.slug)}')">Editar</button>
+                <button class="btn small" type="button" onclick="duplicateCliente('${escapeAttr(c.slug)}')">Duplicar</button>
+                <button class="btn danger small" type="button" onclick="deleteCliente('${escapeAttr(c.slug)}')">Excluir</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+    $("tbClientes").innerHTML = rows || `<tr><td colspan="6" class="muted">Nenhum cliente.</td></tr>`;
   }
 
+  // toggle ativo
+  window.toggleClienteAtivo = async (slug, ativo) => {
+    try{
+      const { error } = await supabaseClient.from("clientes").update({ ativo }).eq("slug", slug);
+      if(error) throw error;
+      // atualiza cache local sem recarregar tudo
+      CLIENTES = CLIENTES.map(c => c.slug === slug ? ({...c, ativo}) : c);
+      renderClientes();
+    }catch(err){
+      console.error(err);
+      showMsg($("globalMsg"), "err", "Falha ao atualizar status do cliente: " + (err.message || String(err)));
+      await loadClientes(true);
+    }
+  };
+
   // ===============================
-  // CATEGORIAS - CREATE / LIST
+  // CATEGORIAS
   // ===============================
-  bindSafe("btnSalvarCategoria", "click", async () => {
-    console.log("Clique em Salvar Categoria ✅");
-    await salvarCategoria();
-  });
+  bindSafe("btnSalvarCategoria","click", salvarCategoria);
+  bindSafe("filtroCatCliente","change", () => renderCategorias());
+  bindSafe("filtroCategoria","input", () => renderCategorias());
 
   async function salvarCategoria(){
     clearMsg($("msgCategoria"));
@@ -606,7 +1016,6 @@
     try{
       const { error } = await supabaseClient.from("categorias").insert({ cliente_slug, nome, ordem, ativo });
       if(error) throw error;
-
       showMsg($("msgCategoria"), "ok", "Categoria criada!");
       $("catNome").value=""; $("catOrdem").value=""; $("catAtivo").value="true";
       await refreshAll();
@@ -618,14 +1027,11 @@
     }
   }
 
-  bindSafe("filtroCatCliente", "change", () => renderCategorias());
-  bindSafe("filtroCategoria", "input", () => renderCategorias());
-
   async function loadCategorias(silent=false){
     const { data, error } = await supabaseClient.from("categorias").select("*").order("ordem");
     if(error){
       console.error(error);
-      if(!silent) showMsg($("msgCategoria"), "err", "Erro ao carregar categorias: " + error.message);
+      if(!silent) showMsg($("globalMsg"), "err", "Erro ao carregar categorias: " + error.message);
       return;
     }
     CATEGORIAS = data || [];
@@ -637,6 +1043,7 @@
   function renderCategorias(){
     const cliente = $("filtroCatCliente").value;
     const q = ($("filtroCategoria").value || "").trim().toLowerCase();
+
     const rows = CATEGORIAS
       .filter(c => (!cliente || c.cliente_slug === cliente))
       .filter(c => (!q || (c.nome||"").toLowerCase().includes(q)))
@@ -648,20 +1055,24 @@
           <td>${tagAtivo(!!c.ativo)}</td>
           <td>
             <div class="actions">
-              <button class="btn-sm primary" type="button" onclick="openEditCategoria(${c.id})">Editar</button>
-              <button class="btn-sm" type="button" onclick="duplicateCategoria(${c.id})">Duplicar</button>
-              <button class="btn-sm danger" type="button" onclick="deleteCategoria(${c.id})">Excluir</button>
+              <button class="btn primary small" type="button" onclick="openEditCategoria(${c.id})">Editar</button>
+              <button class="btn small" type="button" onclick="duplicateCategoria(${c.id})">Duplicar</button>
+              <button class="btn danger small" type="button" onclick="deleteCategoria(${c.id})">Excluir</button>
             </div>
           </td>
         </tr>
       `).join("");
+
     $("tbCategorias").innerHTML = rows || `<tr><td colspan="5" class="muted">Nenhuma categoria.</td></tr>`;
   }
 
   // ===============================
-  // PRODUTOS - CREATE / LIST
+  // PRODUTOS
   // ===============================
-  bindSafe("prodCliente", "change", loadCategoriasSelectProduto);
+  bindSafe("prodCliente","change", loadCategoriasSelectProduto);
+  bindSafe("btnSalvarProduto","click", salvarProduto);
+  bindSafe("filtroProdCliente","change", () => renderProdutos());
+  bindSafe("filtroProduto","input", () => renderProdutos());
 
   async function loadCategoriasSelectProduto(){
     const slug = $("prodCliente").value;
@@ -672,11 +1083,6 @@
     const opts = cats.map(c => `<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join("");
     $("prodCategoria").innerHTML = `<option value="">Selecione a categoria</option>` + opts;
   }
-
-  bindSafe("btnSalvarProduto", "click", async () => {
-    console.log("Clique em Salvar Produto ✅");
-    await salvarProduto();
-  });
 
   async function salvarProduto(){
     clearMsg($("msgProduto"));
@@ -720,14 +1126,11 @@
     }
   }
 
-  bindSafe("filtroProdCliente", "change", () => renderProdutos());
-  bindSafe("filtroProduto", "input", () => renderProdutos());
-
   async function loadProdutos(silent=false){
     const { data, error } = await supabaseClient.from("produtos").select("*").order("nome");
     if(error){
       console.error(error);
-      if(!silent) showMsg($("msgProduto"), "err", "Erro ao carregar produtos: " + error.message);
+      if(!silent) showMsg($("globalMsg"), "err", "Erro ao carregar produtos: " + error.message);
       return;
     }
     PRODUTOS = data || [];
@@ -751,14 +1154,17 @@
         <tr>
           <td>${escapeHtml(p.cliente_slug)}</td>
           <td>${escapeHtml(nomeCategoriaById(p.categoria_id))} <span class="muted">(#${p.categoria_id})</span></td>
-          <td><b>${escapeHtml(p.nome)}</b><div class="muted">${escapeHtml((p.descricao||"").slice(0,80))}${(p.descricao||"").length>80?"…":""}</div></td>
+          <td>
+            <b>${escapeHtml(p.nome)}</b>
+            <div class="muted">${escapeHtml((p.descricao||"").slice(0,80))}${(p.descricao||"").length>80?"…":""}</div>
+          </td>
           <td>${brl(p.preco)}</td>
           <td>${tagAtivo(!!p.ativo)}</td>
           <td>
             <div class="actions">
-              <button class="btn-sm primary" type="button" onclick="openEditProduto(${p.id})">Editar</button>
-              <button class="btn-sm" type="button" onclick="duplicateProduto(${p.id})">Duplicar</button>
-              <button class="btn-sm danger" type="button" onclick="deleteProduto(${p.id})">Excluir</button>
+              <button class="btn primary small" type="button" onclick="openEditProduto(${p.id})">Editar</button>
+              <button class="btn small" type="button" onclick="duplicateProduto(${p.id})">Duplicar</button>
+              <button class="btn danger small" type="button" onclick="deleteProduto(${p.id})">Excluir</button>
             </div>
           </td>
         </tr>
@@ -771,7 +1177,6 @@
   // MODAL infra
   // ===============================
   let MODAL_CTX = null;
-
   bindSafe("modalClose","click", closeModal);
   bindSafe("modalCancel","click", closeModal);
   $("modalBackdrop").addEventListener("click", (e) => { if(e.target.id==="modalBackdrop") closeModal(); });
@@ -794,40 +1199,54 @@
   }
 
   // ===============================
-  // ACTIONS: CLIENTES / CATEGORIAS / PRODUTOS
+  // ACTIONS (Editar/Duplicar/Excluir)
   // ===============================
+  window.openPublished = openPublished;
+
   window.openEditCliente = (slug) => {
     const c = CLIENTES.find(x => x.slug === slug);
     if(!c) return;
+
+    const ativoAtual = (c.ativo === undefined) ? true : !!c.ativo;
 
     openModal(
       `Editar Cliente (${c.slug})`,
       `
         <div class="row">
           <div>
-            <label class="muted">Nome</label>
+            <label>Nome</label>
             <input id="m_cliNome" value="${escapeAttr(c.nome)}" />
           </div>
           <div>
-            <label class="muted">Slug</label>
+            <label>Slug</label>
             <input id="m_cliSlug" value="${escapeAttr(c.slug)}" />
             <div class="muted">Se mudar slug, vamos atualizar categorias/produtos desse cliente.</div>
           </div>
         </div>
-        <div>
-          <label class="muted">WhatsApp</label>
-          <input id="m_cliWhats" value="${escapeAttr(c.whatsapp || "")}" />
+        <div class="row">
+          <div>
+            <label>WhatsApp</label>
+            <input id="m_cliWhats" value="${escapeAttr(c.whatsapp || "")}" />
+          </div>
+          <div>
+            <label>Status</label>
+            <select id="m_cliAtivo">
+              <option value="true" ${ativoAtual ? "selected":""}>Ativo</option>
+              <option value="false" ${!ativoAtual ? "selected":""}>Inativo</option>
+            </select>
+          </div>
         </div>
       `,
       async () => {
         const nome = $("m_cliNome").value.trim();
         const novoSlug = slugify($("m_cliSlug").value.trim());
         const whatsapp = $("m_cliWhats").value.trim();
+        const ativo = $("m_cliAtivo").value === "true";
 
         if(!nome || !novoSlug || !whatsapp) throw new Error("Preencha nome, slug e WhatsApp.");
 
         const { error } = await supabaseClient.from("clientes")
-          .update({ nome, slug: novoSlug, whatsapp })
+          .update({ nome, slug: novoSlug, whatsapp, ativo })
           .eq("slug", slug);
 
         if(error) throw error;
@@ -835,6 +1254,7 @@
         if(novoSlug !== slug){
           const e1 = await supabaseClient.from("categorias").update({ cliente_slug: novoSlug }).eq("cliente_slug", slug);
           if(e1.error) throw e1.error;
+
           const e2 = await supabaseClient.from("produtos").update({ cliente_slug: novoSlug }).eq("cliente_slug", slug);
           if(e2.error) throw e2.error;
         }
@@ -856,10 +1276,13 @@
 
     if(!confirm(`Duplicar cliente "${c.nome}" para slug "${trySlug}"?`)) return;
 
+    const ativo = (c.ativo === undefined) ? true : !!c.ativo;
+
     const { error } = await supabaseClient.from("clientes").insert({
       nome: c.nome + " (cópia)",
       slug: trySlug,
-      whatsapp: c.whatsapp
+      whatsapp: c.whatsapp,
+      ativo
     });
     if(error) return alert("Erro: " + error.message);
 
@@ -890,21 +1313,21 @@
       `
         <div class="row">
           <div>
-            <label class="muted">Cliente (slug)</label>
+            <label>Cliente (slug)</label>
             <input id="m_catCliente" value="${escapeAttr(c.cliente_slug)}" />
           </div>
           <div>
-            <label class="muted">Nome</label>
+            <label>Nome</label>
             <input id="m_catNome" value="${escapeAttr(c.nome)}" />
           </div>
         </div>
         <div class="row">
           <div>
-            <label class="muted">Ordem</label>
+            <label>Ordem</label>
             <input id="m_catOrdem" type="number" value="${Number(c.ordem||0)}" />
           </div>
           <div>
-            <label class="muted">Ativo</label>
+            <label>Status</label>
             <select id="m_catAtivo">
               <option value="true" ${c.ativo ? "selected":""}>Ativa</option>
               <option value="false" ${!c.ativo ? "selected":""}>Inativa</option>
@@ -978,15 +1401,15 @@
       `
         <div class="row3">
           <div>
-            <label class="muted">Cliente (slug)</label>
+            <label>Cliente (slug)</label>
             <input id="m_prodCliente" value="${escapeAttr(p.cliente_slug)}" />
           </div>
           <div>
-            <label class="muted">Categoria</label>
+            <label>Categoria</label>
             <select id="m_prodCategoria">${catOpts || `<option value="${p.categoria_id}">#${p.categoria_id}</option>`}</select>
           </div>
           <div>
-            <label class="muted">Status</label>
+            <label>Status</label>
             <select id="m_prodAtivo">
               <option value="true" ${p.ativo ? "selected":""}>Ativo</option>
               <option value="false" ${!p.ativo ? "selected":""}>Inativo</option>
@@ -996,22 +1419,22 @@
 
         <div class="row">
           <div>
-            <label class="muted">Nome</label>
+            <label>Nome</label>
             <input id="m_prodNome" value="${escapeAttr(p.nome)}" />
           </div>
           <div>
-            <label class="muted">Preço</label>
+            <label>Preço</label>
             <input id="m_prodPreco" type="number" step="0.01" value="${Number(p.preco||0)}" />
           </div>
         </div>
 
         <div>
-          <label class="muted">Imagem (URL)</label>
+          <label>Imagem (URL)</label>
           <input id="m_prodImg" value="${escapeAttr(p.imagem || "")}" />
         </div>
 
         <div>
-          <label class="muted">Descrição</label>
+          <label>Descrição</label>
           <textarea id="m_prodDesc">${escapeHtml(p.descricao || "")}</textarea>
         </div>
       `,
@@ -1058,8 +1481,6 @@
     await refreshAll();
   };
 
-
-
   window.deleteProduto = async (id) => {
     const p = PRODUTOS.find(x => Number(x.id) === Number(id));
     if(!p) return;
@@ -1073,12 +1494,10 @@
   };
 
   // ===============================
-  // INITIAL LOAD if session exists
+  // INITIAL
   // ===============================
   (async () => {
-    const { data, error } = await supabaseClient.auth.getSession();
-    if(error) console.error(error);
-
+    const { data } = await supabaseClient.auth.getSession();
     if(data?.session){
       $("secLogin").classList.add("hidden");
       $("secAdmin").classList.remove("hidden");
@@ -1087,6 +1506,5 @@
     }
   })();
 </script>
-
 </body>
 </html>
