@@ -3,626 +3,360 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Alfa — Cardápio Digital</title>
-
+  <title>Admin — Cardápio Digital</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
     :root{
-      --bg0:#07121f;
-      --bg1:#091a2b;
-      --card:rgba(255,255,255,.06);
-      --card2:rgba(255,255,255,.08);
-      --line:rgba(255,255,255,.10);
-      --text:#e7eefc;
-      --muted:rgba(231,238,252,.72);
-
-      --primary:#2b69ff;
-      --primary2:#1a4fd6;
-      --accent:#2ee6c5;
-      --accent2:#18b79b;
-
-      --danger:#ff5a67;
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --radius: 22px;
-      --radius2: 16px;
-      --glass: blur(14px);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --bg0:#07121f; --bg1:#091a2b;
+      --text:#e7eefc; --muted:rgba(231,238,252,.72);
+      --card:rgba(255,255,255,.06); --line:rgba(255,255,255,.10);
+      --primary:#2b69ff; --primary2:#1a4fd6;
+      --accent:#2ee6c5; --danger:#ff5a67;
+      --r:20px; --shadow:0 18px 60px rgba(0,0,0,.45);
     }
-
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color:var(--text);
+      margin:0; min-height:100vh; color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
       background:
         radial-gradient(1200px 800px at 15% 10%, rgba(43,105,255,.35), transparent 55%),
         radial-gradient(900px 700px at 80% 15%, rgba(46,230,197,.18), transparent 55%),
-        radial-gradient(1100px 900px at 50% 95%, rgba(43,105,255,.20), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 28px 16px 70px;
+      padding: 22px 14px 60px;
     }
-
-    .wrap{max-width: 1240px; margin:0 auto}
-    .topbar{
-      display:flex; gap:16px; align-items:center; justify-content:space-between;
-      padding: 18px 20px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border: 1px solid rgba(255,255,255,.10);
+    .wrap{max-width:1100px;margin:0 auto}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: var(--r);
       box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
+      padding:18px;
     }
-    .brand{display:flex; gap:14px; align-items:center; min-width: 280px;}
+    .btn{
+      cursor:pointer; border:none; color:var(--text);
+      padding:11px 14px; border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      font-weight:900; display:inline-flex; gap:10px; align-items:center;
+    }
+    .btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary2))}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.14);box-shadow:none}
+    .btn.danger{background:linear-gradient(135deg, rgba(255,90,103,.95), rgba(255,90,103,.70))}
+    input,select,textarea{
+      width:100%; padding:12px 12px; border-radius:14px;
+      background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14);
+      color:var(--text); outline:none;
+    }
+    label{display:block;font-size:12.5px;font-weight:900;color:rgba(231,238,252,.80);margin:2px 0 6px}
+    .row{display:grid; grid-template-columns: repeat(12, 1fr); gap:12px}
+    .col12{grid-column:span 12} .col6{grid-column:span 6}
+    .muted{color:var(--muted); font-size:13px}
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      padding:18px 18px; border-radius: var(--r);
+      background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+    }
+    .brand{display:flex; gap:12px; align-items:center}
     .logo{
-      width:58px; height:58px; border-radius: 18px;
+      width:54px; height:54px; border-radius:18px;
       background: linear-gradient(135deg, rgba(43,105,255,.25), rgba(46,230,197,.15));
-      border: 1px dashed rgba(255,255,255,.25);
+      border:1px dashed rgba(255,255,255,.25);
       display:flex; align-items:center; justify-content:center;
       font-weight:900; letter-spacing:.6px;
-      color: rgba(231,238,252,.88);
-      overflow:hidden;
     }
-    .brand h1{margin:0; font-size: 18px; line-height: 1.1}
-    .brand p{margin:4px 0 0; color: var(--muted); font-size: 12.5px}
-
-    .rightTop{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;}
-    .pill{
-      display:flex; gap:8px; align-items:center;
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(231,238,252,.92);
-      font-size: 12.5px;
-      white-space:nowrap;
-    }
-    .mono{font-family: var(--mono)}
-
-    .btn{
-      cursor:pointer;
-      border: none;
-      color: var(--text);
-      padding: 11px 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 10px 30px rgba(0,0,0,.20);
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      display:inline-flex; align-items:center; gap:9px;
-      font-weight:900;
-      white-space:nowrap;
-    }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18)}
-    .btn:active{transform: translateY(0)}
-    .btn.primary{background: linear-gradient(135deg, var(--primary), var(--primary2)); border-color: rgba(255,255,255,.18);}
-    .btn.accent{background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#06201a; border-color: rgba(0,0,0,.05);}
-    .btn.danger{background: linear-gradient(135deg, rgba(255,90,103,.95), rgba(255,90,103,.70)); border-color: rgba(255,255,255,.10);}
-    .btn.ghost{background: transparent; border: 1px solid rgba(255,255,255,.14); box-shadow:none;}
-    .btn.small{padding: 9px 12px; border-radius: 12px; font-size: 13px;}
-
-    .grid{display:grid; grid-template-columns: 1.05fr .95fr; gap: 16px; margin-top: 16px;}
-    .card{
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
-      padding: 18px;
-      overflow:hidden;
-    }
-    .card h2{margin:0 0 4px; font-size: 18px}
-    .sub{margin:0 0 14px; color: var(--muted); font-size: 13px}
-
     .tabs{
-      display:flex; gap:10px; justify-content:center; margin-top: 12px;
-      padding: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
+      display:flex; gap:10px; justify-content:center; margin:12px 0 0;
+      padding:8px; border-radius:999px;
+      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10);
     }
     .tab{
-      cursor:pointer;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: rgba(231,238,252,.85);
-      font-weight: 900;
-      display:flex; gap:8px; align-items:center;
-      min-width: 170px; justify-content:center;
+      cursor:pointer; padding:10px 14px; border-radius:999px;
+      border:1px solid transparent; background:transparent;
+      color:rgba(231,238,252,.85); font-weight:900; min-width:150px;
     }
-    .tab.active{
-      background: rgba(43,105,255,.18);
-      border-color: rgba(43,105,255,.35);
-      color: var(--text);
-    }
-
-    label{
-      display:block;
-      font-size: 12.5px;
-      color: rgba(231,238,252,.80);
-      margin: 2px 0 6px;
-      font-weight: 900;
-    }
-    input, select, textarea{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 14px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.14);
-      color: var(--text);
-      outline:none;
-      transition: border-color .12s ease, background .12s ease;
-    }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(46,230,197,.45);
-      background: rgba(0,0,0,.26);
-    }
-    textarea{min-height: 84px; resize: vertical;}
-
-    .formRow{display:grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-top: 8px;}
-    .field{grid-column: span 12}
-    .half{grid-column: span 6}
-    .third{grid-column: span 4}
-
-    .divider{height:1px; background: rgba(255,255,255,.10); margin: 14px 0;}
-
-    .summary{
-      display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px;
-    }
-    .kpi{
-      padding: 10px 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      min-width: 160px;
-    }
-    .kpi .v{font-size: 18px; font-weight: 900}
-    .kpi .t{font-size: 12.5px; color: var(--muted); margin-top: 2px}
-
-    .listHead{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      margin-top: 6px;
-    }
-    .searchWrap{display:flex; gap:10px; align-items:center; width: 100%;}
-    .searchWrap input{max-width: 560px}
-    .table{
-      margin-top: 12px;
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-    }
-    .trow, .thead{
-      display:grid;
-      grid-template-columns: 1.8fr 1fr .8fr 56px;
-      gap: 10px;
-      padding: 12px 14px;
-      align-items:center;
-    }
-    .thead{
-      background: rgba(255,255,255,.06);
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      color: rgba(231,238,252,.72);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .2px;
-      text-transform: uppercase;
-    }
-    .trow{border-bottom: 1px solid rgba(255,255,255,.08);}
-    .trow:last-child{border-bottom:none}
-    .cellSmall{font-size: 13.5px}
-    .muted{color: var(--muted); font-size: 13px}
-    .chip{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      justify-self: start;
-    }
-    .chip.ok{background: rgba(46,230,197,.14); border-color: rgba(46,230,197,.30)}
-    .chip.off{background: rgba(255,90,103,.12); border-color: rgba(255,90,103,.22)}
-    .dot{width:8px; height:8px; border-radius:99px; background: rgba(255,255,255,.35)}
-    .chip.ok .dot{background: var(--accent)}
-    .chip.off .dot{background: var(--danger)}
-
+    .tab.active{background:rgba(43,105,255,.18); border-color:rgba(43,105,255,.35); color:var(--text)}
+    .table{margin-top:12px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04)}
+    .thead,.trow{display:grid; grid-template-columns: 1.8fr 1.1fr .7fr 56px; gap:10px; padding:12px 14px; align-items:center}
+    .thead{background:rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.10); font-size:12px; font-weight:900; color:rgba(231,238,252,.72); text-transform:uppercase}
+    .trow{border-bottom:1px solid rgba(255,255,255,.08)} .trow:last-child{border-bottom:none}
+    .chip{display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border-radius:999px; font-weight:900; font-size:12px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.06)}
+    .dot{width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,.35)}
+    .chip.ok{background:rgba(46,230,197,.14); border-color:rgba(46,230,197,.30)} .chip.ok .dot{background:var(--accent)}
+    .chip.off{background:rgba(255,90,103,.12); border-color:rgba(255,90,103,.22)} .chip.off .dot{background:var(--danger)}
     .kebab{
-      width: 44px; height: 40px;
-      border-radius: 12px;
-      display:flex; align-items:center; justify-content:center;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.12);
-      cursor:pointer;
-      transition: background .12s ease, transform .12s ease, border-color .12s ease;
-      position: relative;
-      user-select:none;
-      justify-self:end;
+      width:44px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);cursor:pointer;position:relative;user-select:none;justify-self:end
     }
-    .kebab:hover{background: rgba(255,255,255,.08); transform: translateY(-1px); border-color: rgba(255,255,255,.18)}
-    .kebab:active{transform: translateY(0)}
-    .kebab span{letter-spacing: 2px; font-weight: 900}
-
     .menu{
-      position:absolute;
-      right: 0;
-      top: 46px;
-      min-width: 200px;
-      padding: 8px;
-      border-radius: 16px;
-      background: rgba(10, 22, 36, .92);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 18px 60px rgba(0,0,0,.55);
-      backdrop-filter: var(--glass);
-      display:none;
-      z-index: 50;
+      position:absolute; right:0; top:46px; min-width:190px; padding:8px; border-radius:16px;
+      background:rgba(10,22,36,.92); border:1px solid rgba(255,255,255,.14); box-shadow:0 18px 60px rgba(0,0,0,.55);
+      display:none; z-index:50;
     }
     .menu.open{display:block}
     .mitem{
-      width:100%;
-      display:flex; align-items:center; gap:10px;
-      padding: 10px 10px;
-      border-radius: 12px;
-      background: transparent;
-      border: 1px solid transparent;
-      color: rgba(231,238,252,.92);
-      cursor:pointer;
-      font-weight: 900;
-      text-align:left;
+      width:100%; display:flex; gap:10px; align-items:center; padding:10px 10px; border-radius:12px;
+      background:transparent; border:1px solid transparent; color:rgba(231,238,252,.92); cursor:pointer; font-weight:900; text-align:left
     }
-    .mitem:hover{background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.10)}
-    .mitem.danger{color: rgba(255,90,103,.95)}
-    .ico{width:18px; display:inline-flex; justify-content:center}
-
-    .toast{
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: rgba(231,238,252,.90);
-      display:none;
-    }
+    .mitem:hover{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.10)}
+    .mitem.danger{color:rgba(255,90,103,.95)}
+    .toast{margin-top:12px;padding:12px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);display:none}
     .toast.show{display:block}
-    .toast.ok{border-color: rgba(46,230,197,.28); background: rgba(46,230,197,.10)}
-    .toast.err{border-color: rgba(255,90,103,.22); background: rgba(255,90,103,.10)}
-
-    .hidden{display:none !important}
-
-    @media (max-width: 980px){ .grid{grid-template-columns: 1fr} }
-    @media (max-width: 640px){
-      .topbar{flex-direction:column; align-items:stretch}
-      .thead{display:none}
-      .trow{grid-template-columns: 1fr; gap:8px}
-      .kebab{justify-self:end}
-    }
+    .toast.err{border-color:rgba(255,90,103,.22);background:rgba(255,90,103,.10)}
+    .toast.ok{border-color:rgba(46,230,197,.28);background:rgba(46,230,197,.10)}
+    .hidden{display:none!important}
+    @media (max-width:640px){ .thead{display:none} .trow{grid-template-columns:1fr; gap:8px} }
   </style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <!-- TOPBAR -->
-  <div class="topbar">
+  <div class="top">
     <div class="brand">
-      <div class="logo">AA</div>
+      <div class="logo">ADM</div>
       <div>
-        <h1>Admin Alfa</h1>
-        <p id="subtitle">Gerencie clientes, categorias e produtos.</p>
+        <div style="font-weight:900">Admin Alfa</div>
+        <div class="muted" id="sub">Login para gerenciar clientes, categorias e produtos.</div>
       </div>
     </div>
-
-    <div class="rightTop">
-      <div class="pill">Conta: <b id="userEmail">—</b></div>
-      <div class="pill">Bearer: <b id="bearerStatus">—</b></div>
-      <button class="btn danger small" id="btnLogout" disabled>🚪 Sair</button>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+      <div class="muted" id="userEmail">—</div>
+      <button class="btn danger" id="btnLogout" disabled>🚪 Sair</button>
     </div>
   </div>
 
-  <!-- GRID -->
-  <div class="grid">
-
-    <!-- LEFT: Auth + Tabs + Token -->
-    <div class="card">
-      <h2>Acesso</h2>
-      <p class="sub">Login do admin (Supabase) + token da API (Vercel).</p>
-
-      <div id="loginArea">
-        <div class="formRow">
-          <div class="field">
-            <label>Email</label>
-            <input id="email" placeholder="admin@email.com" autocomplete="email"/>
-          </div>
-          <div class="field">
-            <label>Senha</label>
-            <input id="senha" type="password" placeholder="••••••••" autocomplete="current-password"/>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
-          <button class="btn primary" id="btnLogin">🔐 Entrar</button>
-          <button class="btn ghost" id="btnGoogle">🟦 Entrar com Google</button>
-        </div>
-
-        <div class="sub" style="margin-top:10px">
-          Redirect recomendado:
-          <span class="mono" id="redirectHint"></span>
-        </div>
+  <!-- LOGIN (clean) -->
+  <div class="card" id="loginCard" style="margin-top:14px">
+    <div class="row">
+      <div class="col12">
+        <div style="font-size:18px;font-weight:900;margin-bottom:4px">Entrar</div>
+        <div class="muted">Email/senha ou Google (Supabase Auth).</div>
       </div>
-
-      <div class="divider"></div>
-
-      <h2>Token da API</h2>
-      <p class="sub">Cole o <span class="mono">ADMIN_BEARER_TOKEN</span> (Vercel env) para liberar ações.</p>
-
-      <div class="formRow">
-        <div class="field">
-          <label>ADMIN_BEARER_TOKEN</label>
-          <input id="bearerInput" type="password" placeholder="Cole seu token aqui"/>
-        </div>
-        <div class="field" style="display:flex; gap:10px; flex-wrap:wrap">
-          <button class="btn accent" id="btnSaveBearer">💾 Salvar token</button>
-          <button class="btn ghost" id="btnClearBearer">🧹 Limpar token</button>
-        </div>
+      <div class="col12">
+        <label>Email</label>
+        <input id="email" autocomplete="email" placeholder="admin@email.com" />
       </div>
+      <div class="col12">
+        <label>Senha</label>
+        <input id="senha" type="password" autocomplete="current-password" placeholder="••••••••" />
+      </div>
+      <div class="col12" style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn primary" id="btnLogin">🔐 Acessar</button>
+        <button class="btn ghost" id="btnGoogle">🟦 Entrar com Google</button>
+      </div>
+      <div class="col12">
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+  </div>
 
-      <div class="toast" id="toast"></div>
-
-      <div class="divider"></div>
-
+  <!-- APP -->
+  <div id="app" class="hidden">
+    <div class="card" style="margin-top:14px">
       <div class="tabs">
         <button class="tab active" data-tab="clientes">🏪 Clientes</button>
         <button class="tab" data-tab="categorias">🗂️ Categorias</button>
         <button class="tab" data-tab="produtos">🧾 Produtos</button>
       </div>
 
-      <div class="summary">
-        <div class="kpi"><div class="v" id="kpiClientes">—</div><div class="t">Clientes</div></div>
-        <div class="kpi"><div class="v" id="kpiCategorias">—</div><div class="t">Categorias</div></div>
-        <div class="kpi"><div class="v" id="kpiProdutos">—</div><div class="t">Produtos</div></div>
+      <div class="row" style="margin-top:12px">
+        <div class="col6">
+          <label>Busca</label>
+          <input id="search" placeholder="Buscar..." />
+        </div>
+        <div class="col6" style="display:flex; gap:10px; align-items:flex-end; justify-content:flex-end">
+          <button class="btn" id="btnReload">🔄 Recarregar</button>
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT: Form -->
-    <div class="card">
-      <h2 id="formTitle">Cadastrar Cliente</h2>
-      <p class="sub" id="formSub">Crie o cliente e (opcional) crie o acesso do dono.</p>
+    <div class="grid" style="display:grid;grid-template-columns:1.05fr .95fr;gap:14px;margin-top:14px">
+      <!-- FORM -->
+      <div class="card">
+        <div style="font-size:18px;font-weight:900" id="formTitle">Cadastrar Cliente</div>
+        <div class="muted" id="formSub">Crie cliente + acesso (email/senha) do dono.</div>
 
-      <!-- FORM CLIENTES -->
-      <div id="formClientes">
-        <div class="formRow">
-          <div class="field">
-            <label>Nome</label>
-            <input id="cli_nome" placeholder="ex: Cuscuz da Baiana"/>
-          </div>
-          <div class="half">
-            <label>Slug (URL)</label>
-            <input id="cli_slug" placeholder="ex: cuscuz-da-baiana"/>
-          </div>
-          <div class="half">
-            <label>WhatsApp (somente números)</label>
-            <input id="cli_whatsapp" placeholder="ex: 55629996037110"/>
-          </div>
-          <div class="field">
-            <label>Logo (URL) — coluna: <span class="mono">logo_url</span></label>
-            <input id="cli_logo_url" placeholder="https://..."/>
-          </div>
-          <div class="half">
-            <label>Status</label>
-            <select id="cli_ativo">
-              <option value="true">Ativo</option>
-              <option value="false">Inativo</option>
-            </select>
-          </div>
+        <!-- Clientes -->
+        <div id="formClientes" style="margin-top:10px">
+          <div class="row">
+            <div class="col12">
+              <label>Nome</label>
+              <input id="cli_nome" placeholder="ex: Cuscuz da Baiana" />
+            </div>
+            <div class="col6">
+              <label>Slug</label>
+              <input id="cli_slug" placeholder="ex: cuscuz-da-baiana" />
+            </div>
+            <div class="col6">
+              <label>WhatsApp</label>
+              <input id="cli_whatsapp" placeholder="5562..." />
+            </div>
+            <div class="col12">
+              <label>Logo (URL)</label>
+              <input id="cli_logo_url" placeholder="https://..." />
+            </div>
+            <div class="col6">
+              <label>Status</label>
+              <select id="cli_ativo">
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </div>
 
-          <div class="divider" style="grid-column: span 12;"></div>
+            <div class="col12" style="height:1px;background:rgba(255,255,255,.10);margin:6px 0"></div>
 
-          <div class="field">
-            <label>Email do dono (login no painel do cliente)</label>
-            <input id="cli_email" placeholder="cliente@email.com" autocomplete="email"/>
-          </div>
-          <div class="field">
-            <label>Senha do dono</label>
-            <input id="cli_senha" type="password" placeholder="Crie uma senha" autocomplete="new-password"/>
-          </div>
+            <div class="col12">
+              <label>Email do dono (login)</label>
+              <input id="cli_email" autocomplete="email" placeholder="cliente@email.com" />
+            </div>
+            <div class="col12">
+              <label>Senha do dono</label>
+              <input id="cli_senha" type="password" autocomplete="new-password" placeholder="Crie uma senha" />
+            </div>
 
-          <div class="field" style="display:flex; gap:10px; flex-wrap:wrap">
-            <button class="btn accent" id="btnSalvarCliente">💾 Criar/Salvar Cliente</button>
-            <button class="btn ghost" id="btnLimparForm">🧹 Limpar</button>
-          </div>
-
-          <div class="sub">
-            Painel do cliente: <span class="mono">/cliente/</span> • Link público: <span class="mono">/?u=slug</span>
+            <div class="col12" style="display:flex; gap:10px; flex-wrap:wrap">
+              <button class="btn" id="btnClear">🧹 Limpar</button>
+              <button class="btn accent" id="btnSave">💾 Salvar</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- FORM CATEGORIAS -->
-      <div id="formCategorias" class="hidden">
-        <div class="formRow">
-          <div class="field">
-            <label>Cliente (slug)</label>
-            <select id="cat_cliente_slug"></select>
-          </div>
-          <div class="field">
-            <label>Nome</label>
-            <input id="cat_nome" placeholder="ex: Bebidas"/>
-          </div>
-          <div class="half">
-            <label>Ordem</label>
-            <input id="cat_ordem" type="number" placeholder="ex: 1"/>
-          </div>
-          <div class="half">
-            <label>Status</label>
-            <select id="cat_ativo">
-              <option value="true">Ativa</option>
-              <option value="false">Inativa</option>
-            </select>
-          </div>
-          <div class="field">
-            <button class="btn accent" id="btnSalvarCategoria">💾 Salvar</button>
+        <!-- Categorias -->
+        <div id="formCategorias" class="hidden" style="margin-top:10px">
+          <div class="row">
+            <div class="col12">
+              <label>Cliente (slug)</label>
+              <select id="cat_cliente_slug"></select>
+            </div>
+            <div class="col12">
+              <label>Nome</label>
+              <input id="cat_nome" placeholder="ex: Bebidas" />
+            </div>
+            <div class="col6">
+              <label>Ordem</label>
+              <input id="cat_ordem" type="number" placeholder="1" />
+            </div>
+            <div class="col6">
+              <label>Status</label>
+              <select id="cat_ativo">
+                <option value="true">Ativa</option>
+                <option value="false">Inativa</option>
+              </select>
+            </div>
+            <div class="col12"><button class="btn accent" id="btnSaveCat">💾 Salvar</button></div>
           </div>
         </div>
-      </div>
 
-      <!-- FORM PRODUTOS -->
-      <div id="formProdutos" class="hidden">
-        <div class="formRow">
-          <div class="field">
-            <label>Cliente (slug)</label>
-            <select id="p_cliente_slug"></select>
-          </div>
-          <div class="field">
-            <label>Categoria</label>
-            <select id="p_categoria"></select>
-          </div>
-          <div class="field">
-            <label>Nome</label>
-            <input id="p_nome" placeholder="ex: Café coado"/>
-          </div>
-          <div class="field">
-            <label>Descrição</label>
-            <textarea id="p_desc" placeholder="opcional"></textarea>
-          </div>
-          <div class="half">
-            <label>Preço</label>
-            <input id="p_preco" type="number" step="0.01" placeholder="ex: 9.90"/>
-          </div>
-          <div class="half">
-            <label>Status</label>
-            <select id="p_ativo">
-              <option value="true">Ativo</option>
-              <option value="false">Inativo</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Imagem (URL) — coluna: <span class="mono">imagem</span></label>
-            <input id="p_img" placeholder="https://..."/>
-          </div>
-          <div class="half">
-            <label>Ordem</label>
-            <input id="p_ordem" type="number" placeholder="ex: 1"/>
-          </div>
-          <div class="field">
-            <button class="btn accent" id="btnSalvarProduto">💾 Salvar</button>
+        <!-- Produtos -->
+        <div id="formProdutos" class="hidden" style="margin-top:10px">
+          <div class="row">
+            <div class="col12">
+              <label>Cliente (slug)</label>
+              <select id="p_cliente_slug"></select>
+            </div>
+            <div class="col12">
+              <label>Categoria</label>
+              <select id="p_categoria"></select>
+            </div>
+            <div class="col12">
+              <label>Nome</label>
+              <input id="p_nome" placeholder="ex: Café coado" />
+            </div>
+            <div class="col12">
+              <label>Descrição</label>
+              <textarea id="p_desc" placeholder="opcional"></textarea>
+            </div>
+            <div class="col6">
+              <label>Preço</label>
+              <input id="p_preco" type="number" step="0.01" placeholder="9.90" />
+            </div>
+            <div class="col6">
+              <label>Status</label>
+              <select id="p_ativo">
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </div>
+            <div class="col12">
+              <label>Imagem (URL) — coluna: imagem</label>
+              <input id="p_img" placeholder="https://..." />
+            </div>
+            <div class="col6">
+              <label>Ordem</label>
+              <input id="p_ordem" type="number" placeholder="1" />
+            </div>
+            <div class="col12"><button class="btn accent" id="btnSaveProd">💾 Salvar</button></div>
           </div>
         </div>
+
+        <div class="toast" id="toast2"></div>
       </div>
 
-    </div>
-  </div>
+      <!-- LIST -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:end;gap:10px">
+          <div>
+            <div style="font-size:18px;font-weight:900" id="listTitle">Clientes</div>
+            <div class="muted" id="listSub">Menu ⋯ com ações.</div>
+          </div>
+        </div>
 
-  <!-- LIST -->
-  <div class="card" style="margin-top:16px">
-    <div class="listHead">
-      <div>
-        <h2 id="listTitle" style="margin:0">Clientes</h2>
-        <p class="sub" id="listSub" style="margin:4px 0 0">Menu ⋯: editar, duplicar, ativar/desativar, excluir, visualizar.</p>
+        <div class="table">
+          <div class="thead" id="thead">
+            <div>Nome</div><div>Slug/Ref</div><div>Status</div><div style="text-align:right">⋯</div>
+          </div>
+          <div id="tbody"></div>
+        </div>
       </div>
-
-      <div class="searchWrap">
-        <input id="search" placeholder="Buscar..." />
-        <button class="btn small" id="btnReload">🔄 Recarregar</button>
-      </div>
-    </div>
-
-    <div class="table">
-      <div class="thead" id="thead">
-        <div>Nome</div><div>Slug/Ref</div><div>Status</div><div style="text-align:right">⋯</div>
-      </div>
-      <div id="tbody"></div>
     </div>
   </div>
 
 </div>
 
 <script>
-/* ======================
-   CONFIG
-====================== */
+/* ========= CONFIG ========= */
 const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
 
-/**
- * 🔧 AJUSTE AQUI:
- * Coloque sua URL do Vercel (a base do projeto)
- * Ex: https://meu-projeto.vercel.app
- */
+/** 🔧 Troque para sua URL do Vercel */
 const API_BASE = "https://SEU-PROJETO.vercel.app";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ======================
-   STATE
-====================== */
-let session = null;
-let user = null;
+let session=null, user=null;
+let tab="clientes";
+let editing={ clientes:null, categorias:null, produtos:null };
+let clientes=[], categorias=[], produtos=[];
 
-let tab = "clientes";
-let editing = { clientes:null, categorias:null, produtos:null };
-
-let clientes = [];
-let categorias = [];
-let produtos = [];
-
-/* ======================
-   Helpers
-====================== */
 const el = (id)=>document.getElementById(id);
-
-function escapeHtml(str){
-  return String(str ?? "").replace(/[&<>"']/g, (m)=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[m]));
-}
-
-const toast = (msg, type="ok") => {
-  const t = el("toast");
-  t.className = "toast show " + (type === "err" ? "err":"ok");
+const toast = (msg, type="ok", which=1)=>{
+  const t = which===1 ? el("toast") : el("toast2");
+  t.className = "toast show " + (type==="err" ? "err":"ok");
   t.textContent = msg;
-  setTimeout(()=> t.className="toast", 3300);
+  setTimeout(()=> t.className="toast", 3200);
 };
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]))}
 
-function getBearer(){
-  return localStorage.getItem("ADMIN_BEARER_TOKEN") || "";
-}
-function setBearerStatus(){
-  const has = !!getBearer();
-  el("bearerStatus").textContent = has ? "OK" : "Falta";
-}
+function closeAllMenus(){ document.querySelectorAll(".menu.open").forEach(m=>m.classList.remove("open")); }
+document.addEventListener("click",(e)=>{ if(!e.target.closest(".menu") && !e.target.closest(".kebab")) closeAllMenus(); });
 
-function closeAllMenus(){
-  document.querySelectorAll(".menu.open").forEach(m => m.classList.remove("open"));
-}
-document.addEventListener("click",(e)=>{
-  if (!e.target.closest(".menu") && !e.target.closest(".kebab")) closeAllMenus();
-});
-
-async function apiFetch(path, { method="GET", body=null } = {}){
-  const token = getBearer();
-  if (!token) throw new Error("Falta ADMIN_BEARER_TOKEN (salve no painel).");
-
+async function apiFetch(path, {method="GET", body=null}={}){
+  if(!session?.access_token) throw new Error("Faça login.");
   const res = await fetch(`${API_BASE}${path}`,{
     method,
     headers:{
       "Content-Type":"application/json",
-      "Authorization": `Bearer ${token}`
+      "Authorization": `Bearer ${session.access_token}`   // ✅ token do admin logado
     },
     body: body ? JSON.stringify(body) : null
   });
-
   const json = await res.json().catch(()=> ({}));
-  if (!res.ok) throw new Error(json.error || `Erro ${res.status}`);
+  if(!res.ok) throw new Error(json.error || `Erro ${res.status}`);
   return json;
 }
 
-/* ======================
-   AUTH
-====================== */
+/* ========= AUTH ========= */
 async function refreshAuth(){
   const { data } = await sb.auth.getSession();
   session = data.session || null;
@@ -630,556 +364,298 @@ async function refreshAuth(){
 
   el("userEmail").textContent = user?.email || "—";
   el("btnLogout").disabled = !session;
-  el("loginArea").classList.toggle("hidden", !!session);
 
-  el("redirectHint").textContent = window.location.origin + window.location.pathname;
+  el("loginCard").classList.toggle("hidden", !!session);
+  el("app").classList.toggle("hidden", !session);
 
-  setBearerStatus();
+  if(session){
+    await loadAll();
+  }
 }
 
-async function loginWithPassword(){
+async function loginPass(){
   const email = el("email").value.trim();
   const password = el("senha").value;
-  if (!email || !password) return toast("Preencha email e senha.", "err");
-
+  if(!email || !password) return toast("Preencha email e senha.", "err");
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) return toast(error.message, "err");
+  if(error) return toast(error.message, "err");
   toast("Login ok!");
   await refreshAuth();
 }
 
-async function loginWithGoogle(){
+async function loginGoogle(){
   const redirectTo = window.location.origin + window.location.pathname;
-  const { error } = await sb.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo }
-  });
-  if (error) toast(error.message, "err");
+  const { error } = await sb.auth.signInWithOAuth({ provider:"google", options:{ redirectTo }});
+  if(error) toast(error.message, "err");
 }
 
 async function logout(){
   await sb.auth.signOut();
-  toast("Saiu.");
   await refreshAuth();
 }
 
-/* ======================
-   TABS
-====================== */
+/* ========= TABS ========= */
 function setTab(next){
-  tab = next;
-  document.querySelectorAll(".tab").forEach(b=>{
-    b.classList.toggle("active", b.dataset.tab === tab);
-  });
+  tab=next;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active", b.dataset.tab===tab));
 
-  el("formClientes").classList.toggle("hidden", tab !== "clientes");
-  el("formCategorias").classList.toggle("hidden", tab !== "categorias");
-  el("formProdutos").classList.toggle("hidden", tab !== "produtos");
+  el("formClientes").classList.toggle("hidden", tab!=="clientes");
+  el("formCategorias").classList.toggle("hidden", tab!=="categorias");
+  el("formProdutos").classList.toggle("hidden", tab!=="produtos");
 
-  editing = { ...editing, [tab]: null };
-
-  if (tab==="clientes"){
-    el("formTitle").textContent = "Cadastrar Cliente";
-    el("formSub").textContent = "Crie o cliente e crie o acesso do dono (email/senha).";
-    el("listTitle").textContent = "Clientes";
-    el("listSub").textContent = "Menu ⋯: editar, duplicar, ativar/desativar, excluir, visualizar.";
-    el("thead").innerHTML = `<div>Nome</div><div>Slug/Ref</div><div>Status</div><div style="text-align:right">⋯</div>`;
-    el("search").placeholder = "Buscar clientes...";
-  } else if (tab==="categorias"){
-    el("formTitle").textContent = "Cadastrar Categoria";
-    el("formSub").textContent = "Categorias por cliente.";
-    el("listTitle").textContent = "Categorias";
-    el("listSub").textContent = "Menu ⋯: editar, duplicar, ativar/desativar, excluir.";
-    el("thead").innerHTML = `<div>Nome</div><div>Cliente/Ordem</div><div>Status</div><div style="text-align:right">⋯</div>`;
-    el("search").placeholder = "Buscar categorias...";
-  } else {
-    el("formTitle").textContent = "Cadastrar Produto";
-    el("formSub").textContent = "Produtos por cliente e categoria.";
-    el("listTitle").textContent = "Produtos";
-    el("listSub").textContent = "Menu ⋯: editar, duplicar, ativar/desativar, excluir.";
-    el("thead").innerHTML = `<div>Nome</div><div>Cliente/Preço</div><div>Status</div><div style="text-align:right">⋯</div>`;
-    el("search").placeholder = "Buscar produtos...";
+  if(tab==="clientes"){
+    el("formTitle").textContent="Cadastrar Cliente";
+    el("formSub").textContent="Crie cliente + acesso (email/senha) do dono.";
+    el("listTitle").textContent="Clientes";
+    el("listSub").textContent="Menu ⋯ com ações.";
+    el("thead").innerHTML=`<div>Nome</div><div>Slug/Ref</div><div>Status</div><div style="text-align:right">⋯</div>`;
+  }else if(tab==="categorias"){
+    el("formTitle").textContent="Cadastrar Categoria";
+    el("formSub").textContent="Categorias por cliente.";
+    el("listTitle").textContent="Categorias";
+    el("listSub").textContent="Menu ⋯ com ações.";
+    el("thead").innerHTML=`<div>Nome</div><div>Cliente/Ordem</div><div>Status</div><div style="text-align:right">⋯</div>`;
+  }else{
+    el("formTitle").textContent="Cadastrar Produto";
+    el("formSub").textContent="Produtos por cliente e categoria.";
+    el("listTitle").textContent="Produtos";
+    el("listSub").textContent="Menu ⋯ com ações.";
+    el("thead").innerHTML=`<div>Nome</div><div>Cliente/Preço</div><div>Status</div><div style="text-align:right">⋯</div>`;
   }
-
   render();
 }
 
-/* ======================
-   LOAD ALL
-====================== */
+/* ========= LOAD ========= */
 async function loadAll(){
   try{
-    // Você já tem endpoints /api/admin/clientes, /categorias, /produtos
-    const [c1, c2, c3] = await Promise.all([
+    const [c1,c2,c3] = await Promise.all([
       apiFetch("/api/admin/clientes"),
       apiFetch("/api/admin/categorias"),
       apiFetch("/api/admin/produtos"),
     ]);
-
     clientes = c1.data || c1 || [];
     categorias = c2.data || c2 || [];
     produtos = c3.data || c3 || [];
-
-    el("kpiClientes").textContent = clientes.length;
-    el("kpiCategorias").textContent = categorias.length;
-    el("kpiProdutos").textContent = produtos.length;
-
     fillSelects();
     render();
-    toast("Dados carregados!");
-  } catch(err){
-    console.error(err);
-    toast(err.message, "err");
+    toast("Carregado.", "ok", 2);
+  }catch(e){
+    console.error(e);
+    toast(e.message, "err", 2);
   }
 }
 
 function fillSelects(){
-  // selects de cliente_slug
-  const opts = `<option value="">Selecione...</option>` +
-    clientes
-      .slice()
-      .sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||"")))
-      .map(c=> `<option value="${escapeHtml(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`)
-      .join("");
+  const opts = `<option value="">Selecione...</option>` + clientes
+    .slice().sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||"")))
+    .map(c=>`<option value="${esc(c.slug)}">${esc(c.nome)} (${esc(c.slug)})</option>`).join("");
 
   el("cat_cliente_slug").innerHTML = opts;
   el("p_cliente_slug").innerHTML = opts;
-
-  // select categorias depende do cliente selecionado no form produtos
   rebuildCategoriasSelect();
 }
-
 function rebuildCategoriasSelect(){
   const slug = el("p_cliente_slug").value || "";
-  const list = categorias
-    .filter(c => String(c.cliente_slug) === String(slug))
-    .slice()
-    .sort((a,b)=>Number(a.ordem||0)-Number(b.ordem||0));
+  const list = categorias.filter(c=>String(c.cliente_slug)===String(slug))
+    .slice().sort((a,b)=>Number(a.ordem||0)-Number(b.ordem||0));
 
-  el("p_categoria").innerHTML =
-    `<option value="">Selecione...</option>` +
-    list.map(c=> `<option value="${c.id}">${escapeHtml(c.nome)} (#${c.id})</option>`).join("");
+  el("p_categoria").innerHTML = `<option value="">Selecione...</option>` +
+    list.map(c=>`<option value="${c.id}">${esc(c.nome)} (#${c.id})</option>`).join("");
 }
 
-/* ======================
-   FORM ACTIONS
-====================== */
-function limparForms(){
-  // clientes
-  el("cli_nome").value = "";
-  el("cli_slug").value = "";
-  el("cli_whatsapp").value = "";
-  el("cli_logo_url").value = "";
-  el("cli_ativo").value = "true";
-  el("cli_email").value = "";
-  el("cli_senha").value = "";
-  editing.clientes = null;
-
-  // categorias
-  el("cat_cliente_slug").value = "";
-  el("cat_nome").value = "";
-  el("cat_ordem").value = "";
-  el("cat_ativo").value = "true";
-  editing.categorias = null;
-
-  // produtos
-  el("p_cliente_slug").value = "";
-  rebuildCategoriasSelect();
-  el("p_categoria").value = "";
-  el("p_nome").value = "";
-  el("p_desc").value = "";
-  el("p_preco").value = "";
-  el("p_img").value = "";
-  el("p_ordem").value = "";
-  el("p_ativo").value = "true";
-  editing.produtos = null;
+/* ========= CRUD ========= */
+function clearForms(){
+  ["cli_nome","cli_slug","cli_whatsapp","cli_logo_url","cli_email","cli_senha"].forEach(id=>el(id).value="");
+  el("cli_ativo").value="true";
+  ["cat_nome","cat_ordem"].forEach(id=>el(id).value="");
+  el("cat_ativo").value="true"; el("cat_cliente_slug").value="";
+  ["p_nome","p_desc","p_preco","p_img","p_ordem"].forEach(id=>el(id).value="");
+  el("p_ativo").value="true"; el("p_cliente_slug").value=""; rebuildCategoriasSelect(); el("p_categoria").value="";
 }
 
-async function salvarCliente(){
+async function saveCliente(){
   try{
     const nome = el("cli_nome").value.trim();
     const slug = el("cli_slug").value.trim();
     const whatsapp = el("cli_whatsapp").value.trim();
     const logo_url = el("cli_logo_url").value.trim();
-    const ativo = el("cli_ativo").value === "true";
+    const ativo = el("cli_ativo").value==="true";
 
     const email = el("cli_email").value.trim();
     const senha = el("cli_senha").value;
 
-    if (!nome || !slug) throw new Error("Nome e slug são obrigatórios.");
+    if(!nome || !slug) throw new Error("Nome e slug obrigatórios.");
 
-    // Se tiver email+senha, usa endpoint que cria acesso também
-    if (email && senha){
-      // precisa existir no Vercel:
-      // api/admin/criarClienteComAcesso.js
-      const json = await apiFetch("/api/admin/criarClienteComAcesso", {
-        method:"POST",
-        body:{ nome, slug, whatsapp, logo_url, ativo, email, senha, role:"owner" }
-      });
-      toast("Cliente + acesso criado!");
+    // cria cliente + acesso (endpoint que cria user+vinculo)
+    if(email && senha){
+      await apiFetch("/api/admin/criarClienteComAcesso", { method:"POST", body:{ nome, slug, whatsapp, logo_url, ativo, email, senha, role:"owner" }});
+      toast("Cliente + acesso criado!", "ok", 2);
+      clearForms();
       await loadAll();
       return;
     }
 
-    // Caso sem acesso: usa endpoint padrão de clientes (upsert)
-    // Ajuste se seu endpoint for diferente
-    if (editing.clientes?.id){
-      await apiFetch("/api/admin/clientes", { method:"POST", body:{
-        action:"update",
-        id: editing.clientes.id,
-        nome, slug, whatsapp, logo_url, ativo
-      }});
-      toast("Cliente atualizado!");
-    } else {
-      await apiFetch("/api/admin/clientes", { method:"POST", body:{
-        action:"create",
-        nome, slug, whatsapp, logo_url, ativo
-      }});
-      toast("Cliente criado!");
-    }
+    // sem acesso, usa seu endpoint padrão
+    await apiFetch("/api/admin/clientes", { method:"POST", body:{ action:"create", nome, slug, whatsapp, logo_url, ativo }});
+    toast("Cliente criado!", "ok", 2);
+    clearForms();
     await loadAll();
-  } catch(err){
-    console.error(err);
-    toast(err.message, "err");
+  }catch(e){
+    console.error(e);
+    toast(e.message, "err", 2);
   }
 }
 
-async function salvarCategoria(){
+async function saveCategoria(){
   try{
     const cliente_slug = el("cat_cliente_slug").value;
     const nome = el("cat_nome").value.trim();
-    const ordem = Number(el("cat_ordem").value || 0);
-    const ativo = el("cat_ativo").value === "true";
+    const ordem = Number(el("cat_ordem").value||0);
+    const ativo = el("cat_ativo").value==="true";
+    if(!cliente_slug || !nome) throw new Error("Cliente e nome obrigatórios.");
 
-    if (!cliente_slug || !nome) throw new Error("Cliente e nome são obrigatórios.");
-
-    if (editing.categorias?.id){
-      await apiFetch("/api/admin/categorias", { method:"POST", body:{
-        action:"update",
-        id: editing.categorias.id,
-        cliente_slug, nome, ordem, ativo
-      }});
-      toast("Categoria atualizada!");
-    } else {
-      await apiFetch("/api/admin/categorias", { method:"POST", body:{
-        action:"create",
-        cliente_slug, nome, ordem, ativo
-      }});
-      toast("Categoria criada!");
-    }
-
+    await apiFetch("/api/admin/categorias", { method:"POST", body:{ action:"create", cliente_slug, nome, ordem, ativo }});
+    toast("Categoria criada!", "ok", 2);
+    clearForms();
     await loadAll();
-  } catch(err){
-    console.error(err);
-    toast(err.message, "err");
+  }catch(e){
+    console.error(e);
+    toast(e.message, "err", 2);
   }
 }
 
-async function salvarProduto(){
+async function saveProduto(){
   try{
     const cliente_slug = el("p_cliente_slug").value;
-    const categoria_id = Number(el("p_categoria").value || 0);
+    const categoria_id = Number(el("p_categoria").value||0);
     const nome = el("p_nome").value.trim();
     const descricao = el("p_desc").value.trim();
-    const preco = Number(el("p_preco").value || 0);
-    const imagem = el("p_img").value.trim();  // sua coluna é "imagem"
-    const ordem = Number(el("p_ordem").value || 0);
-    const ativo = el("p_ativo").value === "true";
+    const preco = Number(el("p_preco").value||0);
+    const imagem = el("p_img").value.trim();
+    const ordem = Number(el("p_ordem").value||0);
+    const ativo = el("p_ativo").value==="true";
 
-    if (!cliente_slug || !categoria_id || !nome) throw new Error("Cliente, categoria e nome são obrigatórios.");
+    if(!cliente_slug || !categoria_id || !nome) throw new Error("Cliente, categoria e nome obrigatórios.");
 
-    if (editing.produtos?.id){
-      await apiFetch("/api/admin/produtos", { method:"POST", body:{
-        action:"update",
-        id: editing.produtos.id,
-        cliente_slug, categoria_id, nome, descricao, preco, imagem, ordem, ativo
-      }});
-      toast("Produto atualizado!");
-    } else {
-      await apiFetch("/api/admin/produtos", { method:"POST", body:{
-        action:"create",
-        cliente_slug, categoria_id, nome, descricao, preco, imagem, ordem, ativo
-      }});
-      toast("Produto criado!");
-    }
-
+    await apiFetch("/api/admin/produtos", { method:"POST", body:{ action:"create", cliente_slug, categoria_id, nome, descricao, preco, imagem, ordem, ativo }});
+    toast("Produto criado!", "ok", 2);
+    clearForms();
     await loadAll();
-  } catch(err){
-    console.error(err);
-    toast(err.message, "err");
+  }catch(e){
+    console.error(e);
+    toast(e.message, "err", 2);
   }
 }
 
-/* ======================
-   LIST + MENU ⋯
-====================== */
-function kebabMenuHtml(kind, item){
-  const id = item.id;
-  const view = kind==="clientes"
-    ? `<button class="mitem" data-act="view" data-kind="${kind}" data-id="${id}"><span class="ico">👁️</span>Visualizar público</button>`
-    : "";
+/* ========= LIST ========= */
+function chip(ativo, a="Ativo", i="Inativo"){
+  return `<span class="chip ${ativo?"ok":"off"}"><span class="dot"></span>${ativo?a:i}</span>`;
+}
+function kebab(kind, item){
+  const id=item.id;
   return `
-    <div class="kebab" data-kebab="${kind}" data-id="${id}">
+    <div class="kebab" data-k="${kind}" data-id="${id}">
       <span>⋯</span>
-      <div class="menu" id="menu-${kind}-${id}">
-        <button class="mitem" data-act="edit" data-kind="${kind}" data-id="${id}"><span class="ico">✏️</span>Editar</button>
-        <button class="mitem" data-act="dup" data-kind="${kind}" data-id="${id}"><span class="ico">📄</span>Duplicar</button>
-        <button class="mitem" data-act="toggle" data-kind="${kind}" data-id="${id}"><span class="ico">⏻</span>${item.ativo ? "Desativar" : "Ativar"}</button>
-        ${view}
-        <button class="mitem danger" data-act="del" data-kind="${kind}" data-id="${id}"><span class="ico">🗑️</span>Excluir</button>
+      <div class="menu" id="m-${kind}-${id}">
+        <button class="mitem" data-act="toggle" data-k="${kind}" data-id="${id}">⏻ ${item.ativo?"Desativar":"Ativar"}</button>
+        <button class="mitem danger" data-act="del" data-k="${kind}" data-id="${id}">🗑️ Excluir</button>
       </div>
     </div>
   `;
 }
-
 function bindMenus(){
-  document.querySelectorAll(".kebab").forEach(k => {
-    k.addEventListener("click", (e)=>{
+  document.querySelectorAll(".kebab").forEach(k=>{
+    k.onclick=(e)=>{
       e.stopPropagation();
-      const kind = k.dataset.kebab;
-      const id = k.dataset.id;
-      const menu = document.getElementById(`menu-${kind}-${id}`);
-      const open = menu.classList.contains("open");
-      closeAllMenus();
-      if (!open) menu.classList.add("open");
-    });
+      const kind=k.dataset.k, id=k.dataset.id;
+      const m=document.getElementById(`m-${kind}-${id}`);
+      const open=m.classList.contains("open");
+      closeAllMenus(); if(!open) m.classList.add("open");
+    };
   });
-
-  document.querySelectorAll(".mitem").forEach(btn=>{
-    btn.addEventListener("click", async (e)=>{
-      e.stopPropagation();
-      closeAllMenus();
-      await handleAction(btn.dataset.kind, btn.dataset.act, btn.dataset.id);
-    });
+  document.querySelectorAll(".mitem").forEach(b=>{
+    b.onclick= async (e)=>{
+      e.stopPropagation(); closeAllMenus();
+      const kind=b.dataset.k, act=b.dataset.act, id=b.dataset.id;
+      await rowAction(kind, act, id);
+    };
   });
 }
-
-function findById(kind, id){
-  const arr = kind==="clientes" ? clientes : (kind==="categorias" ? categorias : produtos);
-  return arr.find(x => String(x.id) === String(id));
-}
-
-async function handleAction(kind, act, id){
-  const item = findById(kind, id);
-  if (!item) return;
-
-  if (act==="view"){
-    const url = `${window.location.origin}${window.location.pathname.replace(/\/admin\/.*$/, "/")}?u=${item.slug}`;
-    window.open(url, "_blank");
-    return;
-  }
-
-  if (act==="edit"){
-    if (kind==="clientes"){
-      editing.clientes = item;
-      setTab("clientes");
-      el("cli_nome").value = item.nome || "";
-      el("cli_slug").value = item.slug || "";
-      el("cli_whatsapp").value = item.whatsapp || "";
-      el("cli_logo_url").value = item.logo_url || "";
-      el("cli_ativo").value = String(!!item.ativo);
-      el("cli_email").value = "";
-      el("cli_senha").value = "";
-      toast("Editando cliente…");
-    } else if (kind==="categorias"){
-      editing.categorias = item;
-      setTab("categorias");
-      el("cat_cliente_slug").value = item.cliente_slug || "";
-      el("cat_nome").value = item.nome || "";
-      el("cat_ordem").value = item.ordem ?? 0;
-      el("cat_ativo").value = String(!!item.ativo);
-      toast("Editando categoria…");
-    } else {
-      editing.produtos = item;
-      setTab("produtos");
-      el("p_cliente_slug").value = item.cliente_slug || "";
-      rebuildCategoriasSelect();
-      el("p_categoria").value = item.categoria_id || "";
-      el("p_nome").value = item.nome || "";
-      el("p_desc").value = item.descricao || "";
-      el("p_preco").value = item.preco ?? 0;
-      el("p_img").value = item.imagem || "";
-      el("p_ordem").value = item.ordem ?? 0;
-      el("p_ativo").value = String(!!item.ativo);
-      toast("Editando produto…");
+async function rowAction(kind, act, id){
+  try{
+    const endpoint = kind==="clientes"?"/api/admin/clientes":(kind==="categorias"?"/api/admin/categorias":"/api/admin/produtos");
+    if(act==="toggle"){
+      const item = (kind==="clientes"?clientes:(kind==="categorias"?categorias:produtos)).find(x=>String(x.id)===String(id));
+      await apiFetch(endpoint, { method:"POST", body:{ action:"toggle", id: item.id, ativo: !item.ativo }});
+      await loadAll(); return;
     }
-    return;
-  }
-
-  if (act==="dup"){
-    if (!confirm("Duplicar este item?")) return;
-
-    if (kind==="clientes"){
-      await apiFetch("/api/admin/clientes", { method:"POST", body:{
-        action:"create",
-        nome: (item.nome||"Cliente")+" (Cópia)",
-        slug: (item.slug||"cliente")+"-copia-"+Math.floor(Math.random()*999),
-        whatsapp: item.whatsapp || null,
-        logo_url: item.logo_url || null,
-        ativo: item.ativo ?? true
-      }});
-      toast("Cliente duplicado!");
-    } else if (kind==="categorias"){
-      await apiFetch("/api/admin/categorias", { method:"POST", body:{
-        action:"create",
-        cliente_slug: item.cliente_slug,
-        nome: (item.nome||"Categoria")+" (Cópia)",
-        ordem: Number(item.ordem||0)+1,
-        ativo: item.ativo ?? true
-      }});
-      toast("Categoria duplicada!");
-    } else {
-      await apiFetch("/api/admin/produtos", { method:"POST", body:{
-        action:"create",
-        cliente_slug: item.cliente_slug,
-        categoria_id: item.categoria_id,
-        nome: (item.nome||"Produto")+" (Cópia)",
-        descricao: item.descricao || "",
-        preco: Number(item.preco||0),
-        imagem: item.imagem || "",
-        ordem: Number(item.ordem||0)+1,
-        ativo: item.ativo ?? true
-      }});
-      toast("Produto duplicado!");
+    if(act==="del"){
+      if(!confirm("Excluir?")) return;
+      await apiFetch(endpoint, { method:"POST", body:{ action:"delete", id }});
+      await loadAll(); return;
     }
-    await loadAll();
-    return;
-  }
-
-  if (act==="toggle"){
-    const next = !item.ativo;
-    const endpoint = kind==="clientes" ? "/api/admin/clientes" : (kind==="categorias" ? "/api/admin/categorias" : "/api/admin/produtos");
-    await apiFetch(endpoint, { method:"POST", body:{ action:"toggle", id: item.id, ativo: next }});
-    toast(next ? "Ativado!" : "Desativado!");
-    await loadAll();
-    return;
-  }
-
-  if (act==="del"){
-    if (!confirm("Excluir? Não dá pra desfazer.")) return;
-    const endpoint = kind==="clientes" ? "/api/admin/clientes" : (kind==="categorias" ? "/api/admin/categorias" : "/api/admin/produtos");
-    await apiFetch(endpoint, { method:"POST", body:{ action:"delete", id: item.id }});
-    toast("Excluído.");
-    await loadAll();
-    return;
+  }catch(e){
+    console.error(e);
+    toast(e.message, "err", 2);
   }
 }
 
 function render(){
-  const tbody = el("tbody");
-  const q = (el("search").value || "").trim().toLowerCase();
+  const q=(el("search").value||"").toLowerCase().trim();
+  const tbody=el("tbody");
 
-  let list = [];
-  if (tab==="clientes") list = clientes.slice();
-  if (tab==="categorias") list = categorias.slice();
-  if (tab==="produtos") list = produtos.slice();
+  let list = tab==="clientes"?clientes.slice():tab==="categorias"?categorias.slice():produtos.slice();
+  if(q) list = list.filter(x=>JSON.stringify(x).toLowerCase().includes(q));
 
-  if (q) list = list.filter(x => JSON.stringify(x).toLowerCase().includes(q));
+  if(!list.length){ tbody.innerHTML=`<div class="trow"><div class="muted">Sem itens.</div></div>`; return; }
 
-  if (!list.length){
-    tbody.innerHTML = `<div class="trow"><div class="muted">Sem itens.</div></div>`;
-    return;
+  if(tab==="clientes"){
+    tbody.innerHTML = list.sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||""))).map(x=>`
+      <div class="trow">
+        <div><b>${esc(x.nome)}</b><div class="muted">#${esc(x.id)}</div></div>
+        <div class="muted">${esc(x.slug||"")}</div>
+        <div>${chip(!!x.ativo,"Ativo","Inativo")}</div>
+        ${kebab("clientes", x)}
+      </div>
+    `).join("");
+  }else if(tab==="categorias"){
+    tbody.innerHTML = list.map(x=>`
+      <div class="trow">
+        <div><b>${esc(x.nome)}</b><div class="muted">#${esc(x.id)}</div></div>
+        <div class="muted">${esc(x.cliente_slug)} • ordem:${esc(x.ordem??0)}</div>
+        <div>${chip(!!x.ativo,"Ativa","Inativa")}</div>
+        ${kebab("categorias", x)}
+      </div>
+    `).join("");
+  }else{
+    tbody.innerHTML = list.map(x=>`
+      <div class="trow">
+        <div><b>${esc(x.nome)}</b><div class="muted">cat:${esc(x.categoria_id)} • #${esc(x.id)}</div></div>
+        <div class="muted">${esc(x.cliente_slug)} • R$ ${esc(x.preco??0)}</div>
+        <div>${chip(!!x.ativo,"Ativo","Inativo")}</div>
+        ${kebab("produtos", x)}
+      </div>
+    `).join("");
   }
-
-  if (tab==="clientes"){
-    tbody.innerHTML = list
-      .sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||"")))
-      .map(item=>{
-        const chip = `<span class="chip ${item.ativo ? "ok":"off"}"><span class="dot"></span>${item.ativo ? "Ativo":"Inativo"}</span>`;
-        return `
-          <div class="trow">
-            <div class="cellSmall"><b>${escapeHtml(item.nome)}</b><div class="muted mono">#${item.id}</div></div>
-            <div class="cellSmall mono">${escapeHtml(item.slug || "")}</div>
-            <div>${chip}</div>
-            ${kebabMenuHtml("clientes", item)}
-          </div>
-        `;
-      }).join("");
-  }
-
-  if (tab==="categorias"){
-    tbody.innerHTML = list
-      .sort((a,b)=>String(a.cliente_slug||"").localeCompare(String(b.cliente_slug||"")) || (Number(a.ordem||0)-Number(b.ordem||0)))
-      .map(item=>{
-        const chip = `<span class="chip ${item.ativo ? "ok":"off"}"><span class="dot"></span>${item.ativo ? "Ativa":"Inativa"}</span>`;
-        return `
-          <div class="trow">
-            <div class="cellSmall"><b>${escapeHtml(item.nome)}</b><div class="muted mono">#${item.id}</div></div>
-            <div class="cellSmall mono">${escapeHtml(item.cliente_slug)} • ordem:${escapeHtml(String(item.ordem ?? 0))}</div>
-            <div>${chip}</div>
-            ${kebabMenuHtml("categorias", item)}
-          </div>
-        `;
-      }).join("");
-  }
-
-  if (tab==="produtos"){
-    tbody.innerHTML = list
-      .sort((a,b)=>String(a.cliente_slug||"").localeCompare(String(b.cliente_slug||"")) || (Number(a.ordem||0)-Number(b.ordem||0)))
-      .map(item=>{
-        const chip = `<span class="chip ${item.ativo ? "ok":"off"}"><span class="dot"></span>${item.ativo ? "Ativo":"Inativo"}</span>`;
-        return `
-          <div class="trow">
-            <div class="cellSmall"><b>${escapeHtml(item.nome)}</b><div class="muted mono">cat:${escapeHtml(String(item.categoria_id||"—"))} • #${item.id}</div></div>
-            <div class="cellSmall mono">${escapeHtml(item.cliente_slug)} • R$ ${escapeHtml(String(item.preco ?? 0))}</div>
-            <div>${chip}</div>
-            ${kebabMenuHtml("produtos", item)}
-          </div>
-        `;
-      }).join("");
-  }
-
   bindMenus();
 }
 
-/* ======================
-   EVENTS
-====================== */
-document.querySelectorAll(".tab").forEach(b=>{
-  b.addEventListener("click", ()=> setTab(b.dataset.tab));
-});
+/* ========= EVENTS ========= */
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+el("btnLogin").onclick = loginPass;
+el("btnGoogle").onclick = loginGoogle;
+el("btnLogout").onclick = logout;
+el("btnReload").onclick = loadAll;
+el("search").oninput = render;
 
-el("btnLogin").addEventListener("click", loginWithPassword);
-el("btnGoogle").addEventListener("click", loginWithGoogle);
-el("btnLogout").addEventListener("click", logout);
+el("btnClear").onclick = clearForms;
+el("btnSave").onclick = saveCliente;
+el("btnSaveCat").onclick = saveCategoria;
+el("btnSaveProd").onclick = saveProduto;
+el("p_cliente_slug").onchange = rebuildCategoriasSelect;
 
-el("btnSaveBearer").addEventListener("click", ()=>{
-  localStorage.setItem("ADMIN_BEARER_TOKEN", el("bearerInput").value);
-  el("bearerInput").value = "";
-  setBearerStatus();
-  toast("Token salvo!");
-});
-
-el("btnClearBearer").addEventListener("click", ()=>{
-  localStorage.removeItem("ADMIN_BEARER_TOKEN");
-  setBearerStatus();
-  toast("Token removido!");
-});
-
-el("btnSalvarCliente").addEventListener("click", salvarCliente);
-el("btnSalvarCategoria").addEventListener("click", salvarCategoria);
-el("btnSalvarProduto").addEventListener("click", salvarProduto);
-
-el("btnLimparForm").addEventListener("click", limparForms);
-el("btnReload").addEventListener("click", loadAll);
-
-el("p_cliente_slug").addEventListener("change", rebuildCategoriasSelect);
-
-el("search").addEventListener("input", render);
-
-/* ======================
-   INIT
-====================== */
 sb.auth.onAuthStateChange(()=> refreshAuth());
-
-(async function init(){
-  await refreshAuth();
-  setTab("clientes");
-  // tenta carregar se já tiver bearer salvo
-  if (getBearer()){
-    await loadAll();
-  }
-})();
+(async function init(){ await refreshAuth(); setTab("clientes"); })();
 </script>
 </body>
 </html>
