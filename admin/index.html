@@ -35,13 +35,17 @@
       min-height:100vh;
     }
     a{color:inherit}
-    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 60px;}
+    .wrap{max-width:1200px; margin:0 auto; padding:28px 18px 60px;}
     .topbar{
       display:flex; align-items:center; justify-content:space-between;
       padding:14px 16px; border-radius:22px; background:var(--card);
       border:1px solid var(--line); box-shadow:var(--shadow);
       backdrop-filter: blur(10px);
       gap:12px;
+    }
+    @media (max-width:900px){
+      .topbar{flex-direction:column; align-items:flex-start}
+      .status{width:100%; justify-content:flex-start}
     }
     .brand{display:flex; align-items:center; gap:12px; min-width:240px}
     .logo{
@@ -105,6 +109,17 @@
     }
     .card .hd h2{margin:0; font-size:14px}
     .card .bd{padding:16px}
+    .card .bd.compact{padding:22px}
+    .login-grid{
+      display:grid;
+      grid-template-columns: 180px 1fr;
+      gap:22px;
+      align-items:center;
+    }
+    @media (max-width:780px){
+      .login-grid{grid-template-columns:1fr; text-align:center}
+      .login-grid .logo{margin:0 auto}
+    }
     .tabs{
       display:flex; gap:8px; padding:10px; background: rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.10);
@@ -167,6 +182,8 @@
       border:1px solid rgba(255,255,255,.10);
       align-items:center;
     }
+    .item .col{min-width:0}
+    .item h4{word-break:break-word}
     @media(max-width:980px){
       .item{grid-template-columns:1fr; gap:8px}
     }
@@ -220,8 +237,8 @@
 
   <!-- LOGIN VIEW (clean) -->
   <section id="viewLogin" class="card">
-    <div class="bd" style="padding:26px">
-      <div style="display:grid;grid-template-columns: 160px 1fr; gap:22px; align-items:center">
+    <div class="bd compact">
+      <div class="login-grid">
         <div style="display:grid;place-items:center;gap:10px">
           <div class="logo" style="width:120px;height:120px;border-radius:26px;font-size:22px">ADM</div>
           <div style="font-weight:900">Admin Alfa</div>
@@ -560,7 +577,7 @@
     // admin fica em /cafeteria/admin/ (github pages)
     const u = location.origin + location.pathname;
     // garante terminar em /admin/
-    return u.replace(/\/admin\/?$/, "/");
+    return u.replace(/\/admin\/?(index\.html)?$/, "/");
   }
 
   // ===== API fetch with Bearer =====
