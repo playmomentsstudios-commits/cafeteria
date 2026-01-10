@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel Alfa — Cardápio Digital</title>
+  <title>Admin Alfa — Cardápio Digital</title>
 
-  <!-- Supabase JS v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -18,19 +17,15 @@
       --text:#e7eefc;
       --muted:rgba(231,238,252,.72);
 
-      /* Paleta azul + acento (combina com seu layout) */
-      --primary:#2b69ff;      /* azul vivo */
-      --primary2:#1a4fd6;     /* azul profundo */
-      --accent:#2ee6c5;       /* teal/menta */
+      --primary:#2b69ff;
+      --primary2:#1a4fd6;
+      --accent:#2ee6c5;
       --accent2:#18b79b;
 
-      --ok:#2ee6c5;
-      --warn:#ffcc66;
       --danger:#ff5a67;
-
       --shadow: 0 18px 60px rgba(0,0,0,.45);
       --radius: 22px;
-      --radius2: 14px;
+      --radius2: 16px;
       --glass: blur(14px);
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
@@ -46,11 +41,10 @@
         radial-gradient(900px 700px at 80% 15%, rgba(46,230,197,.18), transparent 55%),
         radial-gradient(1100px 900px at 50% 95%, rgba(43,105,255,.20), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 28px 18px 60px;
+      padding: 28px 16px 70px;
     }
 
-    a{color:inherit}
-    .wrap{max-width: 1200px; margin:0 auto}
+    .wrap{max-width: 1240px; margin:0 auto}
     .topbar{
       display:flex; gap:16px; align-items:center; justify-content:space-between;
       padding: 18px 20px;
@@ -60,23 +54,20 @@
       box-shadow: var(--shadow);
       backdrop-filter: var(--glass);
     }
-    .brand{
-      display:flex; gap:14px; align-items:center;
-      min-width: 260px;
-    }
+    .brand{display:flex; gap:14px; align-items:center; min-width: 280px;}
     .logo{
-      width:64px; height:64px; border-radius: 18px;
+      width:58px; height:58px; border-radius: 18px;
       background: linear-gradient(135deg, rgba(43,105,255,.25), rgba(46,230,197,.15));
       border: 1px dashed rgba(255,255,255,.25);
       display:flex; align-items:center; justify-content:center;
-      font-weight:800; letter-spacing:.5px; color: rgba(231,238,252,.88);
+      font-weight:900; letter-spacing:.6px;
+      color: rgba(231,238,252,.88);
+      overflow:hidden;
     }
-    .brand h1{margin:0; font-size: 20px; line-height: 1.1}
+    .brand h1{margin:0; font-size: 18px; line-height: 1.1}
     .brand p{margin:4px 0 0; color: var(--muted); font-size: 12.5px}
 
-    .pillrow{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;
-    }
+    .rightTop{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;}
     .pill{
       display:flex; gap:8px; align-items:center;
       padding: 10px 12px;
@@ -87,7 +78,8 @@
       font-size: 12.5px;
       white-space:nowrap;
     }
-    .pill b{font-weight:800}
+    .mono{font-family: var(--mono)}
+
     .btn{
       cursor:pointer;
       border: none;
@@ -99,42 +91,18 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.20);
       transition: transform .12s ease, background .12s ease, border-color .12s ease;
       display:inline-flex; align-items:center; gap:9px;
-      font-weight:700;
+      font-weight:900;
+      white-space:nowrap;
     }
     .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18)}
     .btn:active{transform: translateY(0)}
-    .btn.primary{
-      background: linear-gradient(135deg, var(--primary), var(--primary2));
-      border-color: rgba(255,255,255,.18);
-    }
-    .btn.accent{
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #06201a;
-      border-color: rgba(0,0,0,.05);
-    }
-    .btn.danger{
-      background: linear-gradient(135deg, rgba(255,90,103,.95), rgba(255,90,103,.70));
-      border-color: rgba(255,255,255,.10);
-    }
-    .btn.ghost{
-      background: transparent;
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: none;
-    }
-    .btn.small{
-      padding: 9px 11px;
-      border-radius: 12px;
-      font-weight:700;
-      font-size: 13px;
-    }
+    .btn.primary{background: linear-gradient(135deg, var(--primary), var(--primary2)); border-color: rgba(255,255,255,.18);}
+    .btn.accent{background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#06201a; border-color: rgba(0,0,0,.05);}
+    .btn.danger{background: linear-gradient(135deg, rgba(255,90,103,.95), rgba(255,90,103,.70)); border-color: rgba(255,255,255,.10);}
+    .btn.ghost{background: transparent; border: 1px solid rgba(255,255,255,.14); box-shadow:none;}
+    .btn.small{padding: 9px 12px; border-radius: 12px; font-size: 13px;}
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 18px;
-      margin-top: 18px;
-    }
-
+    .grid{display:grid; grid-template-columns: 1.05fr .95fr; gap: 16px; margin-top: 16px;}
     .card{
       border-radius: var(--radius);
       background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
@@ -147,21 +115,8 @@
     .card h2{margin:0 0 4px; font-size: 18px}
     .sub{margin:0 0 14px; color: var(--muted); font-size: 13px}
 
-    .stats{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
-    .stat{
-      border-radius: 18px;
-      padding: 14px 14px 12px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-    }
-    .stat .k{color: var(--muted); font-size: 12px}
-    .stat .v{font-size: 20px; font-weight: 900; margin-top: 4px}
     .tabs{
-      display:flex; gap:10px; justify-content:center; margin-top: 14px;
+      display:flex; gap:10px; justify-content:center; margin-top: 12px;
       padding: 8px;
       border-radius: 999px;
       background: rgba(255,255,255,.05);
@@ -174,9 +129,9 @@
       border: 1px solid transparent;
       background: transparent;
       color: rgba(231,238,252,.85);
-      font-weight: 800;
+      font-weight: 900;
       display:flex; gap:8px; align-items:center;
-      min-width: 120px; justify-content:center;
+      min-width: 170px; justify-content:center;
     }
     .tab.active{
       background: rgba(43,105,255,.18);
@@ -184,21 +139,12 @@
       color: var(--text);
     }
 
-    .formRow{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 12px;
-      margin-top: 12px;
-    }
-    .field{grid-column: span 6}
-    .field.sm{grid-column: span 3}
-    .field.lg{grid-column: span 9}
     label{
       display:block;
       font-size: 12.5px;
       color: rgba(231,238,252,.80);
       margin: 2px 0 6px;
-      font-weight: 800;
+      font-weight: 900;
     }
     input, select, textarea{
       width:100%;
@@ -214,28 +160,34 @@
       border-color: rgba(46,230,197,.45);
       background: rgba(0,0,0,.26);
     }
-    textarea{min-height: 90px; resize: vertical}
+    textarea{min-height: 84px; resize: vertical;}
 
-    .rowActions{
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      margin-top: 10px;
+    .formRow{display:grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-top: 8px;}
+    .field{grid-column: span 12}
+    .half{grid-column: span 6}
+    .third{grid-column: span 4}
+
+    .divider{height:1px; background: rgba(255,255,255,.10); margin: 14px 0;}
+
+    .summary{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px;
     }
-
-    .divider{
-      height:1px;
-      background: rgba(255,255,255,.10);
-      margin: 14px 0;
+    .kpi{
+      padding: 10px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      min-width: 160px;
     }
+    .kpi .v{font-size: 18px; font-weight: 900}
+    .kpi .t{font-size: 12.5px; color: var(--muted); margin-top: 2px}
 
-    /* LISTA compacta por linha */
     .listHead{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
-    .searchWrap{
-      display:flex; gap:10px; align-items:center; width: 100%;
-    }
-    .searchWrap input{max-width: 460px}
+    .searchWrap{display:flex; gap:10px; align-items:center; width: 100%;}
+    .searchWrap input{max-width: 560px}
     .table{
       margin-top: 12px;
       border-radius: 18px;
@@ -245,7 +197,7 @@
     }
     .trow, .thead{
       display:grid;
-      grid-template-columns: 1.5fr 1.1fr 1fr .7fr 56px;
+      grid-template-columns: 1.8fr 1fr .8fr 56px;
       gap: 10px;
       padding: 12px 14px;
       align-items:center;
@@ -259,13 +211,10 @@
       letter-spacing: .2px;
       text-transform: uppercase;
     }
-    .trow{
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
+    .trow{border-bottom: 1px solid rgba(255,255,255,.08);}
     .trow:last-child{border-bottom:none}
-    .cellSmall{font-size: 13.5px; color: rgba(231,238,252,.92)}
+    .cellSmall{font-size: 13.5px}
     .muted{color: var(--muted); font-size: 13px}
-    .mono{font-family: var(--mono)}
     .chip{
       display:inline-flex; align-items:center; gap:8px;
       padding: 8px 10px;
@@ -279,10 +228,9 @@
     .chip.ok{background: rgba(46,230,197,.14); border-color: rgba(46,230,197,.30)}
     .chip.off{background: rgba(255,90,103,.12); border-color: rgba(255,90,103,.22)}
     .dot{width:8px; height:8px; border-radius:99px; background: rgba(255,255,255,.35)}
-    .chip.ok .dot{background: var(--ok)}
+    .chip.ok .dot{background: var(--accent)}
     .chip.off .dot{background: var(--danger)}
 
-    /* Botão 3 pontos + menu */
     .kebab{
       width: 44px; height: 40px;
       border-radius: 12px;
@@ -293,6 +241,7 @@
       transition: background .12s ease, transform .12s ease, border-color .12s ease;
       position: relative;
       user-select:none;
+      justify-self:end;
     }
     .kebab:hover{background: rgba(255,255,255,.08); transform: translateY(-1px); border-color: rgba(255,255,255,.18)}
     .kebab:active{transform: translateY(0)}
@@ -302,7 +251,7 @@
       position:absolute;
       right: 0;
       top: 46px;
-      min-width: 180px;
+      min-width: 200px;
       padding: 8px;
       border-radius: 16px;
       background: rgba(10, 22, 36, .92);
@@ -322,7 +271,7 @@
       border: 1px solid transparent;
       color: rgba(231,238,252,.92);
       cursor:pointer;
-      font-weight: 800;
+      font-weight: 900;
       text-align:left;
     }
     .mitem:hover{background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.10)}
@@ -330,7 +279,7 @@
     .ico{width:18px; display:inline-flex; justify-content:center}
 
     .toast{
-      margin-top: 14px;
+      margin-top: 12px;
       padding: 12px 14px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.12);
@@ -342,44 +291,14 @@
     .toast.ok{border-color: rgba(46,230,197,.28); background: rgba(46,230,197,.10)}
     .toast.err{border-color: rgba(255,90,103,.22); background: rgba(255,90,103,.10)}
 
-    .loginGrid{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 16px;
-      align-items: start;
-    }
-    .hint{
-      border-radius: 18px;
-      padding: 14px;
-      background: rgba(46,230,197,.09);
-      border: 1px solid rgba(46,230,197,.18);
-      color: rgba(231,238,252,.90);
-      font-size: 13px;
-      line-height: 1.4;
-    }
-    .hint b{color: rgba(231,238,252,.98)}
-    .smallNote{color: var(--muted); font-size: 12.5px; margin-top: 10px}
+    .hidden{display:none !important}
 
-    @media (max-width: 980px){
-      .grid{grid-template-columns: 1fr}
-      .loginGrid{grid-template-columns: 1fr}
-      .trow, .thead{
-        grid-template-columns: 1.6fr 1.1fr 1fr .8fr 56px;
-      }
-    }
+    @media (max-width: 980px){ .grid{grid-template-columns: 1fr} }
     @media (max-width: 640px){
       .topbar{flex-direction:column; align-items:stretch}
-      .pillrow{justify-content:flex-start}
-      .stats{grid-template-columns: 1fr}
-      .tabs{flex-wrap:wrap}
-      .trow, .thead{
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
       .thead{display:none}
+      .trow{grid-template-columns: 1fr; gap:8px}
       .kebab{justify-self:end}
-      .trow{padding: 14px}
-      .trow .muted{font-size: 12.5px}
     }
   </style>
 </head>
@@ -387,602 +306,626 @@
 <body>
 <div class="wrap">
 
-  <!-- TOP -->
+  <!-- TOPBAR -->
   <div class="topbar">
     <div class="brand">
-      <div class="logo" id="logoBox">LOGO</div>
+      <div class="logo">AA</div>
       <div>
-        <h1>Painel Alfa — Cardápio Digital</h1>
-        <p>Super Admin • CRUD seguro via Vercel (Service Role) • UI compacta</p>
+        <h1>Admin Alfa</h1>
+        <p id="subtitle">Gerencie clientes, categorias e produtos.</p>
       </div>
     </div>
 
-    <div class="pillrow">
-      <div class="pill">Status: <b id="statusTxt">Deslogado</b></div>
-      <div class="pill">API: <b id="apiTxt">—</b></div>
+    <div class="rightTop">
+      <div class="pill">Conta: <b id="userEmail">—</b></div>
+      <div class="pill">Bearer: <b id="bearerStatus">—</b></div>
       <button class="btn danger small" id="btnLogout" disabled>🚪 Sair</button>
     </div>
   </div>
 
-  <!-- MAIN GRID -->
+  <!-- GRID -->
   <div class="grid">
-    <!-- LEFT: Dashboard + Tabs -->
-    <div class="card">
-      <h2>Visão geral</h2>
-      <p class="sub">Resumo rápido e navegação entre Clientes, Categorias e Produtos.</p>
 
-      <div class="stats">
-        <div class="stat">
-          <div class="k">Clientes</div>
-          <div class="v" id="countClientes">—</div>
+    <!-- LEFT: Auth + Tabs + Token -->
+    <div class="card">
+      <h2>Acesso</h2>
+      <p class="sub">Login do admin (Supabase) + token da API (Vercel).</p>
+
+      <div id="loginArea">
+        <div class="formRow">
+          <div class="field">
+            <label>Email</label>
+            <input id="email" placeholder="admin@email.com" autocomplete="email"/>
+          </div>
+          <div class="field">
+            <label>Senha</label>
+            <input id="senha" type="password" placeholder="••••••••" autocomplete="current-password"/>
+          </div>
         </div>
-        <div class="stat">
-          <div class="k">Categorias</div>
-          <div class="v" id="countCategorias">—</div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
+          <button class="btn primary" id="btnLogin">🔐 Entrar</button>
+          <button class="btn ghost" id="btnGoogle">🟦 Entrar com Google</button>
         </div>
-        <div class="stat">
-          <div class="k">Produtos</div>
-          <div class="v" id="countProdutos">—</div>
+
+        <div class="sub" style="margin-top:10px">
+          Redirect recomendado:
+          <span class="mono" id="redirectHint"></span>
         </div>
       </div>
 
-      <div class="tabs" style="margin-top:16px">
-        <button class="tab active" data-tab="clientes">👥 Clientes</button>
-        <button class="tab" data-tab="categorias">🗂️ Categorias</button>
-        <button class="tab" data-tab="produtos">🧾 Produtos</button>
+      <div class="divider"></div>
+
+      <h2>Token da API</h2>
+      <p class="sub">Cole o <span class="mono">ADMIN_BEARER_TOKEN</span> (Vercel env) para liberar ações.</p>
+
+      <div class="formRow">
+        <div class="field">
+          <label>ADMIN_BEARER_TOKEN</label>
+          <input id="bearerInput" type="password" placeholder="Cole seu token aqui"/>
+        </div>
+        <div class="field" style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn accent" id="btnSaveBearer">💾 Salvar token</button>
+          <button class="btn ghost" id="btnClearBearer">🧹 Limpar token</button>
+        </div>
       </div>
 
       <div class="toast" id="toast"></div>
 
       <div class="divider"></div>
 
-      <!-- LOGIN -->
-      <div id="loginArea">
-        <h2>Login</h2>
-        <p class="sub">Entre com um usuário do Supabase Auth. Depois, o painel habilita CRUD via API Vercel.</p>
+      <div class="tabs">
+        <button class="tab active" data-tab="clientes">🏪 Clientes</button>
+        <button class="tab" data-tab="categorias">🗂️ Categorias</button>
+        <button class="tab" data-tab="produtos">🧾 Produtos</button>
+      </div>
 
-        <div class="loginGrid">
-          <div>
-            <div class="formRow">
-              <div class="field lg" style="grid-column: span 12">
-                <label>Email</label>
-                <input id="email" placeholder="seu@email.com" autocomplete="email" />
-              </div>
-              <div class="field lg" style="grid-column: span 12">
-                <label>Senha</label>
-                <input id="senha" type="password" placeholder="••••••••" autocomplete="current-password" />
-              </div>
-            </div>
-
-            <div class="rowActions">
-              <div style="display:flex; gap:10px; flex-wrap:wrap">
-                <button class="btn primary" id="btnLogin">🔐 Entrar</button>
-                <button class="btn ghost" id="btnGoogle">🟦 Entrar com Google</button>
-              </div>
-              <div class="smallNote">Dica: se travar, veja “Diagnóstico” no final da página.</div>
-            </div>
-          </div>
-
-          <div class="hint">
-            <b>Checklist rápido</b><br/>
-            • Redirect URLs no Supabase devem incluir seu /admin/<br/>
-            • CORS na API Vercel permite <span class="mono">playmomentsstudios-commits.github.io</span><br/>
-            • O painel envia <span class="mono">Authorization: Bearer access_token</span>
-          </div>
-        </div>
+      <div class="summary">
+        <div class="kpi"><div class="v" id="kpiClientes">—</div><div class="t">Clientes</div></div>
+        <div class="kpi"><div class="v" id="kpiCategorias">—</div><div class="t">Categorias</div></div>
+        <div class="kpi"><div class="v" id="kpiProdutos">—</div><div class="t">Produtos</div></div>
       </div>
     </div>
 
-    <!-- RIGHT: Forms -->
+    <!-- RIGHT: Form -->
     <div class="card">
       <h2 id="formTitle">Cadastrar Cliente</h2>
-      <p class="sub" id="formSub">Crie a loja e gere o link publicado.</p>
+      <p class="sub" id="formSub">Crie o cliente e (opcional) crie o acesso do dono.</p>
 
-      <!-- CLIENTES FORM -->
+      <!-- FORM CLIENTES -->
       <div id="formClientes">
         <div class="formRow">
-          <div class="field" style="grid-column: span 12">
-            <label>Nome do negócio</label>
-            <input id="c_nome" placeholder="ex: Cafeteria do João"/>
+          <div class="field">
+            <label>Nome</label>
+            <input id="cli_nome" placeholder="ex: Cuscuz da Baiana"/>
           </div>
-          <div class="field" style="grid-column: span 7">
-            <label>Slug</label>
-            <input id="c_slug" placeholder="ex: cafeteria-do-joao"/>
+          <div class="half">
+            <label>Slug (URL)</label>
+            <input id="cli_slug" placeholder="ex: cuscuz-da-baiana"/>
           </div>
-          <div class="field" style="grid-column: span 5">
-            <label>WhatsApp</label>
-            <input id="c_whats" placeholder="ex: 6299..."/>
+          <div class="half">
+            <label>WhatsApp (somente números)</label>
+            <input id="cli_whatsapp" placeholder="ex: 55629996037110"/>
           </div>
-          <div class="field sm" style="grid-column: span 6">
-            <label>Status do cliente</label>
-            <select id="c_ativo">
+          <div class="field">
+            <label>Logo (URL) — coluna: <span class="mono">logo_url</span></label>
+            <input id="cli_logo_url" placeholder="https://..."/>
+          </div>
+          <div class="half">
+            <label>Status</label>
+            <select id="cli_ativo">
               <option value="true">Ativo</option>
               <option value="false">Inativo</option>
             </select>
           </div>
-          <div class="field sm" style="grid-column: span 6">
-            <label>&nbsp;</label>
-            <button class="btn accent" id="btnSalvarCliente">💾 Salvar</button>
+
+          <div class="divider" style="grid-column: span 12;"></div>
+
+          <div class="field">
+            <label>Email do dono (login no painel do cliente)</label>
+            <input id="cli_email" placeholder="cliente@email.com" autocomplete="email"/>
+          </div>
+          <div class="field">
+            <label>Senha do dono</label>
+            <input id="cli_senha" type="password" placeholder="Crie uma senha" autocomplete="new-password"/>
+          </div>
+
+          <div class="field" style="display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn accent" id="btnSalvarCliente">💾 Criar/Salvar Cliente</button>
+            <button class="btn ghost" id="btnLimparForm">🧹 Limpar</button>
+          </div>
+
+          <div class="sub">
+            Painel do cliente: <span class="mono">/cliente/</span> • Link público: <span class="mono">/?u=slug</span>
           </div>
         </div>
       </div>
 
-      <!-- CATEGORIAS FORM -->
-      <div id="formCategorias" style="display:none">
+      <!-- FORM CATEGORIAS -->
+      <div id="formCategorias" class="hidden">
         <div class="formRow">
-          <div class="field" style="grid-column: span 12">
-            <label>Cliente dono da categoria</label>
-            <select id="cat_cliente"></select>
+          <div class="field">
+            <label>Cliente (slug)</label>
+            <select id="cat_cliente_slug"></select>
           </div>
-          <div class="field" style="grid-column: span 8">
-            <label>Nome da categoria</label>
-            <input id="cat_nome" placeholder="ex: Cuscuz, Bebidas, Doces"/>
+          <div class="field">
+            <label>Nome</label>
+            <input id="cat_nome" placeholder="ex: Bebidas"/>
           </div>
-          <div class="field sm" style="grid-column: span 4">
+          <div class="half">
             <label>Ordem</label>
             <input id="cat_ordem" type="number" placeholder="ex: 1"/>
           </div>
-          <div class="field sm" style="grid-column: span 6">
+          <div class="half">
             <label>Status</label>
             <select id="cat_ativo">
               <option value="true">Ativa</option>
               <option value="false">Inativa</option>
             </select>
           </div>
-          <div class="field sm" style="grid-column: span 6">
-            <label>&nbsp;</label>
+          <div class="field">
             <button class="btn accent" id="btnSalvarCategoria">💾 Salvar</button>
           </div>
         </div>
       </div>
 
-      <!-- PRODUTOS FORM -->
-      <div id="formProdutos" style="display:none">
+      <!-- FORM PRODUTOS -->
+      <div id="formProdutos" class="hidden">
         <div class="formRow">
-          <div class="field" style="grid-column: span 12">
-            <label>Cliente</label>
-            <select id="p_cliente"></select>
+          <div class="field">
+            <label>Cliente (slug)</label>
+            <select id="p_cliente_slug"></select>
           </div>
-          <div class="field" style="grid-column: span 12">
+          <div class="field">
             <label>Categoria</label>
             <select id="p_categoria"></select>
           </div>
-          <div class="field" style="grid-column: span 12">
-            <label>Nome do produto</label>
-            <input id="p_nome" placeholder="ex: Cuscuz da Baiana"/>
+          <div class="field">
+            <label>Nome</label>
+            <input id="p_nome" placeholder="ex: Café coado"/>
           </div>
-          <div class="field" style="grid-column: span 12">
+          <div class="field">
             <label>Descrição</label>
             <textarea id="p_desc" placeholder="opcional"></textarea>
           </div>
-          <div class="field sm" style="grid-column: span 6">
+          <div class="half">
             <label>Preço</label>
-            <input id="p_preco" type="number" step="0.01" placeholder="ex: 12.50"/>
+            <input id="p_preco" type="number" step="0.01" placeholder="ex: 9.90"/>
           </div>
-          <div class="field sm" style="grid-column: span 6">
+          <div class="half">
             <label>Status</label>
             <select id="p_ativo">
               <option value="true">Ativo</option>
               <option value="false">Inativo</option>
             </select>
           </div>
-          <div class="field" style="grid-column: span 12">
-            <label>URL da imagem (opcional)</label>
+          <div class="field">
+            <label>Imagem (URL) — coluna: <span class="mono">imagem</span></label>
             <input id="p_img" placeholder="https://..."/>
           </div>
-          <div class="field" style="grid-column: span 12">
+          <div class="half">
+            <label>Ordem</label>
+            <input id="p_ordem" type="number" placeholder="ex: 1"/>
+          </div>
+          <div class="field">
             <button class="btn accent" id="btnSalvarProduto">💾 Salvar</button>
           </div>
         </div>
       </div>
 
-      <div class="smallNote" id="publicHint" style="margin-top:12px">
-        Link público: <span class="mono">?u=slug</span> (ex: <span class="mono">?u=cafeteria-do-joao</span>).
-      </div>
     </div>
   </div>
 
-  <!-- LISTS -->
-  <div class="card" style="margin-top:18px">
+  <!-- LIST -->
+  <div class="card" style="margin-top:16px">
     <div class="listHead">
       <div>
-        <h2 id="listTitle" style="margin:0">Clientes cadastrados</h2>
-        <div class="sub" id="listSub" style="margin:4px 0 0">Ações no menu ⋯ (ver, copiar link, editar, duplicar, ativar/desativar, excluir).</div>
+        <h2 id="listTitle" style="margin:0">Clientes</h2>
+        <p class="sub" id="listSub" style="margin:4px 0 0">Menu ⋯: editar, duplicar, ativar/desativar, excluir, visualizar.</p>
       </div>
 
       <div class="searchWrap">
-        <input id="search" placeholder="Buscar por nome ou slug..." />
+        <input id="search" placeholder="Buscar..." />
         <button class="btn small" id="btnReload">🔄 Recarregar</button>
       </div>
     </div>
 
-    <div class="table" id="tableWrap">
+    <div class="table">
       <div class="thead" id="thead">
-        <div>Nome</div><div>Slug</div><div>WhatsApp</div><div>Status</div><div style="text-align:right">⋯</div>
+        <div>Nome</div><div>Slug/Ref</div><div>Status</div><div style="text-align:right">⋯</div>
       </div>
       <div id="tbody"></div>
     </div>
   </div>
 
-  <!-- DIAGNÓSTICO -->
-  <div class="card" style="margin-top:18px">
-    <h2>Diagnóstico</h2>
-    <p class="sub">Aqui aparece carregamento, erros de API e sessão.</p>
-    <div id="diag" style="
-      font-family: var(--mono);
-      font-size: 12px;
-      background: rgba(0,0,0,.25);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
-      padding: 12px;
-      max-height: 240px;
-      overflow:auto;"></div>
-  </div>
-
 </div>
 
 <script>
-/* =======================
+/* ======================
    CONFIG
-======================= */
+====================== */
 const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
-const SUPABASE_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
+const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
 
-// seu domínio Vercel (API)
-const API_BASE_DEFAULT = "https://cafeteria-gamma-orpin.vercel.app";
-let API_BASE = API_BASE_DEFAULT;
+/**
+ * 🔧 AJUSTE AQUI:
+ * Coloque sua URL do Vercel (a base do projeto)
+ * Ex: https://meu-projeto.vercel.app
+ */
+const API_BASE = "https://SEU-PROJETO.vercel.app";
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* =======================
+/* ======================
    STATE
-======================= */
+====================== */
 let session = null;
+let user = null;
+
 let tab = "clientes";
-
-let cache = {
-  clientes: [],
-  categorias: [],
-  produtos: [],
-};
-
 let editing = { clientes:null, categorias:null, produtos:null };
 
-/* =======================
-   UI HELPERS
-======================= */
-const el = (id) => document.getElementById(id);
-const diag = (msg, ok=true) => {
-  const box = el("diag");
-  const t = new Date().toLocaleTimeString("pt-BR");
-  box.innerHTML = `[${t}] ${ok ? "✅" : "❌"} ${msg}<br/>` + box.innerHTML;
-};
+let clientes = [];
+let categorias = [];
+let produtos = [];
+
+/* ======================
+   Helpers
+====================== */
+const el = (id)=>document.getElementById(id);
+
+function escapeHtml(str){
+  return String(str ?? "").replace(/[&<>"']/g, (m)=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
 
 const toast = (msg, type="ok") => {
   const t = el("toast");
-  t.className = "toast show " + (type === "err" ? "err" : "ok");
+  t.className = "toast show " + (type === "err" ? "err":"ok");
   t.textContent = msg;
-  setTimeout(()=>{ t.className="toast"; }, 3600);
+  setTimeout(()=> t.className="toast", 3300);
 };
 
-const money = (v) => (Number(v||0)).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function getBearer(){
+  return localStorage.getItem("ADMIN_BEARER_TOKEN") || "";
+}
+function setBearerStatus(){
+  const has = !!getBearer();
+  el("bearerStatus").textContent = has ? "OK" : "Falta";
+}
 
-/* =======================
+function closeAllMenus(){
+  document.querySelectorAll(".menu.open").forEach(m => m.classList.remove("open"));
+}
+document.addEventListener("click",(e)=>{
+  if (!e.target.closest(".menu") && !e.target.closest(".kebab")) closeAllMenus();
+});
+
+async function apiFetch(path, { method="GET", body=null } = {}){
+  const token = getBearer();
+  if (!token) throw new Error("Falta ADMIN_BEARER_TOKEN (salve no painel).");
+
+  const res = await fetch(`${API_BASE}${path}`,{
+    method,
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: body ? JSON.stringify(body) : null
+  });
+
+  const json = await res.json().catch(()=> ({}));
+  if (!res.ok) throw new Error(json.error || `Erro ${res.status}`);
+  return json;
+}
+
+/* ======================
    AUTH
-======================= */
-async function refreshSessionUI() {
+====================== */
+async function refreshAuth(){
   const { data } = await sb.auth.getSession();
   session = data.session || null;
+  user = session?.user || null;
 
-  el("statusTxt").textContent = session ? (session.user?.email || "Logado") : "Deslogado";
+  el("userEmail").textContent = user?.email || "—";
   el("btnLogout").disabled = !session;
-  el("apiTxt").textContent = API_BASE ? new URL(API_BASE).host : "—";
+  el("loginArea").classList.toggle("hidden", !!session);
 
-  el("loginArea").style.display = session ? "none" : "block";
+  el("redirectHint").textContent = window.location.origin + window.location.pathname;
 
-  if (session) {
-    diag("AuthStateChange: SIGNED_IN");
-    await loadAll();
-  } else {
-    diag("AuthStateChange: SIGNED_OUT");
-    cache = { clientes:[], categorias:[], produtos:[] };
-    renderCounts();
-    renderList();
-  }
+  setBearerStatus();
 }
 
-async function loginWithPassword() {
+async function loginWithPassword(){
   const email = el("email").value.trim();
   const password = el("senha").value;
-
   if (!email || !password) return toast("Preencha email e senha.", "err");
 
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    diag("Login error: " + error.message, false);
-    return toast(error.message, "err");
-  }
-  session = data.session;
-  toast("Logado com sucesso!");
-  await refreshSessionUI();
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) return toast(error.message, "err");
+  toast("Login ok!");
+  await refreshAuth();
 }
 
-async function loginWithGoogle() {
-  // redireciona e volta pra mesma URL do /admin/
+async function loginWithGoogle(){
   const redirectTo = window.location.origin + window.location.pathname;
   const { error } = await sb.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo }
   });
-  if (error) {
-    diag("Google OAuth error: " + error.message, false);
-    toast(error.message, "err");
-  }
+  if (error) toast(error.message, "err");
 }
 
-async function logout() {
+async function logout(){
   await sb.auth.signOut();
-  toast("Você saiu.");
-  await refreshSessionUI();
+  toast("Saiu.");
+  await refreshAuth();
 }
 
-sb.auth.onAuthStateChange((event) => {
-  diag("AuthStateChange: " + event);
-});
-
-/* =======================
-   API (Vercel)
-======================= */
-function authHeaders() {
-  if (!session?.access_token) return {};
-  return { "Authorization": "Bearer " + session.access_token };
-}
-
-async function api(path, opts={}) {
-  const url = API_BASE.replace(/\/$/,"") + path;
-  const headers = {
-    "Content-Type": "application/json",
-    ...(opts.headers || {}),
-    ...authHeaders(),
-  };
-
-  const res = await fetch(url, { ...opts, headers });
-
-  // se CORS falhar, nem chega aqui (vira Failed to fetch)
-  let body = null;
-  try { body = await res.json(); } catch {}
-
-  if (!res.ok) {
-    const msg = body?.error || `HTTP ${res.status}`;
-    throw new Error(msg);
-  }
-  return body;
-}
-
-/* =======================
-   LOAD DATA
-======================= */
-async function loadAll() {
-  try{
-    diag("loadAll: iniciando...");
-    const [c1,c2,c3] = await Promise.all([
-      api("/api/admin/clientes", { method:"GET" }),
-      api("/api/admin/categorias", { method:"GET" }),
-      api("/api/admin/produtos", { method:"GET" }),
-    ]);
-
-    cache.clientes = c1.data || [];
-    cache.categorias = c2.data || [];
-    cache.produtos = c3.data || [];
-    diag("loadAll: ok ("+cache.clientes.length+" clientes, "+cache.categorias.length+" categorias, "+cache.produtos.length+" produtos)");
-
-    renderCounts();
-    fillSelects();
-    renderList();
-  } catch(e){
-    diag("loadAll: Failed to fetch ("+ e.message +")", false);
-    toast(e.message, "err");
-  }
-}
-
-/* =======================
-   COUNTS + SELECTS
-======================= */
-function renderCounts() {
-  el("countClientes").textContent = cache.clientes.length || "—";
-  el("countCategorias").textContent = cache.categorias.length || "—";
-  el("countProdutos").textContent = cache.produtos.length || "—";
-}
-
-function fillSelects(){
-  // categorias: select cliente
-  const selCat = el("cat_cliente");
-  const selPCli = el("p_cliente");
-
-  const optionsClientes = cache.clientes
-    .slice()
-    .sort((a,b)=> (a.nome||"").localeCompare(b.nome||""))
-    .map(c => `<option value="${c.slug}">${c.nome} (${c.slug})</option>`)
-    .join("");
-
-  selCat.innerHTML = `<option value="">Selecione...</option>` + optionsClientes;
-  selPCli.innerHTML = `<option value="">Selecione...</option>` + optionsClientes;
-
-  // produtos: select categoria depende do cliente
-  updateCategoriasForProduto();
-}
-
-function updateCategoriasForProduto(){
-  const clienteSlug = el("p_cliente").value;
-  const sel = el("p_categoria");
-  const cats = cache.categorias.filter(x => !clienteSlug || x.cliente_slug === clienteSlug);
-
-  sel.innerHTML =
-    `<option value="">Selecione...</option>` +
-    cats
-      .slice()
-      .sort((a,b)=> (a.ordem||0)-(b.ordem||0))
-      .map(c => `<option value="${c.id}">${c.nome} (ordem ${c.ordem||0})</option>`)
-      .join("");
-}
-
-/* =======================
+/* ======================
    TABS
-======================= */
+====================== */
 function setTab(next){
   tab = next;
   document.querySelectorAll(".tab").forEach(b=>{
     b.classList.toggle("active", b.dataset.tab === tab);
   });
 
-  // forms visibilidade
-  el("formClientes").style.display = tab==="clientes" ? "block" : "none";
-  el("formCategorias").style.display = tab==="categorias" ? "block" : "none";
-  el("formProdutos").style.display = tab==="produtos" ? "block" : "none";
+  el("formClientes").classList.toggle("hidden", tab !== "clientes");
+  el("formCategorias").classList.toggle("hidden", tab !== "categorias");
+  el("formProdutos").classList.toggle("hidden", tab !== "produtos");
 
-  // title/sub
+  editing = { ...editing, [tab]: null };
+
   if (tab==="clientes"){
-    el("formTitle").textContent = editing.clientes ? "Editar Cliente" : "Cadastrar Cliente";
-    el("formSub").textContent = "Crie a loja e gere o link publicado.";
-    el("listTitle").textContent = "Clientes cadastrados";
-    el("listSub").textContent = "Ações no menu ⋯ (ver, copiar link, editar, duplicar, ativar/desativar, excluir).";
-  }
-  if (tab==="categorias"){
-    el("formTitle").textContent = editing.categorias ? "Editar Categoria" : "Cadastrar Categoria";
-    el("formSub").textContent = "Organize o cardápio por categorias.";
-    el("listTitle").textContent = "Categorias cadastradas";
-    el("listSub").textContent = "Ações no menu ⋯ (editar, duplicar, ativar/desativar, excluir).";
-  }
-  if (tab==="produtos"){
-    el("formTitle").textContent = editing.produtos ? "Editar Produto" : "Cadastrar Produto";
-    el("formSub").textContent = "Cadastre produtos e associe uma categoria.";
-    el("listTitle").textContent = "Produtos cadastrados";
-    el("listSub").textContent = "Ações no menu ⋯ (editar, duplicar, ativar/desativar, excluir).";
+    el("formTitle").textContent = "Cadastrar Cliente";
+    el("formSub").textContent = "Crie o cliente e crie o acesso do dono (email/senha).";
+    el("listTitle").textContent = "Clientes";
+    el("listSub").textContent = "Menu ⋯: editar, duplicar, ativar/desativar, excluir, visualizar.";
+    el("thead").innerHTML = `<div>Nome</div><div>Slug/Ref</div><div>Status</div><div style="text-align:right">⋯</div>`;
+    el("search").placeholder = "Buscar clientes...";
+  } else if (tab==="categorias"){
+    el("formTitle").textContent = "Cadastrar Categoria";
+    el("formSub").textContent = "Categorias por cliente.";
+    el("listTitle").textContent = "Categorias";
+    el("listSub").textContent = "Menu ⋯: editar, duplicar, ativar/desativar, excluir.";
+    el("thead").innerHTML = `<div>Nome</div><div>Cliente/Ordem</div><div>Status</div><div style="text-align:right">⋯</div>`;
+    el("search").placeholder = "Buscar categorias...";
+  } else {
+    el("formTitle").textContent = "Cadastrar Produto";
+    el("formSub").textContent = "Produtos por cliente e categoria.";
+    el("listTitle").textContent = "Produtos";
+    el("listSub").textContent = "Menu ⋯: editar, duplicar, ativar/desativar, excluir.";
+    el("thead").innerHTML = `<div>Nome</div><div>Cliente/Preço</div><div>Status</div><div style="text-align:right">⋯</div>`;
+    el("search").placeholder = "Buscar produtos...";
   }
 
-  renderList();
+  render();
 }
 
-/* =======================
-   LIST RENDER (compact row + kebab menu)
-======================= */
-function closeAllMenus(){
-  document.querySelectorAll(".menu.open").forEach(m => m.classList.remove("open"));
+/* ======================
+   LOAD ALL
+====================== */
+async function loadAll(){
+  try{
+    // Você já tem endpoints /api/admin/clientes, /categorias, /produtos
+    const [c1, c2, c3] = await Promise.all([
+      apiFetch("/api/admin/clientes"),
+      apiFetch("/api/admin/categorias"),
+      apiFetch("/api/admin/produtos"),
+    ]);
+
+    clientes = c1.data || c1 || [];
+    categorias = c2.data || c2 || [];
+    produtos = c3.data || c3 || [];
+
+    el("kpiClientes").textContent = clientes.length;
+    el("kpiCategorias").textContent = categorias.length;
+    el("kpiProdutos").textContent = produtos.length;
+
+    fillSelects();
+    render();
+    toast("Dados carregados!");
+  } catch(err){
+    console.error(err);
+    toast(err.message, "err");
+  }
 }
 
-document.addEventListener("click", (e)=>{
-  // fecha menus ao clicar fora
-  const isMenu = e.target.closest(".menu");
-  const isKebab = e.target.closest(".kebab");
-  if (!isMenu && !isKebab) closeAllMenus();
-});
+function fillSelects(){
+  // selects de cliente_slug
+  const opts = `<option value="">Selecione...</option>` +
+    clientes
+      .slice()
+      .sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||"")))
+      .map(c=> `<option value="${escapeHtml(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`)
+      .join("");
 
-function renderList(){
-  const tbody = el("tbody");
-  const search = (el("search").value || "").trim().toLowerCase();
+  el("cat_cliente_slug").innerHTML = opts;
+  el("p_cliente_slug").innerHTML = opts;
 
-  let items = [];
-  if (tab==="clientes") items = cache.clientes;
-  if (tab==="categorias") items = cache.categorias;
-  if (tab==="produtos") items = cache.produtos;
+  // select categorias depende do cliente selecionado no form produtos
+  rebuildCategoriasSelect();
+}
 
-  // filtro simples
-  if (search){
-    items = items.filter(x => JSON.stringify(x).toLowerCase().includes(search));
-  }
+function rebuildCategoriasSelect(){
+  const slug = el("p_cliente_slug").value || "";
+  const list = categorias
+    .filter(c => String(c.cliente_slug) === String(slug))
+    .slice()
+    .sort((a,b)=>Number(a.ordem||0)-Number(b.ordem||0));
 
-  // headers variáveis
-  const thead = el("thead");
-  if (tab==="clientes"){
-    thead.innerHTML = `<div>Nome</div><div>Slug</div><div>WhatsApp</div><div>Status</div><div style="text-align:right">⋯</div>`;
-  }
-  if (tab==="categorias"){
-    thead.innerHTML = `<div>Nome</div><div>Cliente</div><div>Ordem</div><div>Status</div><div style="text-align:right">⋯</div>`;
-  }
-  if (tab==="produtos"){
-    thead.innerHTML = `<div>Nome</div><div>Cliente</div><div>Preço</div><div>Status</div><div style="text-align:right">⋯</div>`;
-  }
+  el("p_categoria").innerHTML =
+    `<option value="">Selecione...</option>` +
+    list.map(c=> `<option value="${c.id}">${escapeHtml(c.nome)} (#${c.id})</option>`).join("");
+}
 
-  if (!items.length){
-    tbody.innerHTML = `<div class="trow"><div class="muted">Nada por aqui ainda…</div></div>`;
-    return;
-  }
+/* ======================
+   FORM ACTIONS
+====================== */
+function limparForms(){
+  // clientes
+  el("cli_nome").value = "";
+  el("cli_slug").value = "";
+  el("cli_whatsapp").value = "";
+  el("cli_logo_url").value = "";
+  el("cli_ativo").value = "true";
+  el("cli_email").value = "";
+  el("cli_senha").value = "";
+  editing.clientes = null;
 
-  tbody.innerHTML = items.map(item => {
-    const ativo = !!item.ativo;
-    const chip = `<span class="chip ${ativo ? "ok":"off"}"><span class="dot"></span>${ativo ? "Ativo" : "Inativo"}</span>`;
+  // categorias
+  el("cat_cliente_slug").value = "";
+  el("cat_nome").value = "";
+  el("cat_ordem").value = "";
+  el("cat_ativo").value = "true";
+  editing.categorias = null;
 
-    if (tab==="clientes"){
-      const nome = item.nome || "—";
-      const slug = item.slug || "—";
-      const whats = item.whatsapp || "—";
+  // produtos
+  el("p_cliente_slug").value = "";
+  rebuildCategoriasSelect();
+  el("p_categoria").value = "";
+  el("p_nome").value = "";
+  el("p_desc").value = "";
+  el("p_preco").value = "";
+  el("p_img").value = "";
+  el("p_ordem").value = "";
+  el("p_ativo").value = "true";
+  editing.produtos = null;
+}
 
-      return `
-        <div class="trow" data-id="${item.id}">
-          <div class="cellSmall"><b>${escapeHtml(nome)}</b><div class="muted mono">${escapeHtml(item.id||"")}</div></div>
-          <div class="cellSmall mono">${escapeHtml(slug)}</div>
-          <div class="cellSmall mono">${escapeHtml(whats)}</div>
-          <div>${chip}</div>
-          <div style="display:flex; justify-content:flex-end">
-            ${kebabMenuHtml("clientes", item)}
-          </div>
-        </div>`;
+async function salvarCliente(){
+  try{
+    const nome = el("cli_nome").value.trim();
+    const slug = el("cli_slug").value.trim();
+    const whatsapp = el("cli_whatsapp").value.trim();
+    const logo_url = el("cli_logo_url").value.trim();
+    const ativo = el("cli_ativo").value === "true";
+
+    const email = el("cli_email").value.trim();
+    const senha = el("cli_senha").value;
+
+    if (!nome || !slug) throw new Error("Nome e slug são obrigatórios.");
+
+    // Se tiver email+senha, usa endpoint que cria acesso também
+    if (email && senha){
+      // precisa existir no Vercel:
+      // api/admin/criarClienteComAcesso.js
+      const json = await apiFetch("/api/admin/criarClienteComAcesso", {
+        method:"POST",
+        body:{ nome, slug, whatsapp, logo_url, ativo, email, senha, role:"owner" }
+      });
+      toast("Cliente + acesso criado!");
+      await loadAll();
+      return;
     }
 
-    if (tab==="categorias"){
-      const nome = item.nome || "—";
-      const cliente = item.cliente_slug || "—";
-      const ordem = item.ordem ?? 0;
-      return `
-        <div class="trow" data-id="${item.id}">
-          <div class="cellSmall"><b>${escapeHtml(nome)}</b><div class="muted mono">${escapeHtml(item.id||"")}</div></div>
-          <div class="cellSmall mono">${escapeHtml(cliente)}</div>
-          <div class="cellSmall mono">${escapeHtml(String(ordem))}</div>
-          <div>${chip}</div>
-          <div style="display:flex; justify-content:flex-end">
-            ${kebabMenuHtml("categorias", item)}
-          </div>
-        </div>`;
+    // Caso sem acesso: usa endpoint padrão de clientes (upsert)
+    // Ajuste se seu endpoint for diferente
+    if (editing.clientes?.id){
+      await apiFetch("/api/admin/clientes", { method:"POST", body:{
+        action:"update",
+        id: editing.clientes.id,
+        nome, slug, whatsapp, logo_url, ativo
+      }});
+      toast("Cliente atualizado!");
+    } else {
+      await apiFetch("/api/admin/clientes", { method:"POST", body:{
+        action:"create",
+        nome, slug, whatsapp, logo_url, ativo
+      }});
+      toast("Cliente criado!");
     }
-
-    // produtos
-    const nome = item.nome || "—";
-    const cliente = item.cliente_slug || "—";
-    const preco = money(item.preco || 0);
-    return `
-      <div class="trow" data-id="${item.id}">
-        <div class="cellSmall"><b>${escapeHtml(nome)}</b><div class="muted mono">${escapeHtml(item.id||"")}</div></div>
-        <div class="cellSmall mono">${escapeHtml(cliente)}</div>
-        <div class="cellSmall mono">${escapeHtml(preco)}</div>
-        <div>${chip}</div>
-        <div style="display:flex; justify-content:flex-end">
-          ${kebabMenuHtml("produtos", item)}
-        </div>
-      </div>`;
-  }).join("");
-
-  // bind menus
-  bindMenus();
+    await loadAll();
+  } catch(err){
+    console.error(err);
+    toast(err.message, "err");
+  }
 }
 
+async function salvarCategoria(){
+  try{
+    const cliente_slug = el("cat_cliente_slug").value;
+    const nome = el("cat_nome").value.trim();
+    const ordem = Number(el("cat_ordem").value || 0);
+    const ativo = el("cat_ativo").value === "true";
+
+    if (!cliente_slug || !nome) throw new Error("Cliente e nome são obrigatórios.");
+
+    if (editing.categorias?.id){
+      await apiFetch("/api/admin/categorias", { method:"POST", body:{
+        action:"update",
+        id: editing.categorias.id,
+        cliente_slug, nome, ordem, ativo
+      }});
+      toast("Categoria atualizada!");
+    } else {
+      await apiFetch("/api/admin/categorias", { method:"POST", body:{
+        action:"create",
+        cliente_slug, nome, ordem, ativo
+      }});
+      toast("Categoria criada!");
+    }
+
+    await loadAll();
+  } catch(err){
+    console.error(err);
+    toast(err.message, "err");
+  }
+}
+
+async function salvarProduto(){
+  try{
+    const cliente_slug = el("p_cliente_slug").value;
+    const categoria_id = Number(el("p_categoria").value || 0);
+    const nome = el("p_nome").value.trim();
+    const descricao = el("p_desc").value.trim();
+    const preco = Number(el("p_preco").value || 0);
+    const imagem = el("p_img").value.trim();  // sua coluna é "imagem"
+    const ordem = Number(el("p_ordem").value || 0);
+    const ativo = el("p_ativo").value === "true";
+
+    if (!cliente_slug || !categoria_id || !nome) throw new Error("Cliente, categoria e nome são obrigatórios.");
+
+    if (editing.produtos?.id){
+      await apiFetch("/api/admin/produtos", { method:"POST", body:{
+        action:"update",
+        id: editing.produtos.id,
+        cliente_slug, categoria_id, nome, descricao, preco, imagem, ordem, ativo
+      }});
+      toast("Produto atualizado!");
+    } else {
+      await apiFetch("/api/admin/produtos", { method:"POST", body:{
+        action:"create",
+        cliente_slug, categoria_id, nome, descricao, preco, imagem, ordem, ativo
+      }});
+      toast("Produto criado!");
+    }
+
+    await loadAll();
+  } catch(err){
+    console.error(err);
+    toast(err.message, "err");
+  }
+}
+
+/* ======================
+   LIST + MENU ⋯
+====================== */
 function kebabMenuHtml(kind, item){
-  // kind: clientes/categorias/produtos
   const id = item.id;
-
-  // Itens extra para cliente
-  const clienteExtras = (kind==="clientes") ? `
-    <button class="mitem" data-act="ver" data-kind="${kind}" data-id="${id}"><span class="ico">👁️</span>Ver publicado</button>
-    <button class="mitem" data-act="link" data-kind="${kind}" data-id="${id}"><span class="ico">🔗</span>Copiar link</button>
-  ` : ``;
-
+  const view = kind==="clientes"
+    ? `<button class="mitem" data-act="view" data-kind="${kind}" data-id="${id}"><span class="ico">👁️</span>Visualizar público</button>`
+    : "";
   return `
     <div class="kebab" data-kebab="${kind}" data-id="${id}">
       <span>⋯</span>
       <div class="menu" id="menu-${kind}-${id}">
-        ${clienteExtras}
         <button class="mitem" data-act="edit" data-kind="${kind}" data-id="${id}"><span class="ico">✏️</span>Editar</button>
         <button class="mitem" data-act="dup" data-kind="${kind}" data-id="${id}"><span class="ico">📄</span>Duplicar</button>
         <button class="mitem" data-act="toggle" data-kind="${kind}" data-id="${id}"><span class="ico">⏻</span>${item.ativo ? "Desativar" : "Ativar"}</button>
+        ${view}
         <button class="mitem danger" data-act="del" data-kind="${kind}" data-id="${id}"><span class="ico">🗑️</span>Excluir</button>
       </div>
     </div>
@@ -996,10 +939,9 @@ function bindMenus(){
       const kind = k.dataset.kebab;
       const id = k.dataset.id;
       const menu = document.getElementById(`menu-${kind}-${id}`);
-      if (!menu) return;
-      const isOpen = menu.classList.contains("open");
+      const open = menu.classList.contains("open");
       closeAllMenus();
-      if (!isOpen) menu.classList.add("open");
+      if (!open) menu.classList.add("open");
     });
   });
 
@@ -1007,26 +949,13 @@ function bindMenus(){
     btn.addEventListener("click", async (e)=>{
       e.stopPropagation();
       closeAllMenus();
-      const act = btn.dataset.act;
-      const kind = btn.dataset.kind;
-      const id = btn.dataset.id;
-
-      await handleAction(kind, act, id);
+      await handleAction(btn.dataset.kind, btn.dataset.act, btn.dataset.id);
     });
   });
 }
 
-function escapeHtml(str){
-  return String(str ?? "").replace(/[&<>"']/g, (m)=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[m]));
-}
-
-/* =======================
-   ACTIONS
-======================= */
 function findById(kind, id){
-  const arr = cache[kind] || [];
+  const arr = kind==="clientes" ? clientes : (kind==="categorias" ? categorias : produtos);
   return arr.find(x => String(x.id) === String(id));
 }
 
@@ -1034,232 +963,178 @@ async function handleAction(kind, act, id){
   const item = findById(kind, id);
   if (!item) return;
 
-  if (act === "ver" && kind==="clientes"){
-    const url = `${window.location.origin.replace(/\/admin\/?$/,"/")}?u=${encodeURIComponent(item.slug)}`;
+  if (act==="view"){
+    const url = `${window.location.origin}${window.location.pathname.replace(/\/admin\/.*$/, "/")}?u=${item.slug}`;
     window.open(url, "_blank");
     return;
   }
 
-  if (act === "link" && kind==="clientes"){
-    const url = `${window.location.origin.replace(/\/admin\/?$/,"/")}?u=${encodeURIComponent(item.slug)}`;
-    await navigator.clipboard.writeText(url);
-    toast("Link copiado!");
-    return;
-  }
-
-  if (act === "edit"){
-    editing[kind] = item;
-    toast("Editando: " + (item.nome || item.slug || item.id));
-    setTab(kind); // garante que o form certo aparece
-
+  if (act==="edit"){
     if (kind==="clientes"){
-      el("c_nome").value = item.nome || "";
-      el("c_slug").value = item.slug || "";
-      el("c_whats").value = item.whatsapp || "";
-      el("c_ativo").value = String(!!item.ativo);
-      el("formTitle").textContent = "Editar Cliente";
-    }
-    if (kind==="categorias"){
-      el("cat_cliente").value = item.cliente_slug || "";
+      editing.clientes = item;
+      setTab("clientes");
+      el("cli_nome").value = item.nome || "";
+      el("cli_slug").value = item.slug || "";
+      el("cli_whatsapp").value = item.whatsapp || "";
+      el("cli_logo_url").value = item.logo_url || "";
+      el("cli_ativo").value = String(!!item.ativo);
+      el("cli_email").value = "";
+      el("cli_senha").value = "";
+      toast("Editando cliente…");
+    } else if (kind==="categorias"){
+      editing.categorias = item;
+      setTab("categorias");
+      el("cat_cliente_slug").value = item.cliente_slug || "";
       el("cat_nome").value = item.nome || "";
       el("cat_ordem").value = item.ordem ?? 0;
       el("cat_ativo").value = String(!!item.ativo);
-      el("formTitle").textContent = "Editar Categoria";
-    }
-    if (kind==="produtos"){
-      el("p_cliente").value = item.cliente_slug || "";
-      updateCategoriasForProduto();
+      toast("Editando categoria…");
+    } else {
+      editing.produtos = item;
+      setTab("produtos");
+      el("p_cliente_slug").value = item.cliente_slug || "";
+      rebuildCategoriasSelect();
       el("p_categoria").value = item.categoria_id || "";
       el("p_nome").value = item.nome || "";
       el("p_desc").value = item.descricao || "";
       el("p_preco").value = item.preco ?? 0;
-      el("p_img").value = item.imagem_url || "";
+      el("p_img").value = item.imagem || "";
+      el("p_ordem").value = item.ordem ?? 0;
       el("p_ativo").value = String(!!item.ativo);
-      el("formTitle").textContent = "Editar Produto";
+      toast("Editando produto…");
     }
     return;
   }
 
-  if (act === "dup"){
+  if (act==="dup"){
     if (!confirm("Duplicar este item?")) return;
 
     if (kind==="clientes"){
-      // duplica mudando slug
-      const newSlug = (item.slug || "novo") + "-copia";
-      await api("/api/admin/clientes", {
-        method:"POST",
-        body: JSON.stringify({
-          nome: (item.nome || "Cliente") + " (Cópia)",
-          slug: newSlug,
-          whatsapp: item.whatsapp || "",
-          ativo: item.ativo ?? true
-        })
-      });
+      await apiFetch("/api/admin/clientes", { method:"POST", body:{
+        action:"create",
+        nome: (item.nome||"Cliente")+" (Cópia)",
+        slug: (item.slug||"cliente")+"-copia-"+Math.floor(Math.random()*999),
+        whatsapp: item.whatsapp || null,
+        logo_url: item.logo_url || null,
+        ativo: item.ativo ?? true
+      }});
       toast("Cliente duplicado!");
-      await loadAll();
-      return;
-    }
-
-    if (kind==="categorias"){
-      await api("/api/admin/categorias", {
-        method:"POST",
-        body: JSON.stringify({
-          cliente_slug: item.cliente_slug,
-          nome: (item.nome || "Categoria") + " (Cópia)",
-          ordem: (item.ordem ?? 0) + 1,
-          ativo: item.ativo ?? true
-        })
-      });
+    } else if (kind==="categorias"){
+      await apiFetch("/api/admin/categorias", { method:"POST", body:{
+        action:"create",
+        cliente_slug: item.cliente_slug,
+        nome: (item.nome||"Categoria")+" (Cópia)",
+        ordem: Number(item.ordem||0)+1,
+        ativo: item.ativo ?? true
+      }});
       toast("Categoria duplicada!");
-      await loadAll();
-      return;
-    }
-
-    if (kind==="produtos"){
-      await api("/api/admin/produtos", {
-        method:"POST",
-        body: JSON.stringify({
-          cliente_slug: item.cliente_slug,
-          categoria_id: item.categoria_id,
-          nome: (item.nome || "Produto") + " (Cópia)",
-          descricao: item.descricao || "",
-          preco: item.preco ?? 0,
-          imagem_url: item.imagem_url || "",
-          ativo: item.ativo ?? true
-        })
-      });
+    } else {
+      await apiFetch("/api/admin/produtos", { method:"POST", body:{
+        action:"create",
+        cliente_slug: item.cliente_slug,
+        categoria_id: item.categoria_id,
+        nome: (item.nome||"Produto")+" (Cópia)",
+        descricao: item.descricao || "",
+        preco: Number(item.preco||0),
+        imagem: item.imagem || "",
+        ordem: Number(item.ordem||0)+1,
+        ativo: item.ativo ?? true
+      }});
       toast("Produto duplicado!");
-      await loadAll();
-      return;
     }
+    await loadAll();
+    return;
   }
 
-  if (act === "toggle"){
+  if (act==="toggle"){
     const next = !item.ativo;
-    const endpoint = kind==="clientes" ? "/api/admin/clientes"
-      : kind==="categorias" ? "/api/admin/categorias"
-      : "/api/admin/produtos";
-
-    await api(endpoint, {
-      method:"PATCH",
-      body: JSON.stringify({ id: item.id, ativo: next })
-    });
-
+    const endpoint = kind==="clientes" ? "/api/admin/clientes" : (kind==="categorias" ? "/api/admin/categorias" : "/api/admin/produtos");
+    await apiFetch(endpoint, { method:"POST", body:{ action:"toggle", id: item.id, ativo: next }});
     toast(next ? "Ativado!" : "Desativado!");
     await loadAll();
     return;
   }
 
-  if (act === "del"){
-    if (!confirm("Tem certeza que deseja excluir?")) return;
-    const endpoint = kind==="clientes" ? "/api/admin/clientes"
-      : kind==="categorias" ? "/api/admin/categorias"
-      : "/api/admin/produtos";
-
-    await api(`${endpoint}?id=${encodeURIComponent(item.id)}`, { method:"DELETE" });
+  if (act==="del"){
+    if (!confirm("Excluir? Não dá pra desfazer.")) return;
+    const endpoint = kind==="clientes" ? "/api/admin/clientes" : (kind==="categorias" ? "/api/admin/categorias" : "/api/admin/produtos");
+    await apiFetch(endpoint, { method:"POST", body:{ action:"delete", id: item.id }});
     toast("Excluído.");
     await loadAll();
     return;
   }
 }
 
-/* =======================
-   SAVE (FORMS)
-======================= */
-async function salvarCliente(){
-  try{
-    const payload = {
-      nome: el("c_nome").value.trim(),
-      slug: el("c_slug").value.trim(),
-      whatsapp: el("c_whats").value.trim(),
-      ativo: el("c_ativo").value === "true",
-    };
+function render(){
+  const tbody = el("tbody");
+  const q = (el("search").value || "").trim().toLowerCase();
 
-    if (!payload.nome || !payload.slug) return toast("Nome e slug são obrigatórios.", "err");
+  let list = [];
+  if (tab==="clientes") list = clientes.slice();
+  if (tab==="categorias") list = categorias.slice();
+  if (tab==="produtos") list = produtos.slice();
 
-    if (editing.clientes){
-      await api("/api/admin/clientes", { method:"PATCH", body: JSON.stringify({ id: editing.clientes.id, ...payload }) });
-      toast("Cliente atualizado!");
-    } else {
-      await api("/api/admin/clientes", { method:"POST", body: JSON.stringify(payload) });
-      toast("Cliente criado!");
-    }
+  if (q) list = list.filter(x => JSON.stringify(x).toLowerCase().includes(q));
 
-    editing.clientes = null;
-    el("c_nome").value = ""; el("c_slug").value = ""; el("c_whats").value = "";
-    el("c_ativo").value = "true";
-    await loadAll();
-  } catch(e){
-    diag("Salvar cliente: "+e.message, false);
-    toast(e.message, "err");
+  if (!list.length){
+    tbody.innerHTML = `<div class="trow"><div class="muted">Sem itens.</div></div>`;
+    return;
   }
+
+  if (tab==="clientes"){
+    tbody.innerHTML = list
+      .sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||"")))
+      .map(item=>{
+        const chip = `<span class="chip ${item.ativo ? "ok":"off"}"><span class="dot"></span>${item.ativo ? "Ativo":"Inativo"}</span>`;
+        return `
+          <div class="trow">
+            <div class="cellSmall"><b>${escapeHtml(item.nome)}</b><div class="muted mono">#${item.id}</div></div>
+            <div class="cellSmall mono">${escapeHtml(item.slug || "")}</div>
+            <div>${chip}</div>
+            ${kebabMenuHtml("clientes", item)}
+          </div>
+        `;
+      }).join("");
+  }
+
+  if (tab==="categorias"){
+    tbody.innerHTML = list
+      .sort((a,b)=>String(a.cliente_slug||"").localeCompare(String(b.cliente_slug||"")) || (Number(a.ordem||0)-Number(b.ordem||0)))
+      .map(item=>{
+        const chip = `<span class="chip ${item.ativo ? "ok":"off"}"><span class="dot"></span>${item.ativo ? "Ativa":"Inativa"}</span>`;
+        return `
+          <div class="trow">
+            <div class="cellSmall"><b>${escapeHtml(item.nome)}</b><div class="muted mono">#${item.id}</div></div>
+            <div class="cellSmall mono">${escapeHtml(item.cliente_slug)} • ordem:${escapeHtml(String(item.ordem ?? 0))}</div>
+            <div>${chip}</div>
+            ${kebabMenuHtml("categorias", item)}
+          </div>
+        `;
+      }).join("");
+  }
+
+  if (tab==="produtos"){
+    tbody.innerHTML = list
+      .sort((a,b)=>String(a.cliente_slug||"").localeCompare(String(b.cliente_slug||"")) || (Number(a.ordem||0)-Number(b.ordem||0)))
+      .map(item=>{
+        const chip = `<span class="chip ${item.ativo ? "ok":"off"}"><span class="dot"></span>${item.ativo ? "Ativo":"Inativo"}</span>`;
+        return `
+          <div class="trow">
+            <div class="cellSmall"><b>${escapeHtml(item.nome)}</b><div class="muted mono">cat:${escapeHtml(String(item.categoria_id||"—"))} • #${item.id}</div></div>
+            <div class="cellSmall mono">${escapeHtml(item.cliente_slug)} • R$ ${escapeHtml(String(item.preco ?? 0))}</div>
+            <div>${chip}</div>
+            ${kebabMenuHtml("produtos", item)}
+          </div>
+        `;
+      }).join("");
+  }
+
+  bindMenus();
 }
 
-async function salvarCategoria(){
-  try{
-    const payload = {
-      cliente_slug: el("cat_cliente").value,
-      nome: el("cat_nome").value.trim(),
-      ordem: Number(el("cat_ordem").value || 0),
-      ativo: el("cat_ativo").value === "true",
-    };
-
-    if (!payload.cliente_slug || !payload.nome) return toast("Cliente e nome são obrigatórios.", "err");
-
-    if (editing.categorias){
-      await api("/api/admin/categorias", { method:"PATCH", body: JSON.stringify({ id: editing.categorias.id, ...payload }) });
-      toast("Categoria atualizada!");
-    } else {
-      await api("/api/admin/categorias", { method:"POST", body: JSON.stringify(payload) });
-      toast("Categoria criada!");
-    }
-
-    editing.categorias = null;
-    el("cat_nome").value = ""; el("cat_ordem").value = "";
-    el("cat_ativo").value = "true";
-    await loadAll();
-  } catch(e){
-    diag("Salvar categoria: "+e.message, false);
-    toast(e.message, "err");
-  }
-}
-
-async function salvarProduto(){
-  try{
-    const payload = {
-      cliente_slug: el("p_cliente").value,
-      categoria_id: el("p_categoria").value ? Number(el("p_categoria").value) : null,
-      nome: el("p_nome").value.trim(),
-      descricao: el("p_desc").value.trim(),
-      preco: Number(el("p_preco").value || 0),
-      imagem_url: el("p_img").value.trim(),
-      ativo: el("p_ativo").value === "true",
-    };
-
-    if (!payload.cliente_slug || !payload.categoria_id || !payload.nome)
-      return toast("Cliente, categoria e nome são obrigatórios.", "err");
-
-    if (editing.produtos){
-      await api("/api/admin/produtos", { method:"PATCH", body: JSON.stringify({ id: editing.produtos.id, ...payload }) });
-      toast("Produto atualizado!");
-    } else {
-      await api("/api/admin/produtos", { method:"POST", body: JSON.stringify(payload) });
-      toast("Produto criado!");
-    }
-
-    editing.produtos = null;
-    el("p_nome").value = ""; el("p_desc").value=""; el("p_preco").value="";
-    el("p_img").value=""; el("p_ativo").value="true";
-    await loadAll();
-  } catch(e){
-    diag("Salvar produto: "+e.message, false);
-    toast(e.message, "err");
-  }
-}
-
-/* =======================
+/* ======================
    EVENTS
-======================= */
+====================== */
 document.querySelectorAll(".tab").forEach(b=>{
   b.addEventListener("click", ()=> setTab(b.dataset.tab));
 });
@@ -1268,28 +1143,42 @@ el("btnLogin").addEventListener("click", loginWithPassword);
 el("btnGoogle").addEventListener("click", loginWithGoogle);
 el("btnLogout").addEventListener("click", logout);
 
+el("btnSaveBearer").addEventListener("click", ()=>{
+  localStorage.setItem("ADMIN_BEARER_TOKEN", el("bearerInput").value);
+  el("bearerInput").value = "";
+  setBearerStatus();
+  toast("Token salvo!");
+});
+
+el("btnClearBearer").addEventListener("click", ()=>{
+  localStorage.removeItem("ADMIN_BEARER_TOKEN");
+  setBearerStatus();
+  toast("Token removido!");
+});
+
 el("btnSalvarCliente").addEventListener("click", salvarCliente);
 el("btnSalvarCategoria").addEventListener("click", salvarCategoria);
 el("btnSalvarProduto").addEventListener("click", salvarProduto);
 
+el("btnLimparForm").addEventListener("click", limparForms);
 el("btnReload").addEventListener("click", loadAll);
-el("search").addEventListener("input", ()=> renderList());
 
-el("p_cliente").addEventListener("change", ()=>{
-  updateCategoriasForProduto();
-});
+el("p_cliente_slug").addEventListener("change", rebuildCategoriasSelect);
 
-/* =======================
+el("search").addEventListener("input", render);
+
+/* ======================
    INIT
-======================= */
-(function init(){
-  // tenta pegar API base via querystring ?api=https://...
-  const qs = new URLSearchParams(location.search);
-  const apiQ = qs.get("api");
-  if (apiQ) API_BASE = apiQ;
+====================== */
+sb.auth.onAuthStateChange(()=> refreshAuth());
 
-  diag("UI iniciada. API_BASE=" + API_BASE);
-  refreshSessionUI();
+(async function init(){
+  await refreshAuth();
+  setTab("clientes");
+  // tenta carregar se já tiver bearer salvo
+  if (getBearer()){
+    await loadAll();
+  }
 })();
 </script>
 </body>
