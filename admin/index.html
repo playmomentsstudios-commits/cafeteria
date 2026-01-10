@@ -11,17 +11,21 @@
     :root{
       --bg1:#071225; --bg2:#071b2d;
       --card: rgba(255,255,255,.06);
-      --card2: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.10);
+      --card3: rgba(255,255,255,.12);
       --line: rgba(255,255,255,.10);
       --txt: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.65);
       --blue:#3aa0ff;
       --blue2:#2a7bff;
+      --blue3:#1e63ff;
       --ok:#2ee59d;
       --warn:#ffbf4a;
       --danger:#ff5b6e;
       --radius:18px;
       --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --shadow-soft: 0 12px 30px rgba(0,0,0,.35);
+      --focus: 0 0 0 3px rgba(58,160,255,.25);
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
     *{box-sizing:border-box}
@@ -35,12 +39,12 @@
       min-height:100vh;
     }
     a{color:inherit}
-    .wrap{max-width:1200px; margin:0 auto; padding:28px 18px 60px;}
+    .wrap{max-width:1220px; margin:0 auto; padding:28px 18px 60px;}
     .topbar{
       display:flex; align-items:center; justify-content:space-between;
-      padding:14px 16px; border-radius:22px; background:var(--card);
-      border:1px solid var(--line); box-shadow:var(--shadow);
-      backdrop-filter: blur(10px);
+      padding:16px 18px; border-radius:22px; background:var(--card);
+      border:1px solid rgba(255,255,255,.14); box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
       gap:12px;
     }
     @media (max-width:900px){
@@ -51,8 +55,8 @@
     .logo{
       width:46px; height:46px; border-radius:14px;
       display:grid; place-items:center;
-      background: linear-gradient(135deg, rgba(58,160,255,.35), rgba(42,123,255,.15));
-      border:1px dashed rgba(255,255,255,.25);
+      background: linear-gradient(135deg, rgba(58,160,255,.6), rgba(42,123,255,.12));
+      border:1px dashed rgba(255,255,255,.35);
       font-weight:800; letter-spacing:.5px;
     }
     .brand h1{font-size:16px; margin:0}
@@ -60,26 +64,27 @@
     .status{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
     .pill{
       padding:8px 10px; border-radius:999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
       font-size:12px; color:var(--muted);
       display:flex; gap:8px; align-items:center;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
     }
     .pill b{color:var(--txt); font-weight:700}
     .btn{
       border:0; cursor:pointer; color:var(--txt);
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
-      padding:10px 12px; border-radius:12px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.16);
+      padding:10px 14px; border-radius:12px;
       display:inline-flex; align-items:center; gap:8px;
-      transition:.15s transform, .15s background, .15s border;
+      transition:.15s transform, .2s background, .2s border, .2s box-shadow;
       user-select:none;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.10)}
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.14); box-shadow: var(--shadow-soft)}
     .btn.primary{
-      background: linear-gradient(135deg, var(--blue), var(--blue2));
-      border:1px solid rgba(255,255,255,.18);
-      color:#061226; font-weight:800;
+      background: linear-gradient(135deg, var(--blue), var(--blue2), var(--blue3));
+      border:1px solid rgba(255,255,255,.22);
+      color:#061226; font-weight:800; box-shadow: 0 12px 30px rgba(42,123,255,.3);
     }
     .btn.danger{
       background: rgba(255,91,110,.14);
@@ -90,7 +95,7 @@
       margin-top:16px;
       display:grid;
       grid-template-columns: 1.2fr .8fr;
-      gap:16px;
+      gap:18px;
       align-items:start;
     }
     @media (max-width:980px){ .grid{grid-template-columns:1fr} }
@@ -106,10 +111,11 @@
       padding:14px 16px;
       display:flex; align-items:center; justify-content:space-between;
       border-bottom:1px solid rgba(255,255,255,.08);
+      background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
     }
     .card .hd h2{margin:0; font-size:14px}
-    .card .bd{padding:16px}
-    .card .bd.compact{padding:22px}
+    .card .bd{padding:18px}
+    .card .bd.compact{padding:24px}
     .login-grid{
       display:grid;
       grid-template-columns: 180px 1fr;
@@ -121,19 +127,22 @@
       .login-grid .logo{margin:0 auto}
     }
     .tabs{
-      display:flex; gap:8px; padding:10px; background: rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.10);
+      display:flex; gap:6px; padding:6px; background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
       border-radius: 999px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
     }
     .tab{
-      padding:10px 12px; border-radius:999px; border:1px solid transparent;
+      padding:9px 14px; border-radius:999px; border:1px solid transparent;
       background: transparent; color:var(--muted); cursor:pointer;
       font-weight:700; font-size:13px;
+      transition:.2s ease;
     }
     .tab.active{
-      background: rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.2);
       color:var(--txt);
+      box-shadow: 0 10px 20px rgba(0,0,0,.25);
     }
     .form{
       display:grid; gap:10px;
@@ -146,10 +155,16 @@
     label{font-size:12px; color:var(--muted)}
     input,select,textarea{
       width:100%; padding:12px 12px; border-radius:12px;
-      background: rgba(0,0,0,.22);
+      background: rgba(3,10,22,.6);
       border:1px solid rgba(255,255,255,.14);
       color: var(--txt);
       outline:none;
+      transition:.2s ease;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(58,160,255,.6);
+      box-shadow: var(--focus);
+      background: rgba(3,10,22,.75);
     }
     textarea{min-height:86px; resize:vertical}
     input::placeholder, textarea::placeholder{color: rgba(255,255,255,.35)}
@@ -157,7 +172,7 @@
     .divider{height:1px; background: rgba(255,255,255,.08); margin:14px 0}
     .msg{
       padding:12px 12px; border-radius:14px;
-      background: rgba(255,255,255,.06);
+      background: rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.12);
       color: var(--muted);
       font-size:13px;
@@ -178,9 +193,15 @@
       grid-template-columns: 1.1fr .8fr .8fr .45fr .45fr 40px;
       gap:10px;
       padding:12px; border-radius:16px;
-      background: rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
       align-items:center;
+      transition:.2s ease;
+    }
+    .item:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.09);
+      box-shadow: var(--shadow-soft);
     }
     .item .col{min-width:0}
     .item h4{word-break:break-word}
@@ -193,8 +214,8 @@
       display:inline-flex; align-items:center; justify-content:center;
       padding:7px 10px; border-radius:999px;
       font-size:12px; font-weight:800;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
       width:max-content;
     }
     .badge.ok{background: rgba(46,229,157,.12); border-color: rgba(46,229,157,.26); color:#d8fff0}
@@ -211,8 +232,8 @@
     .menu{
       position:absolute; right:0; top:44px; z-index:20;
       min-width:210px;
-      background: rgba(15,26,44,.92);
-      border:1px solid rgba(255,255,255,.12);
+      background: rgba(15,26,44,.94);
+      border:1px solid rgba(255,255,255,.14);
       border-radius:14px; box-shadow: var(--shadow);
       overflow:hidden;
       display:none;
@@ -228,6 +249,20 @@
     .menu button:hover{background: rgba(255,255,255,.06)}
     .menu .danger{color:#ffd7dc}
     .footer{margin-top:18px; color:var(--muted); font-size:12px; text-align:center}
+    .section-title{
+      margin:0 0 10px;
+      font-size:13px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.7);
+    }
+    .section-card{
+      padding:14px;
+      border-radius:16px;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .stack{display:grid; gap:12px}
     .hide{display:none !important}
   </style>
 </head>
@@ -320,7 +355,7 @@
 
             <div class="divider"></div>
 
-            <h3 style="margin:0 0 8px">Cadastrar / editar cliente</h3>
+            <h3 class="section-title">Cadastrar / editar cliente</h3>
 
             <form id="formCliente" class="form">
               <div class="row2">
@@ -380,7 +415,7 @@
 
             <div class="divider"></div>
 
-            <h3 style="margin:0 0 10px">Clientes</h3>
+            <h3 class="section-title">Clientes</h3>
             <div id="listClientes" class="list"></div>
           </div>
 
@@ -395,7 +430,7 @@
 
             <div class="divider"></div>
 
-            <h3 style="margin:0 0 8px">Cadastrar / editar categoria</h3>
+            <h3 class="section-title">Cadastrar / editar categoria</h3>
 
             <form id="formCategoria" class="form">
               <div class="row3">
@@ -432,7 +467,7 @@
 
             <div class="divider"></div>
 
-            <h3 style="margin:0 0 10px">Categorias</h3>
+            <h3 class="section-title">Categorias</h3>
             <div id="listCategorias" class="list"></div>
           </div>
 
@@ -447,7 +482,7 @@
 
             <div class="divider"></div>
 
-            <h3 style="margin:0 0 8px">Cadastrar / editar produto</h3>
+            <h3 class="section-title">Cadastrar / editar produto</h3>
 
             <form id="formProduto" class="form">
               <div class="row3">
@@ -498,7 +533,7 @@
 
             <div class="divider"></div>
 
-            <h3 style="margin:0 0 10px">Produtos</h3>
+            <h3 class="section-title">Produtos</h3>
             <div id="listProdutos" class="list"></div>
           </div>
 
@@ -508,15 +543,20 @@
       <!-- SIDE -->
       <div class="card">
         <div class="hd"><h2>Atalhos</h2></div>
-        <div class="bd">
-          <div class="msg">
-            • Link da Home: <b>/cafeteria/</b><br/>
-            • Link do Cliente: <b>/cafeteria/client/</b><br/>
-            • Link do Admin: <b>/cafeteria/admin/</b><br/>
+        <div class="bd stack">
+          <div class="section-card">
+            <div class="section-title" style="margin-bottom:8px">Links rápidos</div>
+            <div class="msg" style="margin:0">
+              • Link da Home: <b>/cafeteria/</b><br/>
+              • Link do Cliente: <b>/cafeteria/client/</b><br/>
+              • Link do Admin: <b>/cafeteria/admin/</b><br/>
+            </div>
           </div>
           <div class="divider"></div>
-          <button class="btn" id="btnOpenHome">🏠 Abrir Home</button>
-          <button class="btn" id="btnOpenClient">👤 Abrir Painel do Cliente</button>
+          <div class="section-card stack">
+            <button class="btn" id="btnOpenHome">🏠 Abrir Home</button>
+            <button class="btn" id="btnOpenClient">👤 Abrir Painel do Cliente</button>
+          </div>
           <div class="footer">Paleta azul • layout compacto • menus por “…”</div>
         </div>
       </div>
