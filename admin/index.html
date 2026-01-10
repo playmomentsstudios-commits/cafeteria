@@ -322,6 +322,11 @@ async function loginEmail(){
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if(error) throw error;
     dbg("✅ signInWithPassword OK.");
+    if (!data.session) {
+      dbg("⚠️ Nenhuma sessão retornada (confirmação de email pendente?).");
+      showAlert("Login recebido, mas sem sessão. Verifique se o email foi confirmado.");
+      return;
+    }
     onLogged(data.session);
   }catch(e){
     dbg("❌ signInWithPassword erro: " + (e?.message || "erro"));
@@ -351,7 +356,15 @@ async function loginGoogle(){
     if(error) throw error;
 
     // Importante: normalmente o browser redireciona imediatamente
-    dbg("✅ signInWithOAuth disparado (deve redirecionar).");
+    dbg("✅ signInWithOAuth disparado.");
+    if (data?.url) {
+      dbg("➡️ Redirecionando para: " + data.url);
+      window.location.href = data.url;
+    } else {
+      dbg("⚠️ Nenhuma URL retornada para OAuth.");
+      showAlert("Não foi possível obter a URL de login do Google.");
+      setLoading(btn, "Abrindo Google...", false);
+    }
   }catch(e){
     dbg("❌ signInWithOAuth erro: " + (e?.message || "erro"));
     showAlert(e?.message || "Erro ao abrir login Google");
@@ -369,7 +382,7 @@ async function logout(){
 /* ======================
    BIND EVENTS (sem onclick inline)
 ====================== */
-document.addEventListener("DOMContentLoaded", async () => {
+const init = async () => {
   dbg("✅ DOMContentLoaded");
 
   document.getElementById("btnLogin").addEventListener("click", loginEmail);
@@ -391,7 +404,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     onLogged(session);
     setLoading(document.getElementById("btnGoogle"), "Abrindo Google...", false);
   });
-});
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
