@@ -4,293 +4,166 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Painel do Cliente — Cardápio Digital</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg0:#07121f;
-      --bg1:#091a2b;
-      --card:rgba(255,255,255,.06);
-      --card2:rgba(255,255,255,.08);
-      --line:rgba(255,255,255,.10);
-      --text:#e7eefc;
-      --muted:rgba(231,238,252,.72);
-
-      --primary:#2b69ff;
-      --primary2:#1a4fd6;
-      --accent:#2ee6c5;
-      --accent2:#18b79b;
-
-      --danger:#ff5a67;
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --radius: 22px;
-      --radius2: 16px;
-      --glass: blur(14px);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --bg:#fffdf2;
+      --card:#ffffff;
+      --line:#f1e7bf;
+      --text:#111827;
+      --muted:#6b7280;
+      --brand:#ffcc00;
+      --brand2:#ffb100;
+      --shadow: 0 16px 40px rgba(17,24,39,.10);
+      --radius: 18px;
+      --radius2: 14px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New", monospace;
+      --red:#ef4444;
+      --green:#22c55e;
     }
-
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color:var(--text);
+      font-family: var(--font);
+      color: var(--text);
       background:
-        radial-gradient(1200px 800px at 15% 10%, rgba(43,105,255,.35), transparent 55%),
-        radial-gradient(900px 700px at 80% 15%, rgba(46,230,197,.18), transparent 55%),
-        radial-gradient(1100px 900px at 50% 95%, rgba(43,105,255,.20), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 28px 16px 70px;
+        radial-gradient(900px 500px at 10% 0%, rgba(255,204,0,.18), transparent 60%),
+        radial-gradient(800px 460px at 90% 10%, rgba(255,177,0,.16), transparent 60%),
+        linear-gradient(180deg, #fffdf2, #fff8dc);
+      min-height:100vh;
+      padding: 14px 12px 70px;
     }
-
-    .wrap{max-width: 1100px; margin:0 auto}
-    .topbar{
-      display:flex; gap:16px; align-items:center; justify-content:space-between;
-      padding: 18px 20px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
-    }
-    .brand{display:flex; gap:14px; align-items:center; min-width: 260px;}
-    .logo{
-      width:58px; height:58px; border-radius: 18px;
-      background: linear-gradient(135deg, rgba(43,105,255,.25), rgba(46,230,197,.15));
-      border: 1px dashed rgba(255,255,255,.25);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900; letter-spacing:.6px;
-      color: rgba(231,238,252,.88);
-      overflow:hidden;
-    }
-    .brand h1{margin:0; font-size: 18px; line-height: 1.1}
-    .brand p{margin:4px 0 0; color: var(--muted); font-size: 12.5px}
-
-    .pillrow{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;}
-    .pill{
-      display:flex; gap:8px; align-items:center;
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(231,238,252,.92);
-      font-size: 12.5px;
-      white-space:nowrap;
-    }
-    .pill b{font-weight:900}
-    .mono{font-family: var(--mono)}
+    .wrap{max-width: 1180px; margin:0 auto;}
+    .hidden{display:none!important}
 
     .btn{
       cursor:pointer;
-      border: none;
-      color: var(--text);
-      padding: 11px 14px;
+      border:0;
       border-radius: 14px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 10px 30px rgba(0,0,0,.20);
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      display:inline-flex; align-items:center; gap:9px;
-      font-weight:900;
+      padding: 11px 12px;
+      font-weight: 950;
+      background:#fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 25px rgba(17,24,39,.06);
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transition: transform .12s ease;
       white-space:nowrap;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18)}
-    .btn:active{transform: translateY(0)}
-    .btn.primary{background: linear-gradient(135deg, var(--primary), var(--primary2)); border-color: rgba(255,255,255,.18);}
-    .btn.accent{background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#06201a; border-color: rgba(0,0,0,.05);}
-    .btn.danger{background: linear-gradient(135deg, rgba(255,90,103,.95), rgba(255,90,103,.70)); border-color: rgba(255,255,255,.10);}
-    .btn.ghost{background: transparent; border: 1px solid rgba(255,255,255,.14); box-shadow:none;}
-    .btn.small{padding: 9px 12px; border-radius: 12px; font-size: 13px;}
+    .btn:active{transform: translateY(1px)}
+    .btn.brand{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border-color: rgba(0,0,0,.06);
+    }
+    .btn.danger{background: var(--red); color:#fff; border-color: rgba(0,0,0,.06);}
+    .btn.small{padding: 9px 10px; border-radius: 12px; font-size: 13px;}
 
-    .grid{display:grid; grid-template-columns: 1.05fr .95fr; gap: 16px; margin-top: 16px;}
-    .card{
+    .appbar{
+      position: sticky;
+      top: 10px;
+      z-index: 20;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 12px 14px;
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
-      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
-      padding: 18px;
-      overflow:hidden;
+      backdrop-filter: blur(10px);
+      margin-bottom: 12px;
     }
-    .card h2{margin:0 0 4px; font-size: 18px}
-    .sub{margin:0 0 14px; color: var(--muted); font-size: 13px}
+    .brand{
+      display:flex; align-items:center; gap:10px; min-width:0;
+    }
+    .brand img{
+      width: 44px; height: 44px; object-fit: contain;
+      border-radius: 12px; border:1px solid var(--line); background:#fff; padding: 6px;
+    }
+    .brandTxt{min-width:0}
+    .brandTxt .t{font-weight: 950; line-height:1.1}
+    .brandTxt .s{font-size: 12.5px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
-    .tabs{
-      display:flex; gap:10px; justify-content:center; margin-top: 12px;
-      padding: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-    }
-    .tab{
-      cursor:pointer;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: rgba(231,238,252,.85);
-      font-weight: 900;
-      display:flex; gap:8px; align-items:center;
-      min-width: 150px; justify-content:center;
-    }
-    .tab.active{
-      background: rgba(43,105,255,.18);
-      border-color: rgba(43,105,255,.35);
-      color: var(--text);
+    .card{
+      background: rgba(255,255,255,.85);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
     }
 
-    label{
-      display:block;
-      font-size: 12.5px;
-      color: rgba(231,238,252,.80);
-      margin: 2px 0 6px;
-      font-weight: 900;
-    }
-    input, select, textarea{
+    label{display:block; font-weight: 900; font-size: 12.5px; margin: 10px 0 6px; color:#374151;}
+    input{
       width:100%;
       padding: 12px 12px;
       border-radius: 14px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.14);
-      color: var(--text);
-      outline:none;
-      transition: border-color .12s ease, background .12s ease;
+      border: 1px solid var(--line);
+      outline: 0;
+      font-size: 14px;
+      background:#fff;
     }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(46,230,197,.45);
-      background: rgba(0,0,0,.26);
+    input:focus{
+      border-color: rgba(255,177,0,.9);
+      box-shadow: 0 0 0 4px rgba(255,177,0,.16);
     }
-    textarea{min-height: 84px; resize: vertical;}
+    .msg{margin-top: 10px; font-weight: 900; font-size: 13px;}
+    .msg.err{color:#b91c1c}
+    .msg.ok{color:#065f46}
 
-    .formRow{display:grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-top: 8px;}
-    .field{grid-column: span 12}
-    .half{grid-column: span 6}
-    .third{grid-column: span 4}
-
-    .divider{height:1px; background: rgba(255,255,255,.10); margin: 14px 0;}
-
-    /* Lista compacta */
-    .listHead{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      margin-top: 6px;
-    }
-    .searchWrap{display:flex; gap:10px; align-items:center; width: 100%;}
-    .searchWrap input{max-width: 520px}
-    .table{
-      margin-top: 12px;
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-    }
-    .trow, .thead{
-      display:grid;
-      grid-template-columns: 1.6fr 1fr .8fr 56px;
+    .tabs{
+      display:flex;
       gap: 10px;
-      padding: 12px 14px;
-      align-items:center;
-    }
-    .thead{
-      background: rgba(255,255,255,.06);
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      color: rgba(231,238,252,.72);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .2px;
-      text-transform: uppercase;
-    }
-    .trow{border-bottom: 1px solid rgba(255,255,255,.08);}
-    .trow:last-child{border-bottom:none}
-    .cellSmall{font-size: 13.5px}
-    .muted{color: var(--muted); font-size: 13px}
-    .chip{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      justify-self: start;
-    }
-    .chip.ok{background: rgba(46,230,197,.14); border-color: rgba(46,230,197,.30)}
-    .chip.off{background: rgba(255,90,103,.12); border-color: rgba(255,90,103,.22)}
-    .dot{width:8px; height:8px; border-radius:99px; background: rgba(255,255,255,.35)}
-    .chip.ok .dot{background: var(--accent)}
-    .chip.off .dot{background: var(--danger)}
-
-    /* Menu 3 pontinhos */
-    .kebab{
-      width: 44px; height: 40px;
-      border-radius: 12px;
-      display:flex; align-items:center; justify-content:center;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.12);
-      cursor:pointer;
-      transition: background .12s ease, transform .12s ease, border-color .12s ease;
-      position: relative;
-      user-select:none;
-      justify-self:end;
-    }
-    .kebab:hover{background: rgba(255,255,255,.08); transform: translateY(-1px); border-color: rgba(255,255,255,.18)}
-    .kebab:active{transform: translateY(0)}
-    .kebab span{letter-spacing: 2px; font-weight: 900}
-
-    .menu{
-      position:absolute;
-      right: 0;
-      top: 46px;
-      min-width: 180px;
+      flex-wrap:wrap;
       padding: 8px;
-      border-radius: 16px;
-      background: rgba(10, 22, 36, .92);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 18px 60px rgba(0,0,0,.55);
-      backdrop-filter: var(--glass);
-      display:none;
-      z-index: 50;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background:#fff;
+      margin-bottom: 12px;
     }
-    .menu.open{display:block}
-    .mitem{
-      width:100%;
-      display:flex; align-items:center; gap:10px;
-      padding: 10px 10px;
-      border-radius: 12px;
-      background: transparent;
-      border: 1px solid transparent;
-      color: rgba(231,238,252,.92);
+    .tab{
       cursor:pointer;
-      font-weight: 900;
-      text-align:left;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 950;
+      color: #374151;
     }
-    .mitem:hover{background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.10)}
-    .mitem.danger{color: rgba(255,90,103,.95)}
-    .ico{width:18px; display:inline-flex; justify-content:center}
-
-    .toast{
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: rgba(231,238,252,.90);
-      display:none;
+    .tab.active{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border-color: rgba(0,0,0,.06);
+      color: #111827;
     }
-    .toast.show{display:block}
-    .toast.ok{border-color: rgba(46,230,197,.28); background: rgba(46,230,197,.10)}
-    .toast.err{border-color: rgba(255,90,103,.22); background: rgba(255,90,103,.10)}
 
-    .hidden{display:none !important}
-
-    @media (max-width: 980px){
-      .grid{grid-template-columns: 1fr}
+    .list{display:flex; flex-direction:column; gap: 10px;}
+    .rowItem{
+      background:#fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius2);
+      box-shadow: 0 12px 28px rgba(17,24,39,.06);
+      padding: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      min-width:0;
     }
-    @media (max-width: 640px){
-      .topbar{flex-direction:column; align-items:stretch}
-      .thead{display:none}
-      .trow{grid-template-columns: 1fr; gap:8px}
-      .kebab{justify-self:end}
+    .rowMain{min-width:0}
+    .rowTitle{font-weight: 950; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .rowMeta{margin-top:4px; color: var(--muted); font-size: 12.5px; display:flex; gap: 10px; flex-wrap:wrap;}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background:#fff;
+      font-size: 12px;
+      font-weight: 950;
+      color:#374151;
     }
   </style>
 </head>
@@ -298,686 +171,244 @@
 <body>
 <div class="wrap">
 
-  <!-- TOP -->
-  <div class="topbar">
+  <div class="appbar">
     <div class="brand">
-      <div class="logo" id="logoBox">LO</div>
-      <div>
-        <h1>Painel do Cliente</h1>
-        <p id="subtitle">Login para gerenciar seu cardápio (somente sua loja).</p>
+      <img src="../logo.png" alt="Logo" />
+      <div class="brandTxt">
+        <div class="t">Painel do Cliente</div>
+        <div class="s" id="who">—</div>
       </div>
     </div>
-
-    <div class="pillrow">
-      <div class="pill">Conta: <b id="userEmail">—</b></div>
-      <div class="pill">Loja: <b id="lojaSlug">—</b></div>
-      <button class="btn danger small" id="btnLogout" disabled>🚪 Sair</button>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+      <a class="btn" href="../" target="_blank">🏠 Home</a>
+      <button class="btn danger hidden" id="btnLogout">Sair</button>
     </div>
   </div>
 
-  <!-- GRID -->
-  <div class="grid">
-    <!-- LEFT: Login + Tabs -->
-    <div class="card">
-      <h2>Controle do Cardápio</h2>
-      <p class="sub">Categorias e produtos apenas da sua loja (RLS ativo).</p>
+  <!-- LOGIN -->
+  <div id="loginCard" class="card">
+    <div style="font-weight:950; font-size:16px">Login</div>
+    <div style="color:var(--muted); font-size:12.5px; margin-top:4px">Use email/senha ou Google.</div>
 
-      <div class="tabs">
-        <button class="tab active" data-tab="categorias">🗂️ Categorias</button>
-        <button class="tab" data-tab="produtos">🧾 Produtos</button>
-      </div>
+    <label>Email</label>
+    <input id="email" placeholder="cliente@email.com" autocomplete="email"/>
 
-      <div class="toast" id="toast"></div>
+    <label>Senha</label>
+    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
 
-      <div class="divider"></div>
-
-      <!-- LOGIN -->
-      <div id="loginArea">
-        <h2>Login</h2>
-        <p class="sub">Use email/senha ou Google. O redirect volta para esta página.</p>
-
-        <div class="formRow">
-          <div class="field">
-            <label>Email</label>
-            <input id="email" placeholder="seu@email.com" autocomplete="email" />
-          </div>
-          <div class="field">
-            <label>Senha</label>
-            <input id="senha" type="password" placeholder="••••••••" autocomplete="current-password" />
-          </div>
-        </div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
-          <button class="btn primary" id="btnLogin">🔐 Entrar</button>
-          <button class="btn ghost" id="btnGoogle">🟦 Entrar com Google</button>
-        </div>
-
-        <div class="sub" style="margin-top:10px">
-          Se o Google não voltar, adicione este redirect no Supabase Auth:
-          <span class="mono" id="redirectHint"></span>
-        </div>
-      </div>
+    <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap">
+      <button class="btn brand" id="btnLogin">Entrar</button>
+      <button class="btn" id="btnGoogle">Entrar com Google</button>
     </div>
 
-    <!-- RIGHT: Form -->
-    <div class="card">
-      <h2 id="formTitle">Cadastrar Categoria</h2>
-      <p class="sub" id="formSub">Crie e organize as categorias do seu cardápio.</p>
-
-      <!-- FORM CATEGORIAS -->
-      <div id="formCategorias">
-        <div class="formRow">
-          <div class="field">
-            <label>Nome</label>
-            <input id="cat_nome" placeholder="ex: Bebidas, Lanches, Doces"/>
-          </div>
-          <div class="half">
-            <label>Ordem</label>
-            <input id="cat_ordem" type="number" placeholder="ex: 1"/>
-          </div>
-          <div class="half">
-            <label>Status</label>
-            <select id="cat_ativo">
-              <option value="true">Ativa</option>
-              <option value="false">Inativa</option>
-            </select>
-          </div>
-          <div class="field">
-            <button class="btn accent" id="btnSalvarCategoria">💾 Salvar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- FORM PRODUTOS -->
-      <div id="formProdutos" class="hidden">
-        <div class="formRow">
-          <div class="field">
-            <label>Categoria</label>
-            <select id="p_categoria"></select>
-          </div>
-          <div class="field">
-            <label>Nome do produto</label>
-            <input id="p_nome" placeholder="ex: Café Coado"/>
-          </div>
-          <div class="field">
-            <label>Descrição</label>
-            <textarea id="p_desc" placeholder="opcional"></textarea>
-          </div>
-          <div class="half">
-            <label>Preço</label>
-            <input id="p_preco" type="number" step="0.01" placeholder="ex: 9.90"/>
-          </div>
-          <div class="half">
-            <label>Status</label>
-            <select id="p_ativo">
-              <option value="true">Ativo</option>
-              <option value="false">Inativo</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Imagem (URL) — coluna: <span class="mono">imagem</span></label>
-            <input id="p_img" placeholder="https://..."/>
-          </div>
-          <div class="half">
-            <label>Ordem</label>
-            <input id="p_ordem" type="number" placeholder="ex: 1"/>
-          </div>
-          <div class="field">
-            <button class="btn accent" id="btnSalvarProduto">💾 Salvar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-      <div class="sub">
-        Link público do seu cardápio:
-        <span class="mono" id="publicLink">—</span>
-      </div>
-    </div>
+    <div id="loginMsg" class="msg"></div>
   </div>
 
-  <!-- LIST -->
-  <div class="card" style="margin-top:16px">
-    <div class="listHead">
-      <div>
-        <h2 id="listTitle" style="margin:0">Categorias</h2>
-        <p class="sub" id="listSub" style="margin:4px 0 0">Gerencie itens usando o menu ⋯.</p>
-      </div>
-
-      <div class="searchWrap">
-        <input id="search" placeholder="Buscar..." />
-        <button class="btn small" id="btnReload">🔄 Recarregar</button>
-      </div>
+  <!-- APP -->
+  <div id="appCard" class="hidden">
+    <div class="tabs">
+      <button class="tab active" data-tab="categorias">Categorias</button>
+      <button class="tab" data-tab="produtos">Produtos</button>
     </div>
 
-    <div class="table">
-      <div class="thead" id="thead">
-        <div>Nome</div><div>Ordem</div><div>Status</div><div style="text-align:right">⋯</div>
+    <div id="tab-categorias" class="card">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="min-width:240px; flex:1">
+          <label style="margin:0 0 6px">Buscar</label>
+          <input id="qCats" placeholder="nome..." />
+        </div>
+        <button class="btn brand" id="btnNovaCat">➕ Nova</button>
+        <button class="btn" id="btnReloadCats">🔄</button>
       </div>
-      <div id="tbody"></div>
+      <div class="list" id="listCats"></div>
+    </div>
+
+    <div id="tab-produtos" class="card hidden">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="min-width:240px; flex:1">
+          <label style="margin:0 0 6px">Buscar</label>
+          <input id="qProds" placeholder="nome ou descrição..." />
+        </div>
+        <button class="btn brand" id="btnNovoProd">➕ Novo</button>
+        <button class="btn" id="btnReloadProds">🔄</button>
+      </div>
+      <div class="list" id="listProds"></div>
     </div>
   </div>
 
 </div>
 
 <script>
-/* ======================
-   CONFIG SUPABASE
-====================== */
+/* ================================
+   SUPABASE
+================================= */
 const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+});
 
-/* ======================
-   STATE
-====================== */
-let session = null;
-let user = null;
-let clienteSlug = null;
-let cliente = null;
-
-let tab = "categorias";
-let categorias = [];
-let produtos = [];
-
-let editing = { categorias:null, produtos:null };
-
-/* ======================
-   UI helpers
-====================== */
 const el = (id)=>document.getElementById(id);
+const esc = (s)=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 
-const toast = (msg, type="ok") => {
-  const t = el("toast");
-  t.className = "toast show " + (type === "err" ? "err":"ok");
-  t.textContent = msg;
-  setTimeout(()=> t.className="toast", 3300);
+async function withRetry(fn, tries=3){
+  let last;
+  for (let i=0;i<tries;i++){
+    try { return await fn(); }
+    catch(e){ last=e; await new Promise(r=>setTimeout(r, 350*(i+1))); }
+  }
+  throw last;
+}
+
+function setMsg(node, text, ok=false){
+  node.className = "msg " + (ok ? "ok" : "err");
+  node.textContent = text || "";
+}
+
+/* ================================
+   UI
+================================= */
+function showLogin(){
+  el("loginCard").classList.remove("hidden");
+  el("appCard").classList.add("hidden");
+  el("btnLogout").classList.add("hidden");
+}
+function showApp(email){
+  el("loginCard").classList.add("hidden");
+  el("appCard").classList.remove("hidden");
+  el("btnLogout").classList.remove("hidden");
+  el("who").textContent = email ? ("Conta: " + email) : "Logado";
+}
+
+document.querySelectorAll(".tab").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    const t = b.dataset.tab;
+    el("tab-categorias").classList.toggle("hidden", t!=="categorias");
+    el("tab-produtos").classList.toggle("hidden", t!=="produtos");
+  };
+});
+
+/* ================================
+   LOGIN
+================================= */
+el("btnLogin").onclick = async ()=>{
+  try{
+    setMsg(el("loginMsg"), "Entrando...");
+    const email = (el("email").value||"").trim();
+    const pass  = el("pass").value;
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) throw error;
+  }catch(err){
+    console.error(err);
+    setMsg(el("loginMsg"), "Invalid login credentials (usuário não existe ou senha errada).", false);
+  }
 };
 
-const money = (v)=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-
-function escapeHtml(str){
-  return String(str ?? "").replace(/[&<>"']/g, (m)=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[m]));
-}
-
-function closeAllMenus(){
-  document.querySelectorAll(".menu.open").forEach(m => m.classList.remove("open"));
-}
-document.addEventListener("click",(e)=>{
-  if (!e.target.closest(".menu") && !e.target.closest(".kebab")) closeAllMenus();
-});
-
-/* ======================
-   AUTH
-====================== */
-async function refreshAuth(){
-  const { data } = await sb.auth.getSession();
-  session = data.session || null;
-  user = session?.user || null;
-
-  el("userEmail").textContent = user?.email || "—";
-  el("btnLogout").disabled = !session;
-  el("loginArea").classList.toggle("hidden", !!session);
-
-  el("redirectHint").textContent = window.location.origin + window.location.pathname;
-
-  if (session){
-    await resolveTenant();
-  } else {
-    clienteSlug = null;
-    cliente = null;
-    el("lojaSlug").textContent = "—";
-    el("subtitle").textContent = "Login para gerenciar seu cardápio (somente sua loja).";
-    el("logoBox").textContent = "LO";
-    el("publicLink").textContent = "—";
-    categorias = [];
-    produtos = [];
-    render();
+el("btnGoogle").onclick = async ()=>{
+  try{
+    setMsg(el("loginMsg"), "Abrindo Google...");
+    const { error } = await sb.auth.signInWithOAuth({
+      provider:"google",
+      options:{ redirectTo: window.location.href }
+    });
+    if (error) throw error;
+  }catch(err){
+    console.error(err);
+    setMsg(el("loginMsg"), "Erro no Google: " + (err.message||err), false);
   }
-}
+};
 
-async function loginWithPassword(){
-  const email = el("email").value.trim();
-  const password = el("senha").value;
-  if (!email || !password) return toast("Preencha email e senha.", "err");
-
-  const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) return toast(error.message, "err");
-  toast("Login ok!");
-  await refreshAuth();
-}
-
-async function loginWithGoogle(){
-  const redirectTo = window.location.origin + window.location.pathname;
-  const { error } = await sb.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo }
-  });
-  if (error) toast(error.message, "err");
-}
-
-async function logout(){
+el("btnLogout").onclick = async ()=>{
   await sb.auth.signOut();
-  toast("Saiu.");
-  await refreshAuth();
-}
+  showLogin();
+};
 
-/* ======================
-   TENANT: descobrir loja do usuário
-====================== */
-async function resolveTenant(){
-  // 1) buscar vínculo
-  const { data: link, error: e1 } = await sb
-    .from("cliente_usuarios")
-    .select("cliente_slug, role, ativo")
-    .eq("user_id", user.id)
-    .eq("ativo", true)
-    .limit(1)
-    .maybeSingle();
-
-  if (e1) {
-    toast("Erro lendo vínculo: " + e1.message, "err");
-    return;
-  }
-  if (!link?.cliente_slug){
-    toast("Seu usuário não está vinculado a nenhuma loja.", "err");
-    el("subtitle").textContent = "Conta sem vínculo. Fale com o administrador.";
-    return;
-  }
-
-  clienteSlug = link.cliente_slug;
-  el("lojaSlug").textContent = clienteSlug;
-
-  // 2) buscar dados da loja
-  const { data: cli, error: e2 } = await sb
-    .from("clientes")
-    .select("*")
-    .eq("slug", clienteSlug)
-    .maybeSingle();
-
-  if (e2) {
-    toast("Erro lendo loja: " + e2.message, "err");
-    return;
-  }
-  cliente = cli;
-
-  el("subtitle").textContent = `Você está gerenciando: ${cliente?.nome || clienteSlug}`;
-  // logo: usa logo_url se existir, senão iniciais
-  if (cliente?.logo_url){
-    el("logoBox").innerHTML = `<img src="${escapeHtml(cliente.logo_url)}" style="width:100%;height:100%;object-fit:cover" alt="logo"/>`;
-  } else {
-    el("logoBox").textContent = (cliente?.nome || "LO").trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()||"").join("") || "LO";
-  }
-
-  // link público (ajusta para sua raiz)
-  const root = window.location.origin + window.location.pathname.replace(/\/cliente\/?$/, "/");
-  el("publicLink").textContent = `${root}?u=${clienteSlug}`;
-
-  await loadData();
-}
-
-/* ======================
-   LOAD DATA (RLS protege)
-====================== */
-async function loadData(){
-  if (!clienteSlug) return;
-
-  // categorias da loja
-  const { data: cats, error: e1 } = await sb
-    .from("categorias")
-    .select("*")
-    .eq("cliente_slug", clienteSlug)
-    .order("ordem", { ascending:true });
-
-  if (e1) return toast("Erro categorias: " + e1.message, "err");
-  categorias = cats || [];
-
-  // produtos da loja
-  const { data: prods, error: e2 } = await sb
-    .from("produtos")
-    .select("*")
-    .eq("cliente_slug", clienteSlug)
-    .order("ordem", { ascending:true });
-
-  if (e2) return toast("Erro produtos: " + e2.message, "err");
-  produtos = prods || [];
-
-  fillSelectCategorias();
-  render();
-}
-
-/* ======================
-   TABS + FORM
-====================== */
-function setTab(next){
-  tab = next;
-  document.querySelectorAll(".tab").forEach(b=>{
-    b.classList.toggle("active", b.dataset.tab === tab);
-  });
-
-  el("formCategorias").classList.toggle("hidden", tab !== "categorias");
-  el("formProdutos").classList.toggle("hidden", tab !== "produtos");
-
-  if (tab==="categorias"){
-    el("formTitle").textContent = editing.categorias ? "Editar Categoria" : "Cadastrar Categoria";
-    el("formSub").textContent = "Crie e organize as categorias do seu cardápio.";
-    el("listTitle").textContent = "Categorias";
-    el("listSub").textContent = "Menu ⋯: editar, duplicar, ativar/desativar, excluir.";
-    el("thead").innerHTML = `<div>Nome</div><div>Ordem</div><div>Status</div><div style="text-align:right">⋯</div>`;
-    el("search").placeholder = "Buscar categorias...";
-  } else {
-    el("formTitle").textContent = editing.produtos ? "Editar Produto" : "Cadastrar Produto";
-    el("formSub").textContent = "Cadastre produtos e associe a uma categoria.";
-    el("listTitle").textContent = "Produtos";
-    el("listSub").textContent = "Menu ⋯: editar, duplicar, ativar/desativar, excluir.";
-    el("thead").innerHTML = `<div>Nome</div><div>Preço</div><div>Status</div><div style="text-align:right">⋯</div>`;
-    el("search").placeholder = "Buscar produtos...";
-  }
-
-  render();
-}
-
-function fillSelectCategorias(){
-  const sel = el("p_categoria");
-  sel.innerHTML =
-    `<option value="">Selecione...</option>` +
-    categorias.map(c => `<option value="${c.id}">${escapeHtml(c.nome)} (ordem ${c.ordem ?? 0})</option>`).join("");
-}
-
-/* ======================
-   CRUD
-====================== */
-async function salvarCategoria(){
-  if (!clienteSlug) return toast("Sem loja vinculada.", "err");
-  const payload = {
-    cliente_slug: clienteSlug,
-    nome: el("cat_nome").value.trim(),
-    ordem: Number(el("cat_ordem").value || 0),
-    ativo: el("cat_ativo").value === "true",
-  };
-  if (!payload.nome) return toast("Nome obrigatório.", "err");
-
-  if (editing.categorias){
-    const { error } = await sb
-      .from("categorias")
-      .update(payload)
-      .eq("id", editing.categorias.id)
-      .eq("cliente_slug", clienteSlug);
-    if (error) return toast(error.message, "err");
-    toast("Categoria atualizada!");
-  } else {
-    const { error } = await sb.from("categorias").insert(payload);
-    if (error) return toast(error.message, "err");
-    toast("Categoria criada!");
-  }
-
-  editing.categorias = null;
-  el("cat_nome").value = "";
-  el("cat_ordem").value = "";
-  el("cat_ativo").value = "true";
-  await loadData();
-}
-
-async function salvarProduto(){
-  if (!clienteSlug) return toast("Sem loja vinculada.", "err");
-
-  const payload = {
-    cliente_slug: clienteSlug,
-    categoria_id: el("p_categoria").value ? Number(el("p_categoria").value) : null,
-    nome: el("p_nome").value.trim(),
-    descricao: el("p_desc").value.trim(),
-    preco: Number(el("p_preco").value || 0),
-    imagem: el("p_img").value.trim(),   // <- SUA COLUNA É "imagem"
-    ordem: Number(el("p_ordem").value || 0),
-    ativo: el("p_ativo").value === "true",
-  };
-
-  if (!payload.categoria_id || !payload.nome) return toast("Categoria e nome são obrigatórios.", "err");
-
-  if (editing.produtos){
-    const { error } = await sb
-      .from("produtos")
-      .update(payload)
-      .eq("id", editing.produtos.id)
-      .eq("cliente_slug", clienteSlug);
-    if (error) return toast(error.message, "err");
-    toast("Produto atualizado!");
-  } else {
-    const { error } = await sb.from("produtos").insert(payload);
-    if (error) return toast(error.message, "err");
-    toast("Produto criado!");
-  }
-
-  editing.produtos = null;
-  el("p_categoria").value = "";
-  el("p_nome").value = "";
-  el("p_desc").value = "";
-  el("p_preco").value = "";
-  el("p_img").value = "";
-  el("p_ordem").value = "";
-  el("p_ativo").value = "true";
-  await loadData();
-}
-
-/* ======================
-   LIST RENDER + MENU ⋯
-====================== */
-function kebabMenuHtml(kind, item){
-  const id = item.id;
-  return `
-    <div class="kebab" data-kebab="${kind}" data-id="${id}">
-      <span>⋯</span>
-      <div class="menu" id="menu-${kind}-${id}">
-        <button class="mitem" data-act="edit" data-kind="${kind}" data-id="${id}"><span class="ico">✏️</span>Editar</button>
-        <button class="mitem" data-act="dup" data-kind="${kind}" data-id="${id}"><span class="ico">📄</span>Duplicar</button>
-        <button class="mitem" data-act="toggle" data-kind="${kind}" data-id="${id}"><span class="ico">⏻</span>${item.ativo ? "Desativar" : "Ativar"}</button>
-        <button class="mitem danger" data-act="del" data-kind="${kind}" data-id="${id}"><span class="ico">🗑️</span>Excluir</button>
+/* ================================
+   DATA (RLS)
+================================= */
+let cats=[], prods=[];
+async function loadCats(){
+  const q=(el("qCats").value||"").toLowerCase().trim();
+  try{
+    const { data, error } = await withRetry(()=>sb.from("categorias").select("*").order("ordem",{ascending:true}));
+    if (error) throw error;
+    cats = (data||[]);
+    const list = q ? cats.filter(c=>(c.nome||"").toLowerCase().includes(q)) : cats;
+    el("listCats").innerHTML = list.length ? list.map(c=>`
+      <div class="rowItem">
+        <div class="rowMain">
+          <div class="rowTitle">${esc(c.nome||"—")}</div>
+          <div class="rowMeta">
+            <span class="badge">ordem: <span style="font-family:var(--mono)">${esc(c.ordem??0)}</span></span>
+            <span class="badge">${c.ativo ? "Ativo" : "Inativo"}</span>
+          </div>
+        </div>
+        <span class="badge">id: <span style="font-family:var(--mono)">${esc(c.id)}</span></span>
       </div>
-    </div>
-  `;
-}
-
-function bindMenus(){
-  document.querySelectorAll(".kebab").forEach(k => {
-    k.addEventListener("click", (e)=>{
-      e.stopPropagation();
-      const kind = k.dataset.kebab;
-      const id = k.dataset.id;
-      const menu = document.getElementById(`menu-${kind}-${id}`);
-      const open = menu.classList.contains("open");
-      closeAllMenus();
-      if (!open) menu.classList.add("open");
-    });
-  });
-
-  document.querySelectorAll(".mitem").forEach(btn=>{
-    btn.addEventListener("click", async (e)=>{
-      e.stopPropagation();
-      closeAllMenus();
-      await handleAction(btn.dataset.kind, btn.dataset.act, btn.dataset.id);
-    });
-  });
-}
-
-function render(){
-  const tbody = el("tbody");
-  const q = (el("search").value || "").trim().toLowerCase();
-
-  if (!clienteSlug){
-    tbody.innerHTML = `<div class="trow"><div class="muted">Faça login e esteja vinculado a uma loja.</div></div>`;
-    return;
+    `).join("") : `<div style="color:#6b7280">Nenhuma categoria.</div>`;
+  }catch(e){
+    console.error(e);
+    el("listCats").innerHTML = `<div style="color:#6b7280">Erro ao carregar categorias (RLS/associação do usuário).</div>`;
   }
-
-  if (tab==="categorias"){
-    let list = categorias.slice();
-    if (q) list = list.filter(x => JSON.stringify(x).toLowerCase().includes(q));
-
-    if (!list.length){
-      tbody.innerHTML = `<div class="trow"><div class="muted">Sem categorias ainda.</div></div>`;
-      return;
-    }
-
-    tbody.innerHTML = list.map(item=>{
-      const chip = `<span class="chip ${item.ativo ? "ok":"off"}"><span class="dot"></span>${item.ativo ? "Ativa":"Inativa"}</span>`;
+}
+async function loadProds(){
+  const q=(el("qProds").value||"").toLowerCase().trim();
+  try{
+    const { data, error } = await withRetry(()=>sb.from("produtos").select("*").order("ordem",{ascending:true}));
+    if (error) throw error;
+    prods = (data||[]);
+    const list = q ? prods.filter(p=>(p.nome||"").toLowerCase().includes(q)||(p.descricao||"").toLowerCase().includes(q)) : prods;
+    el("listProds").innerHTML = list.length ? list.map(p=>{
+      const img = p.imagem_url || p.imagem || "";
       return `
-        <div class="trow">
-          <div class="cellSmall"><b>${escapeHtml(item.nome)}</b><div class="muted mono">#${item.id}</div></div>
-          <div class="cellSmall mono">${escapeHtml(String(item.ordem ?? 0))}</div>
-          <div>${chip}</div>
-          ${kebabMenuHtml("categorias", item)}
+        <div class="rowItem">
+          <div class="rowMain">
+            <div class="rowTitle">${esc(p.nome||"—")}</div>
+            <div class="rowMeta">
+              <span class="badge">preço: <span style="font-family:var(--mono)">${Number(p.preco||0).toFixed(2)}</span></span>
+              <span class="badge">cat: <span style="font-family:var(--mono)">${esc(p.categoria_id||"-")}</span></span>
+              <span class="badge">img: ${img ? "sim" : "não"}</span>
+              <span class="badge">${p.ativo ? "Ativo" : "Inativo"}</span>
+            </div>
+          </div>
+          <span class="badge">id: <span style="font-family:var(--mono)">${esc(p.id)}</span></span>
         </div>
       `;
-    }).join("");
-
-    bindMenus();
-    return;
-  }
-
-  // produtos
-  let list = produtos.slice();
-  if (q) list = list.filter(x => JSON.stringify(x).toLowerCase().includes(q));
-
-  if (!list.length){
-    tbody.innerHTML = `<div class="trow"><div class="muted">Sem produtos ainda.</div></div>`;
-    return;
-  }
-
-  tbody.innerHTML = list.map(item=>{
-    const chip = `<span class="chip ${item.ativo ? "ok":"off"}"><span class="dot"></span>${item.ativo ? "Ativo":"Inativo"}</span>`;
-    return `
-      <div class="trow">
-        <div class="cellSmall"><b>${escapeHtml(item.nome)}</b><div class="muted mono">cat:${escapeHtml(String(item.categoria_id||"—"))} • ordem:${escapeHtml(String(item.ordem ?? 0))}</div></div>
-        <div class="cellSmall mono">${escapeHtml(money(item.preco))}</div>
-        <div>${chip}</div>
-        ${kebabMenuHtml("produtos", item)}
-      </div>
-    `;
-  }).join("");
-
-  bindMenus();
-}
-
-function findById(kind, id){
-  const arr = kind==="categorias" ? categorias : produtos;
-  return arr.find(x => String(x.id) === String(id));
-}
-
-async function handleAction(kind, act, id){
-  const item = findById(kind, id);
-  if (!item) return;
-
-  if (act==="edit"){
-    if (kind==="categorias"){
-      editing.categorias = item;
-      setTab("categorias");
-      el("cat_nome").value = item.nome || "";
-      el("cat_ordem").value = item.ordem ?? 0;
-      el("cat_ativo").value = String(!!item.ativo);
-      toast("Editando categoria…");
-    } else {
-      editing.produtos = item;
-      setTab("produtos");
-      el("p_categoria").value = item.categoria_id || "";
-      el("p_nome").value = item.nome || "";
-      el("p_desc").value = item.descricao || "";
-      el("p_preco").value = item.preco ?? 0;
-      el("p_img").value = item.imagem || "";
-      el("p_ordem").value = item.ordem ?? 0;
-      el("p_ativo").value = String(!!item.ativo);
-      toast("Editando produto…");
-    }
-    return;
-  }
-
-  if (act==="dup"){
-    if (!confirm("Duplicar este item?")) return;
-
-    if (kind==="categorias"){
-      const payload = {
-        cliente_slug: clienteSlug,
-        nome: (item.nome || "Categoria") + " (Cópia)",
-        ordem: Number(item.ordem ?? 0) + 1,
-        ativo: item.ativo ?? true,
-      };
-      const { error } = await sb.from("categorias").insert(payload);
-      if (error) return toast(error.message, "err");
-      toast("Categoria duplicada!");
-    } else {
-      const payload = {
-        cliente_slug: clienteSlug,
-        categoria_id: item.categoria_id,
-        nome: (item.nome || "Produto") + " (Cópia)",
-        descricao: item.descricao || "",
-        preco: Number(item.preco ?? 0),
-        imagem: item.imagem || "",
-        ordem: Number(item.ordem ?? 0) + 1,
-        ativo: item.ativo ?? true,
-      };
-      const { error } = await sb.from("produtos").insert(payload);
-      if (error) return toast(error.message, "err");
-      toast("Produto duplicado!");
-    }
-    await loadData();
-    return;
-  }
-
-  if (act==="toggle"){
-    const next = !item.ativo;
-    if (kind==="categorias"){
-      const { error } = await sb.from("categorias").update({ ativo: next }).eq("id", item.id).eq("cliente_slug", clienteSlug);
-      if (error) return toast(error.message, "err");
-      toast(next ? "Categoria ativada!" : "Categoria desativada!");
-    } else {
-      const { error } = await sb.from("produtos").update({ ativo: next }).eq("id", item.id).eq("cliente_slug", clienteSlug);
-      if (error) return toast(error.message, "err");
-      toast(next ? "Produto ativado!" : "Produto desativado!");
-    }
-    await loadData();
-    return;
-  }
-
-  if (act==="del"){
-    if (!confirm("Excluir? Não dá pra desfazer.")) return;
-    if (kind==="categorias"){
-      const { error } = await sb.from("categorias").delete().eq("id", item.id).eq("cliente_slug", clienteSlug);
-      if (error) return toast(error.message, "err");
-      toast("Categoria excluída.");
-    } else {
-      const { error } = await sb.from("produtos").delete().eq("id", item.id).eq("cliente_slug", clienteSlug);
-      if (error) return toast(error.message, "err");
-      toast("Produto excluído.");
-    }
-    await loadData();
-    return;
+    }).join("") : `<div style="color:#6b7280">Nenhum produto.</div>`;
+  }catch(e){
+    console.error(e);
+    el("listProds").innerHTML = `<div style="color:#6b7280">Erro ao carregar produtos (RLS/associação do usuário).</div>`;
   }
 }
 
-/* ======================
-   Events
-====================== */
-document.querySelectorAll(".tab").forEach(b=>{
-  b.addEventListener("click", ()=> setTab(b.dataset.tab));
+el("btnReloadCats").onclick = loadCats;
+el("btnReloadProds").onclick = loadProds;
+el("qCats").addEventListener("input", loadCats);
+el("qProds").addEventListener("input", loadProds);
+
+/* ================================
+   INIT SESSION
+================================= */
+sb.auth.onAuthStateChange(async (evt, session)=>{
+  if (session){
+    showApp(session.user?.email);
+    await loadCats();
+    await loadProds();
+  }else{
+    showLogin();
+  }
 });
-el("btnLogin").addEventListener("click", loginWithPassword);
-el("btnGoogle").addEventListener("click", loginWithGoogle);
-el("btnLogout").addEventListener("click", logout);
-
-el("btnSalvarCategoria").addEventListener("click", salvarCategoria);
-el("btnSalvarProduto").addEventListener("click", salvarProduto);
-
-el("btnReload").addEventListener("click", loadData);
-el("search").addEventListener("input", render);
-
-/* ======================
-   Init
-====================== */
-sb.auth.onAuthStateChange(()=> refreshAuth());
 
 (async function init(){
-  await refreshAuth();
-  setTab("categorias");
+  const { data } = await sb.auth.getSession();
+  if (data?.session){
+    showApp(data.session.user?.email);
+    await loadCats(); await loadProds();
+  }else{
+    showLogin();
+  }
 })();
 </script>
 </body>
