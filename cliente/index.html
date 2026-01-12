@@ -1,415 +1,384 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel do Cliente — Cardápio Digital</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Cliente</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg:#fffdf2;
-      --card:#ffffff;
-      --line:#f1e7bf;
-      --text:#111827;
-      --muted:#6b7280;
-      --brand:#ffcc00;
-      --brand2:#ffb100;
-      --shadow: 0 16px 40px rgba(17,24,39,.10);
-      --radius: 18px;
-      --radius2: 14px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New", monospace;
-      --red:#ef4444;
-      --green:#22c55e;
+      --bg:#0b1220;
+      --card:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.12);
+      --text:#fff;
+      --muted:rgba(255,255,255,.7);
+      --y:#ffd24a; --y2:#ffbb1a;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --r:18px;
     }
     *{box-sizing:border-box}
     body{
-      margin:0;
-      font-family: var(--font);
-      color: var(--text);
+      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);
       background:
-        radial-gradient(900px 500px at 10% 0%, rgba(255,204,0,.18), transparent 60%),
-        radial-gradient(800px 460px at 90% 10%, rgba(255,177,0,.16), transparent 60%),
-        linear-gradient(180deg, #fffdf2, #fff8dc);
-      min-height:100vh;
-      padding: 14px 12px 70px;
+        radial-gradient(900px 600px at 20% 0%, rgba(255,210,74,.18), transparent 55%),
+        linear-gradient(180deg, #070b14, var(--bg));
+      padding:18px 14px 90px;
     }
-    .wrap{max-width: 1180px; margin:0 auto;}
-    .hidden{display:none!important}
-
+    .wrap{max-width:1100px;margin:0 auto}
+    .top{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:46px;height:46px;border-radius:16px;overflow:hidden;
+      background:rgba(255,255,255,.06);border:1px solid var(--line);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .logo img{width:100%;height:100%;object-fit:cover}
     .btn{
-      cursor:pointer;
-      border:0;
-      border-radius: 14px;
-      padding: 11px 12px;
-      font-weight: 950;
-      background:#fff;
-      border: 1px solid var(--line);
-      box-shadow: 0 10px 25px rgba(17,24,39,.06);
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      transition: transform .12s ease;
-      white-space:nowrap;
+      border:none;cursor:pointer;
+      padding:10px 12px;border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      color:var(--text);
+      font-weight:800;
+      display:inline-flex;align-items:center;gap:8px;
     }
-    .btn:active{transform: translateY(1px)}
-    .btn.brand{
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
-      border-color: rgba(0,0,0,.06);
-    }
-    .btn.danger{background: var(--red); color:#fff; border-color: rgba(0,0,0,.06);}
-    .btn.small{padding: 9px 10px; border-radius: 12px; font-size: 13px;}
-
-    .appbar{
-      position: sticky;
-      top: 10px;
-      z-index: 20;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.72);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      margin-bottom: 12px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:10px; min-width:0;
-    }
-    .brand img{
-      width: 44px; height: 44px; object-fit: contain;
-      border-radius: 12px; border:1px solid var(--line); background:#fff; padding: 6px;
-    }
-    .brandTxt{min-width:0}
-    .brandTxt .t{font-weight: 950; line-height:1.1}
-    .brandTxt .s{font-size: 12.5px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-
+    .btn.y{background:linear-gradient(135deg,var(--y),var(--y2));color:#201400;border-color:rgba(0,0,0,.08)}
     .card{
-      background: rgba(255,255,255,.85);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
+      margin-top:14px;
+      border-radius:22px;padding:16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
     }
-
-    label{display:block; font-weight: 900; font-size: 12.5px; margin: 10px 0 6px; color:#374151;}
-    input{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      outline: 0;
-      font-size: 14px;
-      background:#fff;
+    .sub{color:var(--muted);font-size:12px;margin:6px 0 0}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    input,select{
+      width:100%;padding:11px 12px;border-radius:14px;
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      color:var(--text);outline:none;
     }
-    input:focus{
-      border-color: rgba(255,177,0,.9);
-      box-shadow: 0 0 0 4px rgba(255,177,0,.16);
-    }
-    .msg{margin-top: 10px; font-weight: 900; font-size: 13px;}
-    .msg.err{color:#b91c1c}
-    .msg.ok{color:#065f46}
-
-    .tabs{
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      padding: 8px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background:#fff;
-      margin-bottom: 12px;
-    }
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .field{flex:1;min-width:220px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
     .tab{
-      cursor:pointer;
-      border: 1px solid transparent;
-      background: transparent;
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-weight: 950;
-      color: #374151;
+      padding:10px 12px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.05);color:var(--muted);font-weight:900;cursor:pointer;
     }
-    .tab.active{
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
-      border-color: rgba(0,0,0,.06);
-      color: #111827;
+    .tab.active{background:rgba(255,210,74,.18);color:var(--text);border-color:rgba(255,210,74,.45)}
+    .grid4{
+      display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;margin-top:12px;
     }
-
-    .list{display:flex; flex-direction:column; gap: 10px;}
-    .rowItem{
-      background:#fff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius2);
-      box-shadow: 0 12px 28px rgba(17,24,39,.06);
-      padding: 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-      min-width:0;
+    .item{
+      border-radius:18px;padding:12px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      min-height:150px;
+      display:flex;flex-direction:column;gap:10px;
     }
-    .rowMain{min-width:0}
-    .rowTitle{font-weight: 950; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-    .rowMeta{margin-top:4px; color: var(--muted); font-size: 12.5px; display:flex; gap: 10px; flex-wrap:wrap;}
-    .badge{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background:#fff;
-      font-size: 12px;
-      font-weight: 950;
-      color:#374151;
-    }
+    .ttl{font-weight:900}
+    .meta{color:var(--muted);font-size:12px}
+    @media (max-width:1050px){ .grid4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media (max-width:720px){ .grid4{grid-template-columns:1fr} }
+    .msg{margin-top:10px;padding:10px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.2);color:var(--muted)}
+    .msg.err{border-color:rgba(255,90,103,.45);color:#ffd0d5}
+    .msg.ok{border-color:rgba(29,214,164,.40);color:#c9fff0}
   </style>
 </head>
 
 <body>
 <div class="wrap">
-
-  <div class="appbar">
+  <div class="top">
     <div class="brand">
-      <img src="../logo.png" alt="Logo" />
-      <div class="brandTxt">
-        <div class="t">Painel do Cliente</div>
-        <div class="s" id="who">—</div>
+      <div class="logo"><img src="../logo.png" onerror="this.style.display='none';this.parentElement.textContent='LO'"></div>
+      <div>
+        <div style="font-weight:900">Painel do Cliente</div>
+        <div class="sub">Gerencie categorias e produtos da sua loja.</div>
       </div>
     </div>
-    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-      <a class="btn" href="../" target="_blank">🏠 Home</a>
-      <button class="btn danger hidden" id="btnLogout">Sair</button>
-    </div>
+    <button class="btn y" id="btnSair">🚪 Sair</button>
   </div>
 
-  <!-- LOGIN -->
-  <div id="loginCard" class="card">
-    <div style="font-weight:950; font-size:16px">Login</div>
-    <div style="color:var(--muted); font-size:12.5px; margin-top:4px">Use email/senha ou Google.</div>
+  <div class="card" id="loginCard">
+    <div style="font-weight:900;font-size:18px">Entrar</div>
+    <p class="sub">Use email/senha (criado pelo Admin) ou Google.</p>
 
-    <label>Email</label>
-    <input id="email" placeholder="cliente@email.com" autocomplete="email"/>
-
-    <label>Senha</label>
-    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
-
-    <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap">
-      <button class="btn brand" id="btnLogin">Entrar</button>
-      <button class="btn" id="btnGoogle">Entrar com Google</button>
-    </div>
-
-    <div id="loginMsg" class="msg"></div>
-  </div>
-
-  <!-- APP -->
-  <div id="appCard" class="hidden">
-    <div class="tabs">
-      <button class="tab active" data-tab="categorias">Categorias</button>
-      <button class="tab" data-tab="produtos">Produtos</button>
-    </div>
-
-    <div id="tab-categorias" class="card">
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;">
-        <div style="min-width:240px; flex:1">
-          <label style="margin:0 0 6px">Buscar</label>
-          <input id="qCats" placeholder="nome..." />
-        </div>
-        <button class="btn brand" id="btnNovaCat">➕ Nova</button>
-        <button class="btn" id="btnReloadCats">🔄</button>
+    <div class="row" style="margin-top:10px">
+      <div class="field">
+        <label>Email</label>
+        <input id="email" placeholder="cliente@dominio.com" />
       </div>
-      <div class="list" id="listCats"></div>
+      <div class="field">
+        <label>Senha</label>
+        <input id="senha" type="password" placeholder="••••••••" />
+      </div>
     </div>
 
-    <div id="tab-produtos" class="card hidden">
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;">
-        <div style="min-width:240px; flex:1">
-          <label style="margin:0 0 6px">Buscar</label>
-          <input id="qProds" placeholder="nome ou descrição..." />
-        </div>
-        <button class="btn brand" id="btnNovoProd">➕ Novo</button>
-        <button class="btn" id="btnReloadProds">🔄</button>
-      </div>
-      <div class="list" id="listProds"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn y" id="btnLogin">🔒 Entrar</button>
+      <button class="btn" id="btnGoogle">🟦 Entrar com Google</button>
     </div>
+
+    <div id="loginMsg" class="msg err" style="display:none"></div>
   </div>
 
+  <div class="card" id="app" style="display:none">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:900;font-size:18px" id="lojaNome">—</div>
+        <div class="sub">Slug: <span id="lojaSlug">—</span></div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-tab="categorias">Categorias</button>
+        <button class="tab" data-tab="produtos">Produtos</button>
+      </div>
+    </div>
+
+    <div id="msg" class="msg" style="display:none"></div>
+
+    <div class="row" style="margin-top:12px">
+      <div class="field">
+        <label>Nova categoria</label>
+        <input id="cat_nome" placeholder="Ex: Bebidas" />
+      </div>
+      <div class="field">
+        <label>Ordem</label>
+        <input id="cat_ordem" type="number" value="0" />
+      </div>
+      <div class="field" style="min-width:160px">
+        <label>&nbsp;</label>
+        <button class="btn y" id="btnCriarCat">📁 Criar</button>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <div class="field">
+        <label>Categoria (para produto)</label>
+        <select id="selCat"></select>
+      </div>
+      <div class="field">
+        <label>Produto</label>
+        <input id="p_nome" placeholder="Ex: Pão de queijo" />
+      </div>
+      <div class="field">
+        <label>Preço</label>
+        <input id="p_preco" type="number" step="0.01" value="0" />
+      </div>
+      <div class="field">
+        <label>Imagem URL (opcional)</label>
+        <input id="p_img" placeholder="https://.../foto.jpg" />
+      </div>
+      <div class="field" style="min-width:160px">
+        <label>&nbsp;</label>
+        <button class="btn y" id="btnCriarProd">🧾 Criar</button>
+      </div>
+    </div>
+
+    <div class="grid4" id="grid"></div>
+  </div>
 </div>
 
 <script>
-/* ================================
-   SUPABASE
-================================= */
-const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
-const SUPABASE_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
-});
+  const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const el = (id)=>document.getElementById(id);
-const esc = (s)=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+  const el = (id)=>document.getElementById(id);
 
-async function withRetry(fn, tries=3){
-  let last;
-  for (let i=0;i<tries;i++){
-    try { return await fn(); }
-    catch(e){ last=e; await new Promise(r=>setTimeout(r, 350*(i+1))); }
+  let session=null;
+  let cliente_slug=null;
+  let tab="categorias";
+  let categorias=[];
+  let produtos=[];
+
+  function showMsg(text,type=""){
+    const m=el("msg");
+    m.style.display="block";
+    m.className="msg "+(type||"");
+    m.textContent=text;
+    setTimeout(()=>m.style.display="none",3500);
   }
-  throw last;
-}
 
-function setMsg(node, text, ok=false){
-  node.className = "msg " + (ok ? "ok" : "err");
-  node.textContent = text || "";
-}
+  async function resolveClienteSlug(){
+    const { data: userData } = await sb.auth.getUser();
+    const uid = userData?.user?.id;
+    if (!uid) throw new Error("Sem usuário");
 
-/* ================================
-   UI
-================================= */
-function showLogin(){
-  el("loginCard").classList.remove("hidden");
-  el("appCard").classList.add("hidden");
-  el("btnLogout").classList.add("hidden");
-}
-function showApp(email){
-  el("loginCard").classList.add("hidden");
-  el("appCard").classList.remove("hidden");
-  el("btnLogout").classList.remove("hidden");
-  el("who").textContent = email ? ("Conta: " + email) : "Logado";
-}
+    const { data, error } = await sb
+      .from("cliente_usuarios")
+      .select("cliente_slug,role,ativo")
+      .eq("user_id", uid)
+      .eq("ativo", true)
+      .single();
 
-document.querySelectorAll(".tab").forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    const t = b.dataset.tab;
-    el("tab-categorias").classList.toggle("hidden", t!=="categorias");
-    el("tab-produtos").classList.toggle("hidden", t!=="produtos");
-  };
-});
-
-/* ================================
-   LOGIN
-================================= */
-el("btnLogin").onclick = async ()=>{
-  try{
-    setMsg(el("loginMsg"), "Entrando...");
-    const email = (el("email").value||"").trim();
-    const pass  = el("pass").value;
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error) throw error;
-  }catch(err){
-    console.error(err);
-    setMsg(el("loginMsg"), "Invalid login credentials (usuário não existe ou senha errada).", false);
+    if (error || !data?.cliente_slug) throw new Error("Usuário não vinculado a uma loja");
+    return data.cliente_slug;
   }
-};
 
-el("btnGoogle").onclick = async ()=>{
-  try{
-    setMsg(el("loginMsg"), "Abrindo Google...");
-    const { error } = await sb.auth.signInWithOAuth({
+  async function loadLoja(){
+    const { data: cli, error } = await sb
+      .from("clientes")
+      .select("*")
+      .eq("slug", cliente_slug)
+      .single();
+
+    if (error || !cli) throw new Error("Loja não encontrada");
+
+    el("lojaNome").textContent = cli.nome || "Minha loja";
+    el("lojaSlug").textContent = cli.slug || "—";
+  }
+
+  async function loadData(){
+    const { data: cats } = await sb
+      .from("categorias")
+      .select("*")
+      .eq("cliente_slug", cliente_slug)
+      .order("ordem", { ascending:true });
+
+    const { data: prods } = await sb
+      .from("produtos")
+      .select("*")
+      .eq("cliente_slug", cliente_slug)
+      .order("created_at", { ascending:false });
+
+    categorias = cats || [];
+    produtos = prods || [];
+
+    el("selCat").innerHTML = categorias.map(c=>`<option value="${c.id}">${c.nome}</option>`).join("");
+    render();
+  }
+
+  function render(){
+    const grid = el("grid");
+    if (tab==="categorias"){
+      grid.innerHTML = categorias.map(c=>`
+        <div class="item">
+          <div class="ttl">${escapeHtml(c.nome||"—")}</div>
+          <div class="meta">ordem: ${Number(c.ordem||0)}</div>
+          <div class="meta">status: ${c.ativo ? "ativo":"inativo"}</div>
+        </div>
+      `).join("");
+      return;
+    }
+
+    grid.innerHTML = produtos.map(p=>`
+      <div class="item">
+        <div class="ttl">${escapeHtml(p.nome||"—")}</div>
+        <div class="meta">R$ ${Number(p.preco||0).toFixed(2)}</div>
+        <div class="meta">${escapeHtml(p.descricao||"")}</div>
+      </div>
+    `).join("");
+  }
+
+  function escapeHtml(str){
+    return String(str ?? "").replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  // tabs
+  document.querySelectorAll(".tab").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      tab = b.dataset.tab;
+      render();
+    });
+  });
+
+  // login
+  el("btnLogin").addEventListener("click", async ()=>{
+    try{
+      el("loginMsg").style.display="none";
+      const email = el("email").value.trim();
+      const password = el("senha").value.trim();
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      session = data.session;
+      await afterLogin();
+    }catch(e){
+      el("loginMsg").style.display="block";
+      el("loginMsg").textContent = e.message || "Falha no login";
+    }
+  });
+
+  el("btnGoogle").addEventListener("click", async ()=>{
+    await sb.auth.signInWithOAuth({
       provider:"google",
       options:{ redirectTo: window.location.href }
     });
-    if (error) throw error;
-  }catch(err){
-    console.error(err);
-    setMsg(el("loginMsg"), "Erro no Google: " + (err.message||err), false);
-  }
-};
+  });
 
-el("btnLogout").onclick = async ()=>{
-  await sb.auth.signOut();
-  showLogin();
-};
+  async function afterLogin(){
+    el("loginCard").style.display="none";
+    el("app").style.display="block";
 
-/* ================================
-   DATA (RLS)
-================================= */
-let cats=[], prods=[];
-async function loadCats(){
-  const q=(el("qCats").value||"").toLowerCase().trim();
-  try{
-    const { data, error } = await withRetry(()=>sb.from("categorias").select("*").order("ordem",{ascending:true}));
-    if (error) throw error;
-    cats = (data||[]);
-    const list = q ? cats.filter(c=>(c.nome||"").toLowerCase().includes(q)) : cats;
-    el("listCats").innerHTML = list.length ? list.map(c=>`
-      <div class="rowItem">
-        <div class="rowMain">
-          <div class="rowTitle">${esc(c.nome||"—")}</div>
-          <div class="rowMeta">
-            <span class="badge">ordem: <span style="font-family:var(--mono)">${esc(c.ordem??0)}</span></span>
-            <span class="badge">${c.ativo ? "Ativo" : "Inativo"}</span>
-          </div>
-        </div>
-        <span class="badge">id: <span style="font-family:var(--mono)">${esc(c.id)}</span></span>
-      </div>
-    `).join("") : `<div style="color:#6b7280">Nenhuma categoria.</div>`;
-  }catch(e){
-    console.error(e);
-    el("listCats").innerHTML = `<div style="color:#6b7280">Erro ao carregar categorias (RLS/associação do usuário).</div>`;
+    cliente_slug = await resolveClienteSlug();
+    await loadLoja();
+    await loadData();
   }
-}
-async function loadProds(){
-  const q=(el("qProds").value||"").toLowerCase().trim();
-  try{
-    const { data, error } = await withRetry(()=>sb.from("produtos").select("*").order("ordem",{ascending:true}));
-    if (error) throw error;
-    prods = (data||[]);
-    const list = q ? prods.filter(p=>(p.nome||"").toLowerCase().includes(q)||(p.descricao||"").toLowerCase().includes(q)) : prods;
-    el("listProds").innerHTML = list.length ? list.map(p=>{
-      const img = p.imagem_url || p.imagem || "";
-      return `
-        <div class="rowItem">
-          <div class="rowMain">
-            <div class="rowTitle">${esc(p.nome||"—")}</div>
-            <div class="rowMeta">
-              <span class="badge">preço: <span style="font-family:var(--mono)">${Number(p.preco||0).toFixed(2)}</span></span>
-              <span class="badge">cat: <span style="font-family:var(--mono)">${esc(p.categoria_id||"-")}</span></span>
-              <span class="badge">img: ${img ? "sim" : "não"}</span>
-              <span class="badge">${p.ativo ? "Ativo" : "Inativo"}</span>
-            </div>
-          </div>
-          <span class="badge">id: <span style="font-family:var(--mono)">${esc(p.id)}</span></span>
-        </div>
-      `;
-    }).join("") : `<div style="color:#6b7280">Nenhum produto.</div>`;
-  }catch(e){
-    console.error(e);
-    el("listProds").innerHTML = `<div style="color:#6b7280">Erro ao carregar produtos (RLS/associação do usuário).</div>`;
-  }
-}
 
-el("btnReloadCats").onclick = loadCats;
-el("btnReloadProds").onclick = loadProds;
-el("qCats").addEventListener("input", loadCats);
-el("qProds").addEventListener("input", loadProds);
+  el("btnSair").addEventListener("click", async ()=>{
+    await sb.auth.signOut();
+    session=null; cliente_slug=null;
+    el("app").style.display="none";
+    el("loginCard").style.display="block";
+  });
 
-/* ================================
-   INIT SESSION
-================================= */
-sb.auth.onAuthStateChange(async (evt, session)=>{
-  if (session){
-    showApp(session.user?.email);
-    await loadCats();
-    await loadProds();
-  }else{
-    showLogin();
-  }
-});
+  // criar categoria/produto (RLS precisa permitir)
+  el("btnCriarCat").addEventListener("click", async ()=>{
+    try{
+      const nome = el("cat_nome").value.trim();
+      const ordem = Number(el("cat_ordem").value||0);
+      if (!nome) throw new Error("Nome obrigatório");
+      const { error } = await sb.from("categorias").insert({ cliente_slug, nome, ordem, ativo:true });
+      if (error) throw error;
+      el("cat_nome").value="";
+      showMsg("Categoria criada ✅","ok");
+      await loadData();
+    }catch(e){
+      showMsg("Erro: "+e.message,"err");
+    }
+  });
 
-(async function init(){
-  const { data } = await sb.auth.getSession();
-  if (data?.session){
-    showApp(data.session.user?.email);
-    await loadCats(); await loadProds();
-  }else{
-    showLogin();
-  }
-})();
+  el("btnCriarProd").addEventListener("click", async ()=>{
+    try{
+      const categoria_id = el("selCat").value;
+      if (!categoria_id) throw new Error("Selecione uma categoria");
+      const nome = el("p_nome").value.trim();
+      const preco = Number(el("p_preco").value||0);
+      const imagem_url = el("p_img").value.trim() || null;
+      if (!nome) throw new Error("Nome obrigatório");
+
+      const { error } = await sb.from("produtos").insert({
+        cliente_slug, categoria_id, nome, preco, ativo:true, imagem_url
+      });
+      if (error) throw error;
+
+      el("p_nome").value=""; el("p_preco").value="0"; el("p_img").value="";
+      showMsg("Produto criado ✅","ok");
+      await loadData();
+    }catch(e){
+      showMsg("Erro: "+e.message,"err");
+    }
+  });
+
+  // init
+  (async ()=>{
+    const { data } = await sb.auth.getSession();
+    session = data.session || null;
+    if (session) await afterLogin();
+  })();
 </script>
 </body>
 </html>
