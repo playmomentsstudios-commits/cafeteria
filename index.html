@@ -4,243 +4,306 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cardápio Digital</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg0:#07121f;
-      --bg1:#091a2b;
-      --card:rgba(255,255,255,.06);
-      --card2:rgba(255,255,255,.08);
-      --line:rgba(255,255,255,.10);
-      --text:#e7eefc;
-      --muted:rgba(231,238,252,.72);
+      --bg:#fffdf2;
+      --card:#ffffff;
+      --line:#f1e7bf;
+      --text:#111827;
+      --muted:#6b7280;
 
-      --primary:#2b69ff;
-      --primary2:#1a4fd6;
-      --accent:#2ee6c5;
-      --accent2:#18b79b;
+      --brand:#ffcc00;     /* amarelo */
+      --brand2:#ffb100;    /* amarelo mais forte */
+      --ink:#111827;
+      --shadow: 0 16px 40px rgba(17,24,39,.10);
+      --radius: 18px;
+      --radius2: 14px;
 
-      --danger:#ff5a67;
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --radius: 22px;
-      --radius2: 16px;
-      --glass: blur(14px);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --green:#22c55e;
+      --red:#ef4444;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color:var(--text);
+      font-family: var(--font);
+      color: var(--text);
       background:
-        radial-gradient(1200px 800px at 15% 10%, rgba(43,105,255,.35), transparent 55%),
-        radial-gradient(900px 700px at 80% 15%, rgba(46,230,197,.18), transparent 55%),
-        radial-gradient(1100px 900px at 50% 95%, rgba(43,105,255,.20), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 22px 14px 84px;
+        radial-gradient(900px 500px at 10% 0%, rgba(255,204,0,.18), transparent 60%),
+        radial-gradient(800px 460px at 90% 10%, rgba(255,177,0,.16), transparent 60%),
+        linear-gradient(180deg, #fffdf2, #fff8dc);
+      padding: 14px 12px 86px;
     }
 
     a{color:inherit; text-decoration:none}
-    .wrap{max-width: 1220px; margin:0 auto}
+    .wrap{max-width: 1180px; margin: 0 auto;}
 
-    /* Topbar */
-    .topbar{
-      display:flex; gap:14px; align-items:center; justify-content:space-between;
-      padding: 14px 16px;
+    /* App bar */
+    .appbar{
+      position: sticky;
+      top: 10px;
+      z-index: 30;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 12px 14px;
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
+      backdrop-filter: blur(10px);
     }
-    .brand{display:flex; gap:12px; align-items:center; min-width:0}
-    .logo{
-      width:48px; height:48px; border-radius: 16px;
-      background: linear-gradient(135deg, rgba(43,105,255,.25), rgba(46,230,197,.15));
-      border: 1px dashed rgba(255,255,255,.25);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900; letter-spacing:.6px;
-      color: rgba(231,238,252,.88);
-      flex:0 0 auto;
-    }
-    .brandText{min-width:0}
-    .brandText h1{margin:0; font-size: 16.5px; line-height: 1.1}
-    .brandText p{margin:4px 0 0; color: var(--muted); font-size: 12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-    .rightTop{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
-    .pillGroup{
-      display:flex; gap:8px; align-items:center;
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+    .brand img{
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
       padding: 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      backdrop-filter: var(--glass);
+    }
+    .brandTxt{min-width:0}
+    .brandTxt .t{font-weight: 950; letter-spacing:.2px; line-height:1.1}
+    .brandTxt .s{
+      font-size: 12.5px;
+      color: var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
     .btn{
       cursor:pointer;
-      border: none;
-      color: var(--text);
-      padding: 11px 14px;
+      border: 0;
       border-radius: 14px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 10px 30px rgba(0,0,0,.20);
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      display:inline-flex; align-items:center; gap:9px;
-      font-weight:900;
+      padding: 10px 12px;
+      font-weight: 900;
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 25px rgba(17,24,39,.06);
+      transition: transform .12s ease, filter .12s ease;
       white-space:nowrap;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18)}
-    .btn:active{transform: translateY(0)}
-    .btn.primary{background: linear-gradient(135deg, var(--primary), var(--primary2)); border-color: rgba(255,255,255,.18);}
-    .btn.accent{background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #06201a; border-color: rgba(0,0,0,.06);}
-    .btn.ghost{background: transparent; border: 1px solid rgba(255,255,255,.14); box-shadow:none;}
-    .btn.small{padding: 9px 12px; border-radius: 12px; font-size: 13px;}
+    .btn:active{transform: translateY(1px)}
+    .btn.brand{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border-color: rgba(0,0,0,.06);
+    }
 
     /* Hero */
     .hero{
-      margin-top: 14px;
-      padding: 18px;
+      margin-top: 12px;
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
-      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.66));
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
+      padding: 16px;
       overflow:hidden;
-      position:relative;
+      position: relative;
     }
-    .hero::after{
+    .hero:after{
       content:"";
-      position:absolute; inset:-60px -80px auto auto;
-      width: 320px; height: 320px;
-      background: radial-gradient(circle at 30% 30%, rgba(46,230,197,.22), transparent 60%);
-      filter: blur(2px);
-      transform: rotate(18deg);
+      position:absolute;
+      width: 340px;
+      height: 340px;
+      right:-140px;
+      top:-180px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,204,0,.30), transparent 60%);
+      transform: rotate(10deg);
       pointer-events:none;
     }
     .heroGrid{
       display:grid;
       grid-template-columns: 1.2fr .8fr;
-      gap: 14px;
+      gap: 12px;
       align-items:center;
     }
-    .hero h2{margin:0; font-size: 24px; letter-spacing:.2px}
-    .hero p{margin:10px 0 0; color: var(--muted); line-height: 1.45}
-    .heroActions{display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px}
+    .hero h1{
+      margin:0;
+      font-size: 26px;
+      letter-spacing: -0.2px;
+    }
+    .hero p{
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
     .searchRow{
+      display:flex;
+      gap: 10px;
+      align-items:center;
       margin-top: 12px;
-      display:flex; gap:10px; align-items:center;
+      flex-wrap:wrap;
     }
-    .searchRow input{
-      width:100%;
-      padding: 12px 12px;
+    .search{
+      flex: 1;
+      min-width: 240px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      background:#fff;
+      border: 1px solid var(--line);
       border-radius: 14px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.14);
-      color: var(--text);
-      outline:none;
-      transition: border-color .12s ease, background .12s ease;
+      padding: 10px 12px;
+      box-shadow: 0 10px 25px rgba(17,24,39,.05);
     }
-    .searchRow input:focus{border-color: rgba(46,230,197,.45); background: rgba(0,0,0,.26);}
+    .search input{
+      width: 100%;
+      border:0;
+      outline:0;
+      font-size: 14px;
+      background:transparent;
+    }
 
     /* Sections */
     .section{
-      margin-top: 14px;
-      padding: 16px;
+      margin-top: 12px;
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
-      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
+      padding: 14px;
     }
     .sectionHead{
-      display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
-      margin-bottom: 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap: 10px;
+      margin-bottom: 10px;
     }
-    .sectionHead h3{margin:0; font-size: 17px}
-    .sectionHead .sub{margin:0; color: var(--muted); font-size: 12.5px}
+    .sectionHead h2{margin:0; font-size: 16px; font-weight: 950;}
+    .sub{margin:0; color: var(--muted); font-size: 12.5px;}
+    .count{font-family: var(--mono); font-weight: 900; font-size: 12.5px; color: #374151;}
 
-    /* Chips filtros (tipo de negócio) */
+    /* business category chips */
     .chips{
-      display:flex; gap:8px; flex-wrap:wrap;
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
       padding: 8px;
       border-radius: 999px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
+      border: 1px solid var(--line);
+      background: #fff;
     }
     .chipBtn{
       cursor:pointer;
-      padding: 9px 12px;
-      border-radius: 999px;
       border: 1px solid transparent;
       background: transparent;
-      color: rgba(231,238,252,.85);
+      padding: 9px 12px;
+      border-radius: 999px;
       font-weight: 900;
       font-size: 13px;
-      white-space:nowrap;
+      color: #374151;
     }
     .chipBtn.active{
-      background: rgba(43,105,255,.18);
-      border-color: rgba(43,105,255,.35);
-      color: var(--text);
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border-color: rgba(0,0,0,.06);
+      color: #111827;
     }
 
-    /* Clientes grid 2 por linha */
+    /* Clientes grid: 2 por linha */
     .gridClientes{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
     .clienteCard{
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      padding: 12px;
+      border-radius: var(--radius2);
+      background:#fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 28px rgba(17,24,39,.06);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      transition: transform .12s ease;
+      min-width:0;
     }
-    .clienteCard:hover{transform: translateY(-2px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16);}
-    .clienteInfo{display:flex; gap:12px; align-items:center; min-width:0}
+    .clienteCard:hover{transform: translateY(-2px)}
+    .cliLeft{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      min-width:0;
+    }
     .avatar{
-      width:48px; height:48px; border-radius: 16px;
-      background: linear-gradient(135deg, rgba(43,105,255,.22), rgba(46,230,197,.10));
-      border: 1px solid rgba(255,255,255,.12);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,204,0,.55), rgba(255,177,0,.35));
+      border: 1px solid rgba(0,0,0,.06);
+      display:grid;
+      place-items:center;
+      font-weight: 950;
       flex:0 0 auto;
     }
-    .clienteTxt{min-width:0}
-    .clienteTxt .nome{font-weight: 900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-    .clienteTxt .meta{margin-top:4px; font-family: var(--mono); font-size: 12px; color: rgba(231,238,252,.70); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-    .tagTipo{
-      margin-top:6px;
+    .cliTxt{min-width:0}
+    .cliTxt .name{
+      font-weight: 950;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .cliTxt .meta{
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .tag{
       display:inline-flex;
       align-items:center;
       gap:8px;
+      font-size:12px;
       padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(46,230,197,.10);
-      border: 1px solid rgba(46,230,197,.22);
+      border: 1px solid var(--line);
+      background: #fff;
       font-weight: 900;
-      font-size: 12px;
-      color: rgba(231,238,252,.92);
+      color: #374151;
     }
-    .clienteBtns{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+    .dot{width:8px; height:8px; border-radius:99px; background: var(--green);}
 
-    /* Produtos */
-    .topClienteBar{
-      display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    /* Vitrine */
+    .hidden{display:none!important}
+
+    .vitrineTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
       margin-bottom: 10px;
     }
-    .topClienteBar .left{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-    .titleCliente{display:flex; flex-direction:column; gap:2px;}
-    .titleCliente .n{font-weight: 900; font-size: 18px}
-    .titleCliente .m{color: var(--muted); font-size: 12.5px}
+    .vLeft{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .vTitle .n{font-weight: 950; font-size: 18px;}
+    .vTitle .m{font-size: 12.5px; color: var(--muted);}
 
     .gridProdutos{
       display:grid;
@@ -249,238 +312,207 @@
       margin-top: 12px;
     }
     .prodCard{
-      border-radius: 18px;
+      border-radius: var(--radius2);
+      background:#fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 28px rgba(17,24,39,.06);
       overflow:hidden;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      display:flex; flex-direction:column;
-      min-height: 230px;
+      display:flex;
+      flex-direction:column;
+      min-height: 220px;
     }
-    .prodCard:hover{transform: translateY(-2px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16);}
     .prodImg{
       height: 120px;
-      background:
-        radial-gradient(120px 90px at 30% 20%, rgba(46,230,197,.18), transparent 65%),
-        radial-gradient(160px 120px at 80% 10%, rgba(43,105,255,.20), transparent 65%),
-        rgba(0,0,0,.22);
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      display:flex; align-items:center; justify-content:center;
-      color: rgba(231,238,252,.55);
-      font-weight: 900;
+      background: linear-gradient(135deg, rgba(255,204,0,.20), rgba(255,177,0,.12));
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: #9ca3af;
+      font-weight: 950;
     }
-    .prodBody{padding: 12px; display:flex; flex-direction:column; gap:8px; flex:1}
-    .prodName{font-weight: 900; line-height:1.2}
-    .prodMeta{color: var(--muted); font-size: 12px; font-family: var(--mono)}
-    .prodDesc{color: var(--muted); font-size: 12.5px; line-height:1.35; min-height: 34px}
-    .prodBottom{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:auto}
-    .price{font-family: var(--mono); font-weight: 900}
-    .btnAdd{padding: 10px 12px; border-radius: 14px}
+    .prodImg img{width:100%; height:100%; object-fit: cover;}
+    .prodBody{
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 7px;
+      flex:1;
+    }
+    .prodName{font-weight: 950; line-height:1.2}
+    .prodDesc{color: var(--muted); font-size: 12.5px; line-height:1.35; min-height: 34px;}
+    .prodBottom{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      margin-top:auto;
+    }
+    .price{font-family: var(--mono); font-weight: 950;}
+    .store{font-size: 12px; color: var(--muted);}
 
-    /* Carrinho fixo */
+    /* cart */
     .cartBar{
       position: fixed;
-      left: 0; right: 0; bottom: 0;
-      padding: 14px 16px;
-      background: rgba(9,26,43,.86);
-      border-top: 1px solid rgba(255,255,255,.10);
-      backdrop-filter: blur(14px);
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
-      z-index: 100;
-    }
-    .cartBar .total{font-weight: 900; font-family: var(--mono);}
-    .cartBar .muted{color: var(--muted); font-size: 12.5px}
-
-    /* Footer */
-    footer{
-      margin-top: 14px;
-      padding: 16px;
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(231,238,252,.82);
-    }
-    .footerGrid{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 12px;
+      left:0; right:0; bottom:0;
+      padding: 12px;
+      background: rgba(255,255,255,.92);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      display:flex;
       align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      z-index: 50;
     }
-    .footerGrid .links{
-      display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
-    }
-    .badge{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      font-size: 12.5px;
-    }
+    .cartBar .total{font-weight: 950; font-family: var(--mono);}
+    .cartBar .muted{color: var(--muted); font-size: 12.5px;}
 
-    .hidden{display:none !important}
+    footer{
+      margin-top: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      color: #374151;
+    }
 
     @media (max-width: 980px){
       .heroGrid{grid-template-columns: 1fr}
-      .gridProdutos{grid-template-columns: repeat(2, minmax(0, 1fr))}
+      .gridProdutos{grid-template-columns: repeat(2, minmax(0,1fr))}
     }
     @media (max-width: 720px){
-      .topbar{flex-direction:column; align-items:stretch}
-      .rightTop{justify-content:space-between}
       .gridClientes{grid-template-columns: 1fr}
       .gridProdutos{grid-template-columns: 1fr}
-      .footerGrid{grid-template-columns: 1fr}
-      .footerGrid .links{justify-content:flex-start}
     }
   </style>
 </head>
 
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo">CD</div>
-      <div class="brandText">
-        <h1>Cardápio Digital</h1>
-        <p>Estilo iFood: encontre lojas e produtos e finalize no WhatsApp.</p>
-      </div>
-    </div>
-
-    <div class="rightTop">
-      <div class="pillGroup">
-        <a class="btn ghost small" href="./admin/" target="_blank">🛠️ Painel Admin</a>
-        <button class="btn primary small" id="btnVoltarHome" style="display:none">🏠 Home</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- HERO -->
-  <div class="hero" id="hero">
-    <div class="heroGrid">
-      <div>
-        <h2>Estilo “iFood”, simples e moderno.</h2>
-        <p>
-          Descubra lojas por tipo de negócio e encontre produtos por categoria.
-          Finalize o pedido direto no WhatsApp.
-        </p>
-
-        <div class="heroActions">
-          <span class="badge">⚡ Destaques: lojas ativas</span>
-          <span class="badge">🔎 Busca em lojas e produtos</span>
-          <span class="badge">📲 Checkout WhatsApp</span>
-        </div>
-
-        <div class="searchRow">
-          <input id="searchClientes" placeholder="Buscar loja (nome ou slug)..." />
-          <button class="btn accent" id="btnReload">🔄 Atualizar</button>
+    <!-- APPBAR -->
+    <div class="appbar">
+      <div class="brand">
+        <img src="./logo.png" alt="Logo" />
+        <div class="brandTxt">
+          <div class="t">Cardápio Digital</div>
+          <div class="s">Encontre lojas e produtos e finalize pelo WhatsApp.</div>
         </div>
       </div>
 
-      <div>
-        <div class="section" style="margin:0; padding:14px">
-          <div class="sectionHead" style="margin-bottom:10px">
-            <div>
-              <h3 style="margin:0">Categorias</h3>
-              <p class="sub" style="margin:4px 0 0">Filtre as lojas por tipo de negócio.</p>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end">
+        <a class="btn" href="./admin/" target="_blank">🛠️ Painel Admin</a>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero" id="hero">
+      <h1>Estilo “iFood”: simples, moderno e rápido.</h1>
+      <p>Filtre por tipo de negócio (restaurante, mercado, padaria…) e veja produtos por categoria. Checkout direto no WhatsApp.</p>
+
+      <div class="searchRow">
+        <div class="search">
+          🔎 <input id="searchClientes" placeholder="Buscar loja (nome ou slug)..." />
+        </div>
+        <button class="btn brand" id="btnReload">⚡ Atualizar</button>
+      </div>
+    </div>
+
+    <!-- CATEGORIAS (TIPO DE NEGÓCIO) -->
+    <div class="section">
+      <div class="sectionHead">
+        <div>
+          <h2>Categorias</h2>
+          <p class="sub">Filtre as lojas por tipo de negócio.</p>
+        </div>
+        <div class="count" id="countClientes">—</div>
+      </div>
+      <div class="chips" id="bizChips"></div>
+    </div>
+
+    <!-- LOJAS -->
+    <div class="section" id="secClientes">
+      <div class="sectionHead">
+        <div>
+          <h2>Lojas em destaque</h2>
+          <p class="sub" id="clientesSub">Carregando lojas...</p>
+        </div>
+        <div class="count"><span id="countAtivas">—</span> lojas</div>
+      </div>
+      <div class="gridClientes" id="clientesGrid"></div>
+    </div>
+
+    <!-- VITRINE (PRODUTOS) -->
+    <div class="section hidden" id="secProdutos">
+      <div class="vitrineTop">
+        <div class="vLeft">
+          <div class="avatar" id="cliAvatar">LO</div>
+          <div class="vTitle">
+            <div class="n" id="cliNome">Loja</div>
+            <div class="m">
+              slug: <span class="count" id="cliSlug">—</span> • WhatsApp: <span class="count" id="cliWhats">—</span>
             </div>
-            <div class="sub" id="tipoAtual">Todos</div>
           </div>
-          <div class="chips" id="tipoChips"></div>
+          <span class="tag"><span class="dot"></span>Ativa</span>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- HOME: CLIENTES -->
-  <div class="section" id="secClientes">
-    <div class="sectionHead">
-      <div>
-        <h3>Lojas em destaque</h3>
-        <p class="sub" id="clientesSub">Carregando lojas...</p>
-      </div>
-      <div class="sub"><span class="mono" id="countClientes">—</span> lojas</div>
-    </div>
-
-    <div class="gridClientes" id="clientesGrid"></div>
-  </div>
-
-  <!-- VITRINE DO CLIENTE -->
-  <div class="section hidden" id="secProdutos">
-    <div class="topClienteBar">
-      <div class="left">
-        <div class="avatar" id="cliAvatar">LO</div>
-        <div class="titleCliente">
-          <div class="n" id="cliNome">Loja</div>
-          <div class="m">
-            slug: <span class="mono" id="cliSlug">—</span>
-            • WhatsApp: <span class="mono" id="cliWhats">—</span>
-            • Tipo: <span class="mono" id="cliTipo">—</span>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+          <div class="search" style="min-width:260px">
+            🔎 <input id="searchProdutos" placeholder="Buscar produtos..." />
           </div>
+          <button class="btn" id="btnBack">⬅ Voltar</button>
         </div>
       </div>
 
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-        <input id="searchProdutos" placeholder="Buscar produtos..." style="min-width:280px; max-width:420px; padding:12px 12px; border-radius:14px; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.14); color:var(--text); outline:none" />
-        <button class="btn ghost" id="btnBack">⬅ Voltar</button>
-      </div>
+      <div class="chips" id="catChips"></div>
+      <div class="gridProdutos" id="prodGrid"></div>
     </div>
 
-    <div class="chips" id="catChips"></div>
-
-    <div class="gridProdutos" id="prodGrid"></div>
+    <footer>
+      <b>Cardápio Digital</b> • marketplace multi-lojas.<br/>
+      <span style="color:var(--muted); font-size:12.5px">
+        Dica: lojas e produtos aparecem aqui automaticamente (somente ativos).
+      </span>
+    </footer>
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footerGrid">
-      <div>
-        <b>Cardápio Digital</b> • feito para vender rápido pelo WhatsApp.<br/>
-        <span style="color:var(--muted); font-size:12.5px">
-          Dica: crie lojas e produtos no Painel Admin e elas aparecem aqui automaticamente (somente ativas).
-        </span>
-      </div>
-      <div class="links">
-        <span class="badge">🔐 Supabase</span>
-        <span class="badge">⚙️ Vercel API</span>
-        <span class="badge">🌐 GitHub Pages</span>
-      </div>
+  <!-- CARRINHO -->
+  <div class="cartBar" id="cartBar">
+    <div>
+      <div class="total" id="total">Total: R$ 0,00</div>
+      <div class="muted" id="cartCount">0 itens</div>
     </div>
-  </footer>
-
-</div>
-
-<!-- CARRINHO -->
-<div class="cartBar" id="cartBar">
-  <div>
-    <div class="total" id="total">Total: R$ 0,00</div>
-    <div class="muted" id="cartCount">0 itens</div>
+    <div style="display:flex; gap:10px; align-items:center">
+      <button class="btn" id="btnLimpar">🧹 Limpar</button>
+      <button class="btn brand" id="finalizar">📲 Finalizar</button>
+    </div>
   </div>
-  <div style="display:flex; gap:10px; align-items:center">
-    <button class="btn ghost" id="btnLimpar">🧹 Limpar</button>
-    <button class="btn primary" id="finalizar">📲 Finalizar pedido</button>
-  </div>
-</div>
 
 <script>
-  // Supabase (public)
+  /* ================================
+     SUPABASE (PUBLIC)
+  ================================= */
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
   const SUPABASE_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // State
+  /* ================================
+     STATE
+  ================================= */
   let clientes = [];
-  let clientesFiltrados = [];
   let categorias = [];
   let produtos = [];
   let clienteAtual = null;
 
   let carrinho = [];
   let catAtivaId = "all";
-  let tipoAtivo = "all";
+  let tipoNegocioAtivo = "all";
 
-  // Util
+  /* ================================
+     HELPERS
+  ================================= */
   const el = (id)=>document.getElementById(id);
   const money = (v)=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
@@ -489,83 +521,107 @@
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
     }[m]));
   }
-
   function initials(name){
     const s = (name||"").trim().split(/\s+/).slice(0,2).map(x=>x[0]?.toUpperCase()||"").join("");
     return s || "LO";
   }
-
   function getParamSlug(){
-    const params = new URLSearchParams(window.location.search);
-    return params.get("u");
+    return new URLSearchParams(window.location.search).get("u");
   }
-
   function setParamSlug(slug){
     const url = new URL(window.location.href);
     if (slug) url.searchParams.set("u", slug);
     else url.searchParams.delete("u");
-    window.history.pushState({}, "", url.toString());
+    history.pushState({}, "", url.toString());
   }
 
-  // Tipos (cadastre no clientes.tipo_negocio)
-  const TIPOS = [
-    { id:"all", label:"Todos" },
-    { id:"restaurante", label:"Restaurante" },
-    { id:"mercado", label:"Mercado" },
-    { id:"padaria", label:"Padaria" },
-    { id:"lanchonete", label:"Lanchonete" },
-    { id:"farmacia", label:"Farmácia" },
-    { id:"petshop", label:"Pet shop" },
-  ];
-
-  function renderTipoChips(){
-    const chips = el("tipoChips");
-    chips.innerHTML = TIPOS.map(t => `
-      <button class="chipBtn ${tipoAtivo===t.id ? "active":""}" onclick="setTipo('${t.id}')">
-        ${escapeHtml(t.label)}
-      </button>
-    `).join("");
-    el("tipoAtual").textContent = TIPOS.find(x=>x.id===tipoAtivo)?.label || "Todos";
+  // retry simples (reduz AbortError)
+  async function withRetry(fn, tries=3){
+    let last;
+    for (let i=0;i<tries;i++){
+      try { return await fn(); }
+      catch(e){ last=e; await new Promise(r=>setTimeout(r, 350*(i+1))); }
+    }
+    throw last;
   }
 
-  function setTipo(id){
-    tipoAtivo = id;
-    renderTipoChips();
-    renderClientes();
+  function showHome(){
+    clienteAtual = null;
+    categorias = [];
+    produtos = [];
+    catAtivaId = "all";
+    setParamSlug(null);
+
+    el("secProdutos").classList.add("hidden");
+    el("secClientes").classList.remove("hidden");
   }
 
-  // Load clientes
+  function showVitrine(){
+    el("secClientes").classList.add("hidden");
+    el("secProdutos").classList.remove("hidden");
+  }
+
+  /* ================================
+     LOAD CLIENTES (HOME)
+  ================================= */
   async function loadClientes(){
+    el("clientesSub").textContent = "Carregando lojas...";
     try{
-      const { data, error } = await sb
+      const { data, error } = await withRetry(()=>sb
         .from("clientes")
         .select("id,nome,slug,whatsapp,ativo,tipo_negocio")
         .eq("ativo", true)
-        .order("nome", { ascending:true });
+        .order("nome", { ascending:true })
+      );
 
       if (error) throw error;
 
       clientes = data || [];
-      el("countClientes").textContent = clientes.length;
-      el("clientesSub").textContent = clientes.length ? "Lojas ativas disponíveis" : "Nenhuma loja ativa encontrada.";
+      el("countAtivas").textContent = clientes.length;
+      el("countClientes").textContent = `${clientes.length} lojas`;
 
+      buildBizChips();
       renderClientes();
     }catch(err){
       console.error(err);
       el("clientesSub").textContent = "Erro ao carregar lojas.";
-      el("clientesGrid").innerHTML = `<div style="color:rgba(231,238,252,.75)">Erro ao carregar lojas.</div>`;
+      el("clientesGrid").innerHTML = `<div style="color:#6b7280">Não foi possível carregar.</div>`;
     }
   }
 
+  function buildBizChips(){
+    const all = ["all","restaurante","mercado","padaria","lanchonete","farmacia","petshop"];
+    const labels = {
+      all:"Todos",
+      restaurante:"Restaurante",
+      mercado:"Mercado",
+      padaria:"Padaria",
+      lanchonete:"Lanchonete",
+      farmacia:"Farmácia",
+      petshop:"Pet shop",
+    };
+
+    el("bizChips").innerHTML = all.map(t=>`
+      <button class="chipBtn ${t===tipoNegocioAtivo ? "active":""}" onclick="setBiz('${t}')">
+        ${labels[t] || t}
+      </button>
+    `).join("");
+  }
+
+  function setBiz(t){
+    tipoNegocioAtivo = t;
+    buildBizChips();
+    renderClientes();
+  }
+
   function renderClientes(){
-    const q = (el("searchClientes").value || "").trim().toLowerCase();
+    const q = (el("searchClientes").value||"").trim().toLowerCase();
 
     let list = clientes.slice();
 
-    if (tipoAtivo !== "all"){
-      list = list.filter(c => String(c.tipo_negocio||"").toLowerCase() === tipoAtivo);
+    if (tipoNegocioAtivo !== "all"){
+      list = list.filter(c => String(c.tipo_negocio||"").toLowerCase() === tipoNegocioAtivo);
     }
-
     if (q){
       list = list.filter(c =>
         (c.nome||"").toLowerCase().includes(q) ||
@@ -573,97 +629,82 @@
       );
     }
 
-    clientesFiltrados = list;
-
-    const grid = el("clientesGrid");
-    if (!list.length){
-      grid.innerHTML = `<div style="color:rgba(231,238,252,.75)">Nenhuma loja encontrada.</div>`;
-      return;
-    }
-
-    grid.innerHTML = list.map(c => `
-      <div class="clienteCard">
-        <div class="clienteInfo">
+    el("clientesSub").textContent = list.length ? "Toque para abrir a loja." : "Nenhuma loja encontrada.";
+    el("clientesGrid").innerHTML = list.map(c => `
+      <div class="clienteCard" onclick="openLoja('${c.slug}')">
+        <div class="cliLeft">
           <div class="avatar">${initials(c.nome)}</div>
-          <div class="clienteTxt">
-            <div class="nome">${escapeHtml(c.nome || "Loja")}</div>
-            <div class="meta">${escapeHtml(c.slug || "")}</div>
-            <div class="tagTipo">🏷️ ${escapeHtml((c.tipo_negocio||"").toUpperCase() || "—")}</div>
+          <div class="cliTxt">
+            <div class="name">${escapeHtml(c.nome||"Loja")}</div>
+            <div class="meta">${escapeHtml(c.tipo_negocio||"")} • ${escapeHtml(c.slug||"")}</div>
           </div>
         </div>
-        <div class="clienteBtns">
-          <button class="btn small ghost" onclick="openLoja('${c.slug}')">➡ Entrar</button>
-          <button class="btn small accent" onclick="openLoja('${c.slug}')">🛍 Ver produtos</button>
-        </div>
+        <span class="tag"><span class="dot"></span>Ver</span>
       </div>
     `).join("");
   }
 
-  // Load vitrine
+  /* ================================
+     LOAD VITRINE
+  ================================= */
   async function openLoja(slug){
     setParamSlug(slug);
     await loadVitrine(slug);
   }
 
   async function loadVitrine(slug){
-    // Cliente
-    const { data: cli, error: e1 } = await sb
-      .from("clientes")
-      .select("*")
-      .eq("slug", slug)
-      .eq("ativo", true)
-      .single();
+    try{
+      const { data: cli, error: e1 } = await withRetry(()=>sb
+        .from("clientes")
+        .select("*")
+        .eq("slug", slug)
+        .eq("ativo", true)
+        .single()
+      );
+      if (e1 || !cli) throw (e1||new Error("Loja não encontrada"));
 
-    if (e1 || !cli){
-      setParamSlug(null);
+      clienteAtual = cli;
+
+      const { data: cats, error: e2 } = await withRetry(()=>sb
+        .from("categorias")
+        .select("*")
+        .eq("cliente_slug", slug)
+        .eq("ativo", true)
+        .order("ordem", { ascending:true })
+      );
+      if (e2) throw e2;
+
+      const { data: prods, error: e3 } = await withRetry(()=>sb
+        .from("produtos")
+        .select("*")
+        .eq("cliente_slug", slug)
+        .eq("ativo", true)
+        .order("ordem", { ascending:true })
+      );
+      if (e3) throw e3;
+
+      categorias = cats || [];
+      produtos = prods || [];
+
+      el("cliAvatar").textContent = initials(cli.nome);
+      el("cliNome").textContent = cli.nome || "Loja";
+      el("cliSlug").textContent = cli.slug || "—";
+      el("cliWhats").textContent = cli.whatsapp || "—";
+
+      catAtivaId = "all";
+      buildCatChips();
+      renderProdutos();
+      showVitrine();
+    }catch(err){
+      console.error(err);
       showHome();
-      return;
     }
-
-    clienteAtual = cli;
-
-    // Categorias
-    const { data: cats } = await sb
-      .from("categorias")
-      .select("*")
-      .eq("cliente_slug", slug)
-      .eq("ativo", true)
-      .order("ordem", { ascending:true });
-
-    // Produtos
-    const { data: prods } = await sb
-      .from("produtos")
-      .select("*")
-      .eq("cliente_slug", slug)
-      .eq("ativo", true);
-
-    categorias = cats || [];
-    produtos = prods || [];
-
-    // UI
-    el("cliAvatar").textContent = initials(cli.nome);
-    el("cliNome").textContent = cli.nome || "Loja";
-    el("cliSlug").textContent = cli.slug || "—";
-    el("cliWhats").textContent = cli.whatsapp || "—";
-    el("cliTipo").textContent = (cli.tipo_negocio || "—");
-
-    el("btnVoltarHome").style.display = "inline-flex";
-
-    catAtivaId = "all";
-    buildCatChips();
-    renderProdutos();
-
-    // troca seções
-    el("secClientes").classList.add("hidden");
-    el("hero").classList.add("hidden");
-    el("secProdutos").classList.remove("hidden");
   }
 
   function buildCatChips(){
-    const chips = el("catChips");
-    chips.innerHTML = `
+    el("catChips").innerHTML = `
       <button class="chipBtn ${catAtivaId==="all" ? "active":""}" onclick="setCategoria('all')">Todos</button>
-      ${categorias.map(c => `
+      ${categorias.map(c=>`
         <button class="chipBtn ${String(catAtivaId)===String(c.id) ? "active":""}" onclick="setCategoria('${c.id}')">
           ${escapeHtml(c.nome)}
         </button>
@@ -677,15 +718,19 @@
     renderProdutos();
   }
 
+  function getImagemProduto(p){
+    // compat: se existir imagem_url usa, senão tenta imagem
+    const url = p?.imagem_url || p?.imagem || "";
+    return String(url||"").trim();
+  }
+
   function renderProdutos(){
-    const q = (el("searchProdutos").value || "").trim().toLowerCase();
+    const q = (el("searchProdutos").value||"").trim().toLowerCase();
 
     let list = produtos.slice();
-
     if (catAtivaId !== "all"){
       list = list.filter(p => String(p.categoria_id) === String(catAtivaId));
     }
-
     if (q){
       list = list.filter(p =>
         (p.nome||"").toLowerCase().includes(q) ||
@@ -693,71 +738,51 @@
       );
     }
 
-    const grid = el("prodGrid");
     if (!list.length){
-      grid.innerHTML = `<div style="color:rgba(231,238,252,.75)">Nenhum produto encontrado.</div>`;
+      el("prodGrid").innerHTML = `<div style="color:#6b7280">Nenhum produto encontrado.</div>`;
       return;
     }
 
-    grid.innerHTML = list.map(p => `
-      <div class="prodCard">
-        <div class="prodImg">${
-          p.imagem_url
-            ? `<img src="${escapeHtml(p.imagem_url)}" alt="" style="width:100%;height:100%;object-fit:cover"/>`
-            : "Imagem"
-        }</div>
-        <div class="prodBody">
-          <div class="prodName">${escapeHtml(p.nome)}</div>
-          <div class="prodMeta">Loja: ${escapeHtml(clienteAtual?.nome || "")}</div>
-          <div class="prodDesc">${escapeHtml(p.descricao || "")}</div>
-          <div class="prodBottom">
-            <div class="price">${money(p.preco)}</div>
-            <button class="btn btnAdd accent small" onclick="addCarrinho('${p.id}')">➕</button>
+    el("prodGrid").innerHTML = list.map(p=>{
+      const img = getImagemProduto(p);
+      return `
+        <div class="prodCard">
+          <div class="prodImg">
+            ${img ? `<img src="${escapeHtml(img)}" alt="">` : "Sem imagem"}
+          </div>
+          <div class="prodBody">
+            <div class="prodName">${escapeHtml(p.nome)}</div>
+            <div class="prodDesc">${escapeHtml(p.descricao||"")}</div>
+            <div class="prodBottom">
+              <div>
+                <div class="price">${money(p.preco)}</div>
+                <div class="store">${escapeHtml(clienteAtual?.nome || "")}</div>
+              </div>
+              <button class="btn brand" style="padding:10px 12px" onclick="addCarrinho('${p.id}')">➕</button>
+            </div>
           </div>
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
 
-  // Home/nav
-  function showHome(){
-    clienteAtual = null;
-    categorias = [];
-    produtos = [];
-    catAtivaId = "all";
-
-    el("secProdutos").classList.add("hidden");
-    el("secClientes").classList.remove("hidden");
-    el("hero").classList.remove("hidden");
-    el("btnVoltarHome").style.display = "none";
-  }
-
-  window.addEventListener("popstate", async ()=>{
-    const slug = getParamSlug();
-    if (slug) await loadVitrine(slug);
-    else showHome();
-  });
-
-  // Carrinho
+  /* ================================
+     CARRINHO
+  ================================= */
   function addCarrinho(prodId){
     const p = produtos.find(x => String(x.id) === String(prodId));
     if (!p) return;
     carrinho.push(p);
     updateCart();
   }
-
   function updateCart(){
     const total = carrinho.reduce((s,p)=>s+Number(p.preco||0),0);
     el("total").textContent = "Total: " + money(total);
     el("cartCount").textContent = carrinho.length + (carrinho.length===1 ? " item" : " itens");
   }
+  function limparCarrinho(){ carrinho=[]; updateCart(); }
 
-  function limparCarrinho(){
-    carrinho = [];
-    updateCart();
-  }
-
-  async function finalizarPedido(){
+  function finalizarPedido(){
     if (!clienteAtual) return alert("Escolha uma loja primeiro.");
     if (!clienteAtual.whatsapp) return alert("Esta loja não tem WhatsApp cadastrado.");
     if (carrinho.length === 0) return;
@@ -765,20 +790,25 @@
     const linhas = carrinho.map(p => `• ${p.nome} - ${money(p.preco)}`).join("%0A");
     const total = carrinho.reduce((s,p)=>s+Number(p.preco||0),0);
     const texto = `Pedido:%0A${linhas}%0A%0ATotal: ${money(total)}`;
-
     window.open(`https://wa.me/55${clienteAtual.whatsapp}?text=${texto}`, "_blank");
   }
 
-  // Init
-  (async function init(){
-    renderTipoChips();
+  /* ================================
+     NAV
+  ================================= */
+  window.addEventListener("popstate", async ()=>{
+    const slug = getParamSlug();
+    if (slug) await loadVitrine(slug);
+    else showHome();
+  });
 
+  /* ================================
+     INIT
+  ================================= */
+  (async function init(){
     el("btnReload").addEventListener("click", loadClientes);
     el("searchClientes").addEventListener("input", renderClientes);
-
-    el("btnBack").addEventListener("click", ()=>{ setParamSlug(null); showHome(); });
-    el("btnVoltarHome").addEventListener("click", ()=>{ setParamSlug(null); showHome(); });
-
+    el("btnBack").addEventListener("click", showHome);
     el("searchProdutos").addEventListener("input", renderProdutos);
 
     el("btnLimpar").addEventListener("click", limparCarrinho);
