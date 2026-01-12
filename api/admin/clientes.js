@@ -1,155 +1,122 @@
-import { createClient } from "@supabase/supabase-js";
-import { requireAdmin, setCors, json, readBody } from "../_lib/auth.js";
-
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-const sbAdmin = createClient(SUPABASE_URL, SERVICE_ROLE, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
-
-function normSlug(s = "") {
-  return String(s)
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]/g, "")
-    .replace(/-+/g, "-");
-}
+import { supabaseAdmin } from "../_lib/supabaseAdmin.js";
+import { applyCors, requireAdmin, readJson, send } from "../_lib/auth.js";
 
 export default async function handler(req, res) {
-  setCors(req, res);
-  if (req.method === "OPTIONS") return res.status(204).end();
+  if (applyCors(req, res)) return;
 
-  if (!SUPABASE_URL || !SERVICE_ROLE) {
-    return json(res, 500, { error: "Missing SUPABASE_URL or SERVICE_ROLE env" });
-  }
+  const admin = await requireAdmin(req, res);
+  if (!admin) return;
 
-  const auth = await requireAdmin(req);
-  if (!auth.ok) return json(res, auth.status, { error: auth.error });
+  const sb = supabaseAdmin();
 
   try {
     // LISTAR
     if (req.method === "GET") {
-      const { data, error } = await sbAdmin
+      const { data, error } = await sb
         .from("clientes")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) return json(res, 400, { error: error.message });
-      return json(res, 200, { data });
+      if (error) return send(res, 400, { error: error.message });
+      return send(res, 200, data || []);
     }
-
-    const body = await readBody(req);
 
     // CRIAR
     if (req.method === "POST") {
-      const nome = String(body.nome || "").trim();
-      const slug = normSlug(body.slug || nome);
-      const whatsapp = String(body.whatsapp || "").trim();
+      const body = await readJson(req);
+
+      const nome = (body.nome || "").trim();
+      const slug = (body.slug || "").trim();
+      const whatsapp = (body.whatsapp || "").trim();
+      const tipo_negocio = (body.tipo_negocio || "").trim(); // NOVO
       const ativo = body.ativo !== false;
 
-      // NOVO: tipo do negócio
-      const tipo = String(body.tipo || "restaurante").trim();
+      // credenciais do cliente (opcional, mas você pediu)
+      const email = (body.email || "").trim().toLowerCase();
+      const senha = (body.senha || "").trim();
 
-      // credenciais do cliente
-      const email = String(body.email || "").trim().toLowerCase();
-      const senha = String(body.senha || "").trim();
+      if (!nome || !slug) return send(res, 400, { error: "nome e slug são obrigatórios" });
 
-      if (!nome || !slug) {
-        return json(res, 400, { error: "nome/slug obrigatórios" });
-      }
-
-      // 1) cria/atualiza loja
-      const { data: cliente, error: e1 } = await sbAdmin
+      // 1) cria/insere cliente
+      const { data: cli, error: eCli } = await sb
         .from("clientes")
-        .upsert({ nome, slug, whatsapp, ativo, tipo }, { onConflict: "slug" })
+        .insert([{ nome, slug, whatsapp, tipo_negocio, ativo }])
         .select("*")
         .single();
 
-      if (e1) return json(res, 400, { error: e1.message });
+      if (eCli) return send(res, 400, { error: eCli.message });
 
-      // 2) cria usuário Auth + vincula
-      let createdUser = null;
-      let warning = null;
+      // 2) se veio email/senha, cria usuário no Auth e vincula
+      let createdUserId = null;
 
       if (email && senha) {
-        const { data: userRes, error: eU } = await sbAdmin.auth.admin.createUser({
+        const { data: created, error: eUser } = await sb.auth.admin.createUser({
           email,
           password: senha,
           email_confirm: true,
         });
 
-        if (eU) {
-          // Se já existe, não trava a loja — avisa.
-          if (String(eU.message || "").toLowerCase().includes("already")) {
-            warning = "Usuário já existe no Auth. Use 'resetar senha' ou crie com outro email.";
-          } else {
-            return json(res, 400, { error: `Auth createUser: ${eU.message}` });
-          }
-        } else {
-          createdUser = userRes.user;
-
-          const { error: eLink } = await sbAdmin
-            .from("cliente_usuarios")
-            .upsert(
-              {
-                cliente_slug: slug,
-                user_id: createdUser.id,
-                role: "owner",
-                ativo: true,
-              },
-              { onConflict: "cliente_slug,user_id" }
-            );
-
-          if (eLink) return json(res, 400, { error: `Link user: ${eLink.message}` });
+        if (eUser) {
+          // se falhar, desfaz o cliente para não ficar “meio criado”
+          await sb.from("clientes").delete().eq("id", cli.id);
+          return send(res, 400, { error: `Falha ao criar usuário: ${eUser.message}` });
         }
-      } else {
-        warning = "Sem email/senha: cliente criado sem login. Preencha email e senha para liberar acesso.";
+
+        createdUserId = created.user?.id || null;
+
+        const { error: eLink } = await sb
+          .from("cliente_usuarios")
+          .insert([{
+            cliente_slug: slug,
+            user_id: createdUserId,
+            role: "owner",
+            ativo: true
+          }]);
+
+        if (eLink) {
+          await sb.from("clientes").delete().eq("id", cli.id);
+          return send(res, 400, { error: `Falha ao vincular usuário: ${eLink.message}` });
+        }
       }
 
-      return json(res, 200, { data: cliente, user: createdUser, warning });
+      return send(res, 201, { ...cli, created_user_id: createdUserId });
     }
 
     // ATUALIZAR
-    if (req.method === "PATCH" || req.method === "PUT") {
-      const slug = normSlug(body.slug);
-      if (!slug) return json(res, 400, { error: "slug obrigatório" });
+    if (req.method === "PUT" || req.method === "PATCH") {
+      const body = await readJson(req);
+      const id = body.id;
+      if (!id) return send(res, 400, { error: "id é obrigatório" });
 
       const patch = {};
-      if (body.nome != null) patch.nome = String(body.nome).trim();
-      if (body.whatsapp != null) patch.whatsapp = String(body.whatsapp).trim();
-      if (body.ativo != null) patch.ativo = !!body.ativo;
-      if (body.tipo != null) patch.tipo = String(body.tipo).trim();
+      ["nome", "slug", "whatsapp", "tipo_negocio", "ativo"].forEach(k => {
+        if (body[k] !== undefined) patch[k] = body[k];
+      });
 
-      const { data, error } = await sbAdmin
+      const { data, error } = await sb
         .from("clientes")
         .update(patch)
-        .eq("slug", slug)
+        .eq("id", id)
         .select("*")
         .single();
 
-      if (error) return json(res, 400, { error: error.message });
-      return json(res, 200, { data });
+      if (error) return send(res, 400, { error: error.message });
+      return send(res, 200, data);
     }
 
     // EXCLUIR
     if (req.method === "DELETE") {
-      const slug = normSlug(req.query?.slug || "");
-      if (!slug) return json(res, 400, { error: "slug obrigatório" });
+      const body = await readJson(req);
+      const id = body.id;
+      if (!id) return send(res, 400, { error: "id é obrigatório" });
 
-      await sbAdmin.from("produtos").delete().eq("cliente_slug", slug);
-      await sbAdmin.from("categorias").delete().eq("cliente_slug", slug);
-      await sbAdmin.from("cliente_usuarios").delete().eq("cliente_slug", slug);
-
-      const { error } = await sbAdmin.from("clientes").delete().eq("slug", slug);
-      if (error) return json(res, 400, { error: error.message });
-
-      return json(res, 200, { ok: true });
+      const { error } = await sb.from("clientes").delete().eq("id", id);
+      if (error) return send(res, 400, { error: error.message });
+      return send(res, 200, { ok: true });
     }
 
-    return json(res, 405, { error: "Method not allowed" });
+    return send(res, 405, { error: "Method not allowed" });
   } catch (e) {
-    return json(res, 500, { error: String(e?.message || e) });
+    return send(res, 500, { error: e?.message || "Server error" });
   }
 }
