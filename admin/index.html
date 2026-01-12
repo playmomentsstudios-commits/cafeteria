@@ -2,1185 +2,681 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Alfa — Cardápio Digital</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg1:#071225; --bg2:#071b2d;
-      --card: rgba(255,255,255,.06);
-      --card2: rgba(255,255,255,.10);
-      --card3: rgba(255,255,255,.12);
-      --line: rgba(255,255,255,.10);
-      --txt: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.65);
-      --blue:#3aa0ff;
-      --blue2:#2a7bff;
-      --blue3:#1e63ff;
-      --ok:#2ee59d;
-      --warn:#ffbf4a;
-      --danger:#ff5b6e;
-      --radius:18px;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --shadow-soft: 0 12px 30px rgba(0,0,0,.35);
-      --focus: 0 0 0 3px rgba(58,160,255,.25);
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --bg:#0b1320;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --text:#0f172a;
+      --line:#e5e7eb;
+      --brand:#2563eb;
+      --brand2:#1d4ed8;
+      --danger:#ef4444;
+      --shadow: 0 24px 70px rgba(0,0,0,.18);
+      --radius: 18px;
+      --radius2: 14px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
     *{box-sizing:border-box}
     body{
-      margin:0; font-family:var(--font); color:var(--txt);
-      background:
-        radial-gradient(1200px 700px at 20% 15%, rgba(58,160,255,.35), transparent 55%),
-        radial-gradient(900px 600px at 80% 20%, rgba(46,229,157,.22), transparent 55%),
-        radial-gradient(800px 600px at 60% 85%, rgba(255,191,74,.12), transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
+      margin:0; font-family:var(--font);
+      background: radial-gradient(900px 600px at 20% 10%, rgba(37,99,235,.18), transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(34,197,94,.12), transparent 55%),
+                  linear-gradient(180deg, #07101c, #0b1320);
+      color:#e5e7eb;
       min-height:100vh;
+      padding: 28px 16px 60px;
     }
-    a{color:inherit}
-    .wrap{max-width:1220px; margin:0 auto; padding:28px 18px 60px;}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:16px 18px; border-radius:22px; background:var(--card);
-      border:1px solid rgba(255,255,255,.14); box-shadow:var(--shadow);
+    .wrap{max-width:1100px; margin:0 auto}
+    .hidden{display:none!important}
+
+    /* LOGIN (estilo iFood, card branco) */
+    .loginShell{display:grid; place-items:center; min-height: calc(100vh - 120px);}
+    .loginCard{
+      width:min(920px, 100%);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 26px;
+      box-shadow: 0 40px 120px rgba(0,0,0,.45);
       backdrop-filter: blur(12px);
-      gap:12px;
+      padding: 22px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
     }
-    @media (max-width:900px){
-      .topbar{flex-direction:column; align-items:flex-start}
-      .status{width:100%; justify-content:flex-start}
+    .loginLeft{
+      background: rgba(255,255,255,.06);
+      border: 1px dashed rgba(255,255,255,.20);
+      border-radius: 22px;
+      padding: 22px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      justify-content:center;
     }
-    .brand{display:flex; align-items:center; gap:12px; min-width:240px}
     .logo{
-      width:46px; height:46px; border-radius:14px;
+      width:88px; height:88px; border-radius: 24px;
+      background: linear-gradient(135deg, rgba(37,99,235,.35), rgba(34,197,94,.18));
+      border: 1px solid rgba(255,255,255,.18);
       display:grid; place-items:center;
-      background: linear-gradient(135deg, rgba(58,160,255,.6), rgba(42,123,255,.12));
-      border:1px dashed rgba(255,255,255,.35);
-      font-weight:800; letter-spacing:.5px;
+      font-weight:900; letter-spacing:1px;
     }
-    .brand h1{font-size:16px; margin:0}
-    .brand p{margin:2px 0 0; font-size:12px; color:var(--muted)}
-    .status{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
-    .pill{
-      padding:8px 10px; border-radius:999px;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
-      font-size:12px; color:var(--muted);
-      display:flex; gap:8px; align-items:center;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    .loginLeft h1{margin:0; font-size:28px}
+    .loginLeft p{margin:0; color:rgba(229,231,235,.78); line-height:1.35}
+
+    .loginRight{
+      background: #fff;
+      border-radius: 22px;
+      padding: 26px;
+      color: var(--text);
+      box-shadow: var(--shadow);
     }
-    .pill b{color:var(--txt); font-weight:700}
+    .loginRight h2{margin:0 0 6px; font-size:22px}
+    .loginRight .sub{margin:0 0 16px; color:var(--muted); font-size:14px}
+    label{display:block; font-weight:800; font-size:13px; margin:10px 0 6px}
+    input{
+      width:100%;
+      padding: 12px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      outline:none;
+      font-size: 14px;
+    }
+    input:focus{border-color: rgba(37,99,235,.55); box-shadow: 0 0 0 4px rgba(37,99,235,.12);}
+    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top: 14px}
+
     .btn{
-      border:0; cursor:pointer; color:var(--txt);
-      background: rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.16);
-      padding:10px 14px; border-radius:12px;
-      display:inline-flex; align-items:center; gap:8px;
-      transition:.15s transform, .2s background, .2s border, .2s box-shadow;
+      cursor:pointer;
+      border:none;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight:900;
+      display:inline-flex; gap:10px; align-items:center; justify-content:center;
+      transition: transform .12s ease, filter .12s ease;
       user-select:none;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.14); box-shadow: var(--shadow-soft)}
-    .btn.primary{
-      background: linear-gradient(135deg, var(--blue), var(--blue2), var(--blue3));
-      border:1px solid rgba(255,255,255,.22);
-      color:#061226; font-weight:800; box-shadow: 0 12px 30px rgba(42,123,255,.3);
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background: linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff; flex:1}
+    .btn.ghost{background:#fff; border:1px solid var(--line); color:#111827; flex:1}
+    .btn.danger{background: var(--danger); color:#fff}
+    .msg{margin-top:12px; font-weight:800; font-size:13px}
+    .msg.err{color:#b91c1c}
+    .msg.ok{color:#065f46}
+
+    /* APP */
+    .app{
+      margin-top: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      padding: 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 40px 120px rgba(0,0,0,.35);
     }
-    .btn.danger{
-      background: rgba(255,91,110,.14);
-      border:1px solid rgba(255,91,110,.28);
-      color:#ffd7dc;
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+      padding: 10px 12px;
     }
-    .grid{
-      margin-top:16px;
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:18px;
-      align-items:start;
-    }
-    @media (max-width:980px){ .grid{grid-template-columns:1fr} }
-    .card{
-      background: var(--card);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      overflow:hidden;
-    }
-    .card .hd{
-      padding:14px 16px;
-      display:flex; align-items:center; justify-content:space-between;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
-    }
-    .card .hd h2{margin:0; font-size:14px}
-    .card .bd{padding:18px}
-    .card .bd.compact{padding:24px}
-    .login-grid{
-      display:grid;
-      grid-template-columns: 180px 1fr;
-      gap:22px;
-      align-items:center;
-    }
-    @media (max-width:780px){
-      .login-grid{grid-template-columns:1fr; text-align:center}
-      .login-grid .logo{margin:0 auto}
+    .top .who{
+      color:rgba(229,231,235,.80);
+      font-size:13px;
     }
     .tabs{
-      display:flex; gap:6px; padding:6px; background: rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius: 999px;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+      display:flex; gap:10px; flex-wrap:wrap;
+      padding: 0 12px 12px;
     }
     .tab{
-      padding:9px 14px; border-radius:999px; border:1px solid transparent;
-      background: transparent; color:var(--muted); cursor:pointer;
-      font-weight:700; font-size:13px;
-      transition:.2s ease;
+      cursor:pointer;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      color:#e5e7eb;
+      font-weight:900;
     }
     .tab.active{
-      background: rgba(255,255,255,.14);
-      border:1px solid rgba(255,255,255,.2);
-      color:var(--txt);
-      box-shadow: 0 10px 20px rgba(0,0,0,.25);
+      background: rgba(37,99,235,.22);
+      border-color: rgba(37,99,235,.35);
     }
-    .form{
-      display:grid; gap:10px;
-    }
-    .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
-    @media(max-width:780px){
-      .row2,.row3{grid-template-columns:1fr}
-    }
-    label{font-size:12px; color:var(--muted)}
-    input,select,textarea{
-      width:100%; padding:12px 12px; border-radius:12px;
-      background: rgba(3,10,22,.6);
-      border:1px solid rgba(255,255,255,.14);
-      color: var(--txt);
-      outline:none;
-      transition:.2s ease;
-    }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(58,160,255,.6);
-      box-shadow: var(--focus);
-      background: rgba(3,10,22,.75);
-    }
-    textarea{min-height:86px; resize:vertical}
-    input::placeholder, textarea::placeholder{color: rgba(255,255,255,.35)}
-    .hint{font-size:12px; color:var(--muted); margin-top:6px}
-    .divider{height:1px; background: rgba(255,255,255,.08); margin:14px 0}
-    .msg{
-      padding:12px 12px; border-radius:14px;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
-      color: var(--muted);
-      font-size:13px;
-    }
-    .msg.err{background: rgba(255,91,110,.12); border-color: rgba(255,91,110,.26); color:#ffd7dc}
-    .msg.ok{background: rgba(46,229,157,.10); border-color: rgba(46,229,157,.22); color:#d8fff0}
 
-    /* Lists */
-    .toolbar{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-    .toolbar .left{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-    .search{min-width:240px; flex:1}
-    .list{
-      margin-top:12px;
-      display:grid; gap:10px;
+    .panel{
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 14px;
+      margin: 0 12px 14px;
     }
-    .item{
-      display:grid;
-      grid-template-columns: 1.1fr .8fr .8fr .45fr .45fr 40px;
-      gap:10px;
-      padding:12px; border-radius:16px;
+    .panel h3{margin:0 0 10px}
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    .grid3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px}
+    .field label{color:rgba(229,231,235,.85)}
+    .field input, .field select, .field textarea{
       background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      align-items:center;
-      transition:.2s ease;
-    }
-    .item:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,.09);
-      box-shadow: var(--shadow-soft);
-    }
-    .item .col{min-width:0}
-    .item h4{word-break:break-word}
-    @media(max-width:980px){
-      .item{grid-template-columns:1fr; gap:8px}
-    }
-    .col h4{margin:0; font-size:13px}
-    .col small{display:block; margin-top:2px; color:var(--muted); font-size:12px}
-    .badge{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:7px 10px; border-radius:999px;
-      font-size:12px; font-weight:800;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.08);
-      width:max-content;
-    }
-    .badge.ok{background: rgba(46,229,157,.12); border-color: rgba(46,229,157,.26); color:#d8fff0}
-    .badge.off{background: rgba(255,191,74,.10); border-color: rgba(255,191,74,.22); color:#ffeac2}
-    .kebab{
-      width:40px; height:40px; border-radius:12px;
-      display:grid; place-items:center;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      cursor:pointer;
-      position:relative;
-      user-select:none;
-    }
-    .menu{
-      position:absolute; right:0; top:44px; z-index:20;
-      min-width:210px;
-      background: rgba(15,26,44,.94);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:14px; box-shadow: var(--shadow);
-      overflow:hidden;
-      display:none;
-    }
-    .menu.open{display:block}
-    .menu button{
+      color:#e5e7eb;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 12px;
+      padding: 12px;
       width:100%;
-      border:0; background:transparent; color:var(--txt);
-      padding:10px 12px; cursor:pointer;
-      text-align:left;
-      display:flex; align-items:center; justify-content:space-between;
+      outline:none;
     }
-    .menu button:hover{background: rgba(255,255,255,.06)}
-    .menu .danger{color:#ffd7dc}
-    .footer{margin-top:18px; color:var(--muted); font-size:12px; text-align:center}
-    .section-title{
-      margin:0 0 10px;
-      font-size:13px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:rgba(255,255,255,.7);
+    .field textarea{min-height:84px}
+    .list{
+      margin-top: 12px;
+      border-radius: 16px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.12);
     }
-    .section-card{
-      padding:14px;
-      border-radius:16px;
-      background: rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
+    .headRow, .itemRow{
+      display:grid;
+      grid-template-columns: 2fr 1.3fr 1.2fr 120px;
+      gap: 10px;
+      align-items:center;
+      padding: 10px 12px;
     }
-    .stack{display:grid; gap:12px}
-    .hide{display:none !important}
+    .headRow{
+      background: rgba(255,255,255,.06);
+      font-weight:900;
+      color: rgba(229,231,235,.72);
+      font-size: 12px;
+    }
+    .itemRow{
+      background: rgba(0,0,0,.14);
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .pill{
+      display:inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight:900;
+      font-size: 12px;
+      background: rgba(34,197,94,.16);
+      border: 1px solid rgba(34,197,94,.30);
+      justify-content:center;
+      width: fit-content;
+    }
+    .pill.off{
+      background: rgba(239,68,68,.16);
+      border-color: rgba(239,68,68,.30);
+    }
+    .actions{display:flex; gap:8px; justify-content:flex-end}
+    .iconBtn{
+      width:36px; height:36px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color:#e5e7eb;
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-weight:900;
+    }
+    .iconBtn:hover{filter:brightness(1.08)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    @media (max-width: 920px){
+      .loginCard{grid-template-columns: 1fr}
+      .grid2,.grid3{grid-template-columns:1fr}
+      .headRow,.itemRow{grid-template-columns: 1.6fr 1fr .9fr 120px}
+    }
   </style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <!-- LOGIN VIEW (clean) -->
-  <section id="viewLogin" class="card">
-    <div class="bd compact">
-      <div class="login-grid">
-        <div style="display:grid;place-items:center;gap:10px">
-          <div class="logo" style="width:120px;height:120px;border-radius:26px;font-size:22px">ADM</div>
-          <div style="font-weight:900">Admin Alfa</div>
-          <div style="font-size:12px;color:var(--muted);text-align:center;line-height:1.4">
-            Gerencie clientes, categorias e produtos.
-          </div>
-        </div>
-
-        <div>
-          <h2 style="margin:0 0 6px;font-size:18px">Entrar</h2>
-          <div class="hint" style="margin:0 0 14px">Email/senha do Supabase Auth ou Google.</div>
-
-          <div class="row2">
-            <div>
-              <label>Email</label>
-              <input id="loginEmail" type="email" placeholder="seu@email.com" />
-            </div>
-            <div>
-              <label>Senha</label>
-              <input id="loginPass" type="password" placeholder="••••••••" />
-            </div>
-          </div>
-
-          <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap">
-            <button id="btnLogin" class="btn primary">🔒 Entrar</button>
-            <button id="btnGoogle" class="btn">🟦 Entrar com Google</button>
-          </div>
-
-          <div id="loginMsg" class="msg err hide" style="margin-top:12px"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- APP VIEW -->
-  <section id="viewApp" class="hide">
-    <div class="topbar" style="margin-top:16px">
-      <div class="brand">
+  <!-- LOGIN -->
+  <section id="loginView" class="loginShell">
+    <div class="loginCard">
+      <div class="loginLeft">
         <div class="logo">ADM</div>
-        <div>
-          <h1>Admin Alfa</h1>
-          <p>CRUD via Vercel API • multi-lojas</p>
-        </div>
+        <h1>Admin Alfa</h1>
+        <p>Gerencie clientes, categorias e produtos (Supabase + Vercel API).</p>
+        <p style="opacity:.8;font-size:13px">Login por email/senha ou Google.</p>
       </div>
 
-      <div class="status">
-        <div class="pill">Status: <b id="stUser">—</b></div>
-        <div class="pill">API: <b id="stApi">—</b></div>
-        <button id="btnLogout" class="btn danger">🚪 Sair</button>
-      </div>
-    </div>
+      <div class="loginRight">
+        <h2>Entre na sua conta</h2>
+        <p class="sub" id="loginStepHint">Digite seu e-mail para continuar.</p>
 
-    <div class="grid">
-      <!-- MAIN -->
-      <div class="card">
-        <div class="hd">
-          <div class="tabs">
-            <button class="tab active" data-tab="clientes">Clientes</button>
-            <button class="tab" data-tab="categorias">Categorias</button>
-            <button class="tab" data-tab="produtos">Produtos</button>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center">
-            <span class="pill">Clientes: <b id="countClientes">0</b></span>
-            <span class="pill">Categorias: <b id="countCategorias">0</b></span>
-            <span class="pill">Produtos: <b id="countProdutos">0</b></span>
+        <!-- step 1 -->
+        <div id="stepEmail">
+          <label>Email</label>
+          <input id="email" type="email" placeholder="nome@email.com" autocomplete="email" />
+          <div class="row">
+            <button class="btn primary" id="btnNext">Continuar</button>
           </div>
         </div>
 
-        <div class="bd">
-
-          <!-- TAB CLIENTES -->
-          <div id="tabClientes">
-            <div class="toolbar">
-              <div class="left">
-                <input id="searchClientes" class="search" placeholder="Buscar cliente por nome/slug..." />
-                <button class="btn" id="btnReloadClientes">↻ Recarregar</button>
-              </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <h3 class="section-title">Cadastrar / editar cliente</h3>
-
-            <form id="formCliente" class="form">
-              <div class="row2">
-                <div>
-                  <label>Nome do negócio</label>
-                  <input id="cNome" placeholder="ex: Padaria do João" />
-                </div>
-                <div>
-                  <label>Slug</label>
-                  <input id="cSlug" placeholder="ex: padaria-do-joao" />
-                </div>
-              </div>
-
-              <div class="row3">
-                <div>
-                  <label>WhatsApp</label>
-                  <input id="cWhats" placeholder="ex: 629999999999" />
-                </div>
-                <div>
-                  <label>Categoria do negócio</label>
-                  <select id="cTipo">
-                    <option value="restaurante">Restaurante</option>
-                    <option value="lanchonete">Lanchonete</option>
-                    <option value="padaria">Padaria</option>
-                    <option value="mercado">Mercado</option>
-                    <option value="farmacia">Farmácia</option>
-                    <option value="petshop">Petshop</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Status</label>
-                  <select id="cAtivo">
-                    <option value="true">Ativo</option>
-                    <option value="false">Inativo</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="row2">
-                <div>
-                  <label>Email do cliente (para login)</label>
-                  <input id="cEmail" type="email" placeholder="cliente@email.com" />
-                </div>
-                <div>
-                  <label>Senha do cliente</label>
-                  <input id="cSenha" type="password" placeholder="defina uma senha" />
-                </div>
-              </div>
-
-              <div style="display:flex; gap:10px; flex-wrap:wrap">
-                <button class="btn primary" type="submit" id="btnSaveCliente">💾 Salvar</button>
-                <button class="btn" type="button" id="btnClearCliente">🧹 Limpar</button>
-              </div>
-
-              <div id="msgCliente" class="msg hide"></div>
-            </form>
-
-            <div class="divider"></div>
-
-            <h3 class="section-title">Clientes</h3>
-            <div id="listClientes" class="list"></div>
+        <!-- step 2 -->
+        <div id="stepSenha" class="hidden">
+          <label>Senha</label>
+          <input id="senha" type="password" placeholder="••••••••" autocomplete="current-password" />
+          <div class="row">
+            <button class="btn primary" id="btnLogin">Entrar</button>
+            <button class="btn ghost" id="btnGoogle">Entrar com Google</button>
           </div>
-
-          <!-- TAB CATEGORIAS -->
-          <div id="tabCategorias" class="hide">
-            <div class="toolbar">
-              <div class="left">
-                <input id="searchCategorias" class="search" placeholder="Buscar categoria..." />
-                <button class="btn" id="btnReloadCategorias">↻ Recarregar</button>
-              </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <h3 class="section-title">Cadastrar / editar categoria</h3>
-
-            <form id="formCategoria" class="form">
-              <div class="row3">
-                <div>
-                  <label>Cliente (slug)</label>
-                  <select id="kCliente"></select>
-                </div>
-                <div>
-                  <label>Nome da categoria</label>
-                  <input id="kNome" placeholder="ex: Bebidas" />
-                </div>
-                <div>
-                  <label>Ordem</label>
-                  <input id="kOrdem" type="number" placeholder="ex: 1" />
-                </div>
-              </div>
-
-              <div class="row2">
-                <div>
-                  <label>Status</label>
-                  <select id="kAtivo">
-                    <option value="true">Ativa</option>
-                    <option value="false">Inativa</option>
-                  </select>
-                </div>
-                <div style="display:flex; gap:10px; align-items:flex-end">
-                  <button class="btn primary" type="submit" id="btnSaveCategoria">💾 Salvar</button>
-                  <button class="btn" type="button" id="btnClearCategoria">🧹 Limpar</button>
-                </div>
-              </div>
-
-              <div id="msgCategoria" class="msg hide"></div>
-            </form>
-
-            <div class="divider"></div>
-
-            <h3 class="section-title">Categorias</h3>
-            <div id="listCategorias" class="list"></div>
+          <div class="row" style="justify-content:flex-start">
+            <button class="btn ghost" id="btnVoltar">← Trocar e-mail</button>
           </div>
-
-          <!-- TAB PRODUTOS -->
-          <div id="tabProdutos" class="hide">
-            <div class="toolbar">
-              <div class="left">
-                <input id="searchProdutos" class="search" placeholder="Buscar produto..." />
-                <button class="btn" id="btnReloadProdutos">↻ Recarregar</button>
-              </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <h3 class="section-title">Cadastrar / editar produto</h3>
-
-            <form id="formProduto" class="form">
-              <div class="row3">
-                <div>
-                  <label>Cliente (slug)</label>
-                  <select id="pCliente"></select>
-                </div>
-                <div>
-                  <label>Categoria</label>
-                  <select id="pCategoria"></select>
-                </div>
-                <div>
-                  <label>Nome do produto</label>
-                  <input id="pNome" placeholder="ex: Cuscuz completo" />
-                </div>
-              </div>
-
-              <div class="row3">
-                <div>
-                  <label>Preço</label>
-                  <input id="pPreco" type="number" step="0.01" placeholder="ex: 12.50" />
-                </div>
-                <div>
-                  <label>URL da imagem (opcional)</label>
-                  <input id="pImagem" placeholder="https://..." />
-                </div>
-                <div>
-                  <label>Status</label>
-                  <select id="pAtivo">
-                    <option value="true">Ativo</option>
-                    <option value="false">Inativo</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label>Descrição (opcional)</label>
-                <textarea id="pDesc" placeholder="descrição do item..."></textarea>
-              </div>
-
-              <div style="display:flex; gap:10px; flex-wrap:wrap">
-                <button class="btn primary" type="submit" id="btnSaveProduto">💾 Salvar</button>
-                <button class="btn" type="button" id="btnClearProduto">🧹 Limpar</button>
-              </div>
-
-              <div id="msgProduto" class="msg hide"></div>
-            </form>
-
-            <div class="divider"></div>
-
-            <h3 class="section-title">Produtos</h3>
-            <div id="listProdutos" class="list"></div>
-          </div>
-
         </div>
-      </div>
 
-      <!-- SIDE -->
-      <div class="card">
-        <div class="hd"><h2>Atalhos</h2></div>
-        <div class="bd stack">
-          <div class="section-card">
-            <div class="section-title" style="margin-bottom:8px">Links rápidos</div>
-            <div class="msg" style="margin:0">
-              • Link da Home: <b>/cafeteria/</b><br/>
-              • Link do Cliente: <b>/cafeteria/client/</b><br/>
-              • Link do Admin: <b>/cafeteria/admin/</b><br/>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <div class="section-card stack">
-            <button class="btn" id="btnOpenHome">🏠 Abrir Home</button>
-            <button class="btn" id="btnOpenClient">👤 Abrir Painel do Cliente</button>
-          </div>
-          <div class="footer">Paleta azul • layout compacto • menus por “…”</div>
-        </div>
+        <div id="msg" class="msg"></div>
       </div>
-
     </div>
   </section>
 
+  <!-- APP -->
+  <section id="appView" class="app hidden">
+    <div class="top">
+      <div class="who">Logado como: <b id="whoEmail" class="mono">—</b></div>
+      <button class="btn danger" id="btnLogout">Sair</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="clientes">Clientes</button>
+      <button class="tab" data-tab="categorias">Categorias</button>
+      <button class="tab" data-tab="produtos">Produtos</button>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="panel" id="tab-clientes">
+      <h3>Criar cliente</h3>
+      <div class="grid3">
+        <div class="field">
+          <label>Nome</label>
+          <input id="c_nome" placeholder="Ex: Padaria do João" />
+        </div>
+        <div class="field">
+          <label>Slug</label>
+          <input id="c_slug" placeholder="ex: padaria-do-joao" />
+        </div>
+        <div class="field">
+          <label>WhatsApp</label>
+          <input id="c_whats" placeholder="6299..." />
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-top:10px">
+        <div class="field">
+          <label>Tipo de negócio</label>
+          <select id="c_tipo_negocio">
+            <option value="">Selecione…</option>
+            <option>Restaurante</option>
+            <option>Padaria</option>
+            <option>Lanchonete</option>
+            <option>Mercado</option>
+            <option>Farmácia</option>
+            <option>Petshop</option>
+            <option>Outros</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Email do cliente</label>
+          <input id="c_email" placeholder="cliente@email.com" />
+        </div>
+
+        <div class="field">
+          <label>Senha do cliente</label>
+          <input id="c_senha" type="password" placeholder="Crie uma senha" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btnCriarCliente">Salvar</button>
+        <button class="btn ghost" id="btnReloadClientes">Recarregar</button>
+      </div>
+      <div id="msgClientes" class="msg"></div>
+
+      <div class="list" style="margin-top:14px">
+        <div class="headRow">
+          <div>Nome</div><div>Slug</div><div>Status</div><div style="text-align:right">Ações</div>
+        </div>
+        <div id="listaClientes"></div>
+      </div>
+    </div>
+
+    <!-- CATEGORIAS -->
+    <div class="panel hidden" id="tab-categorias">
+      <h3>Categorias (por loja)</h3>
+      <div class="grid2">
+        <div class="field">
+          <label>Cliente (slug)</label>
+          <input id="cat_cliente" placeholder="ex: padaria-do-joao" />
+        </div>
+        <div class="field">
+          <label>Nome da categoria</label>
+          <input id="cat_nome" placeholder="Ex: Pães" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btnCriarCategoria">Salvar</button>
+        <button class="btn ghost" id="btnReloadCategorias">Recarregar</button>
+      </div>
+      <div id="msgCategorias" class="msg"></div>
+
+      <div class="list" style="margin-top:14px">
+        <div class="headRow">
+          <div>Nome</div><div>Cliente</div><div>Status</div><div style="text-align:right">Ações</div>
+        </div>
+        <div id="listaCategorias"></div>
+      </div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div class="panel hidden" id="tab-produtos">
+      <h3>Produtos (por loja)</h3>
+      <div class="grid3">
+        <div class="field">
+          <label>Cliente (slug)</label>
+          <input id="p_cliente" placeholder="ex: padaria-do-joao" />
+        </div>
+        <div class="field">
+          <label>Categoria (id)</label>
+          <input id="p_catid" placeholder="id da categoria" />
+        </div>
+        <div class="field">
+          <label>Nome</label>
+          <input id="p_nome" placeholder="Ex: Pão francês" />
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-top:10px">
+        <div class="field">
+          <label>Preço</label>
+          <input id="p_preco" placeholder="4.50" />
+        </div>
+        <div class="field">
+          <label>Imagem URL</label>
+          <input id="p_img" placeholder="https://..." />
+        </div>
+        <div class="field">
+          <label>Descrição</label>
+          <input id="p_desc" placeholder="Opcional" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btnCriarProduto">Salvar</button>
+        <button class="btn ghost" id="btnReloadProdutos">Recarregar</button>
+      </div>
+      <div id="msgProdutos" class="msg"></div>
+
+      <div class="list" style="margin-top:14px">
+        <div class="headRow">
+          <div>Produto</div><div>Cliente</div><div>Status</div><div style="text-align:right">Ações</div>
+        </div>
+        <div id="listaProdutos"></div>
+      </div>
+    </div>
+
+  </section>
 </div>
 
 <script>
-  // ===== CONFIG =====
+  // CONFIG DO SEU PROJETO SUPABASE (publicável)
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
-  const API_BASE = "https://cafeteria-gamma-orpin.vercel.app"; // sua Vercel
+  const SUPABASE_ANON = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
 
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // SUA API VERCEL
+  const API_BASE = "https://cafeteria-gamma-orpin.vercel.app";
 
-  // ===== UI refs =====
-  const viewLogin = document.getElementById("viewLogin");
-  const viewApp = document.getElementById("viewApp");
-  const loginMsg = document.getElementById("loginMsg");
-  const stUser = document.getElementById("stUser");
-  const stApi = document.getElementById("stApi");
-
-  // Tabs
-  document.querySelectorAll(".tab").forEach(btn=>{
-    btn.onclick = () => {
-      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      const tab = btn.dataset.tab;
-      document.getElementById("tabClientes").classList.toggle("hide", tab!=="clientes");
-      document.getElementById("tabCategorias").classList.toggle("hide", tab!=="categorias");
-      document.getElementById("tabProdutos").classList.toggle("hide", tab!=="produtos");
-      // ao trocar, recarrega opções dependentes
-      if(tab==="categorias") loadCategorias();
-      if(tab==="produtos") loadProdutos();
-    };
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
   });
 
-  // ===== Helpers =====
   const $ = (id)=>document.getElementById(id);
+  const showMsg = (el, text, ok=false)=>{
+    el.className = "msg " + (ok ? "ok" : "err");
+    el.textContent = text || "";
+  };
 
-  function showMsg(el, text, type="") {
-    el.classList.remove("hide","err","ok");
-    el.textContent = text;
-    if(type) el.classList.add(type);
-  }
-  function hideMsg(el){ el.classList.add("hide"); el.textContent=""; el.classList.remove("err","ok"); }
+  async function api(path, method="GET", body=null) {
+    const { data: { session } } = await sb.auth.getSession();
+    const token = session?.access_token || "";
 
-  function normSlug(s){
-    return String(s||"").toLowerCase().trim()
-      .replace(/\s+/g,"-")
-      .replace(/[^\w-]/g,"")
-      .replace(/-+/g,"-");
-  }
+    const res = await fetch(API_BASE + path, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: body ? JSON.stringify(body) : null
+    });
 
-  function ghBase(){
-    // admin fica em /cafeteria/admin/ (github pages)
-    const u = location.origin + location.pathname;
-    // garante terminar em /admin/
-    return u.replace(/\/admin\/?(index\.html)?$/, "/");
-  }
-
-  // ===== API fetch with Bearer =====
-  async function api(path, opt={}){
-    const sess = (await sb.auth.getSession()).data.session;
-    const token = sess?.access_token;
-    const headers = Object.assign({
-      "Content-Type":"application/json",
-      "Authorization": "Bearer " + token
-    }, opt.headers||{});
-
-    const res = await fetch(API_BASE + path, Object.assign({}, opt, { headers }));
-    const txt = await res.text();
-    let json;
-    try{ json = JSON.parse(txt); }catch{ json = { raw: txt }; }
-    if(!res.ok) {
-      throw new Error((json && json.error) ? json.error : ("HTTP "+res.status));
-    }
+    const json = await res.json().catch(()=> ({}));
+    if (!res.ok) throw new Error(json.error || ("HTTP " + res.status));
     return json;
   }
 
-  // ===== Auth =====
-  async function refreshUI(){
-    const { data } = await sb.auth.getSession();
-    const user = data.session?.user;
-    if(!user){
-      viewLogin.classList.remove("hide");
-      viewApp.classList.add("hide");
-      stUser.textContent = "—";
-      stApi.textContent = "—";
-      return;
-    }
-    viewLogin.classList.add("hide");
-    viewApp.classList.remove("hide");
-    stUser.textContent = user.email || user.id;
-    stApi.textContent = new URL(API_BASE).host;
-
-    await loadAll();
-  }
+  // LOGIN FLOW iFood
+  $("btnNext").onclick = ()=>{
+    const email = $("email").value.trim();
+    if (!email) return showMsg($("msg"), "Informe seu e-mail.");
+    $("stepEmail").classList.add("hidden");
+    $("stepSenha").classList.remove("hidden");
+    $("loginStepHint").textContent = "Agora digite sua senha ou use Google.";
+    showMsg($("msg"), "", true);
+    $("senha").focus();
+  };
+  $("btnVoltar").onclick = ()=>{
+    $("stepSenha").classList.add("hidden");
+    $("stepEmail").classList.remove("hidden");
+    $("loginStepHint").textContent = "Digite seu e-mail para continuar.";
+    showMsg($("msg"), "", true);
+  };
 
   $("btnLogin").onclick = async ()=>{
-    hideMsg(loginMsg);
-    const email = $("loginEmail").value.trim();
-    const pass = $("loginPass").value.trim();
     try{
-      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-      if(error) throw error;
-      await refreshUI();
+      showMsg($("msg"), "Entrando...", true);
+      const email = $("email").value.trim();
+      const senha = $("senha").value.trim();
+      const { error } = await sb.auth.signInWithPassword({ email, password: senha });
+      if (error) throw error;
+      showMsg($("msg"), "OK!", true);
     }catch(e){
-      showMsg(loginMsg, e.message || String(e), "err");
+      showMsg($("msg"), e.message || "Erro no login.");
     }
   };
 
   $("btnGoogle").onclick = async ()=>{
-    hideMsg(loginMsg);
     try{
-      const redirectTo = location.origin + location.pathname; // volta pro /admin/
+      showMsg($("msg"), "Abrindo Google...", true);
       const { error } = await sb.auth.signInWithOAuth({
-        provider:"google",
-        options:{ redirectTo }
+        provider: "google",
+        options: { redirectTo: location.href }
       });
-      if(error) throw error;
+      if (error) throw error;
     }catch(e){
-      showMsg(loginMsg, e.message || String(e), "err");
+      showMsg($("msg"), e.message || "Erro no Google.");
     }
   };
 
   $("btnLogout").onclick = async ()=>{
     await sb.auth.signOut();
-    await refreshUI();
   };
 
-  $("btnOpenHome").onclick = ()=> location.href = ghBase(); // raiz /cafeteria/
-  $("btnOpenClient").onclick = ()=> location.href = ghBase() + "client/";
+  // UI tabs
+  document.querySelectorAll(".tab").forEach(btn=>{
+    btn.onclick = ()=>{
+      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const t = btn.dataset.tab;
+      ["clientes","categorias","produtos"].forEach(x=>{
+        $("tab-"+x).classList.toggle("hidden", x !== t);
+      });
+    };
+  });
 
-  sb.auth.onAuthStateChange(async ()=>{ await refreshUI(); });
-
-  // ===== State =====
-  let clientes = [];
-  let categorias = [];
-  let produtos = [];
-  let editClienteSlug = null;
-  let editCategoriaId = null;
-  let editProdutoId = null;
-
-  // ===== Loaders =====
-  async function loadAll(){
-    await loadClientes();
-    await loadCategorias();
-    await loadProdutos();
-  }
+  // RENDER LISTAS
+  const pill = (ativo)=> `<span class="pill ${ativo? "":"off"}">${ativo? "Ativo":"Off"}</span>`;
+  const icon = (txt)=> txt;
 
   async function loadClientes(){
-    hideMsg($("msgCliente"));
-    const out = await api("/api/admin/clientes", { method:"GET" });
-    clientes = out.data || [];
-    $("countClientes").textContent = clientes.length;
+    const list = await api("/api/admin/clientes","GET");
+    $("listaClientes").innerHTML = list.map(c=>`
+      <div class="itemRow">
+        <div><b>${escapeHtml(c.nome||"")}</b><div style="opacity:.7;font-size:12px">${escapeHtml(c.tipo_negocio||"")}</div></div>
+        <div class="mono">${escapeHtml(c.slug||"")}</div>
+        <div>${pill(!!c.ativo)}</div>
+        <div class="actions">
+          <button class="iconBtn" title="Ativar/Desativar" onclick='toggleCliente("${c.id}", ${!c.ativo})'>${icon("⏻")}</button>
+          <button class="iconBtn" title="Excluir" onclick='delCliente("${c.id}")'>${icon("🗑")}</button>
+        </div>
+      </div>
+    `).join("");
+  }
 
-    // fill selects
-    fillClienteSelects();
-
-    renderClientes();
+  async function toggleCliente(id, ativo){
+    try{
+      await api("/api/admin/clientes","PATCH",{id, ativo});
+      await loadClientes();
+    }catch(e){ showMsg($("msgClientes"), e.message); }
+  }
+  async function delCliente(id){
+    if(!confirm("Excluir cliente?")) return;
+    try{
+      await api("/api/admin/clientes","DELETE",{id});
+      await loadClientes();
+    }catch(e){ showMsg($("msgClientes"), e.message); }
   }
 
   async function loadCategorias(){
-    const out = await api("/api/admin/categorias", { method:"GET" });
-    categorias = out.data || [];
-    $("countCategorias").textContent = categorias.length;
-
-    fillCategoriaSelect();
-    renderCategorias();
+    const list = await api("/api/admin/categorias","GET");
+    $("listaCategorias").innerHTML = list.map(c=>`
+      <div class="itemRow">
+        <div><b>${escapeHtml(c.nome||"")}</b></div>
+        <div class="mono">${escapeHtml(c.cliente_slug||"")}</div>
+        <div>${pill(!!c.ativo)}</div>
+        <div class="actions">
+          <button class="iconBtn" title="Ativar/Desativar" onclick='toggleCategoria("${c.id}", ${!c.ativo})'>⏻</button>
+          <button class="iconBtn" title="Excluir" onclick='delCategoria("${c.id}")'>🗑</button>
+        </div>
+      </div>
+    `).join("");
+  }
+  async function toggleCategoria(id, ativo){
+    try{ await api("/api/admin/categorias","PATCH",{id, ativo}); await loadCategorias(); }
+    catch(e){ showMsg($("msgCategorias"), e.message); }
+  }
+  async function delCategoria(id){
+    if(!confirm("Excluir categoria?")) return;
+    try{ await api("/api/admin/categorias","DELETE",{id}); await loadCategorias(); }
+    catch(e){ showMsg($("msgCategorias"), e.message); }
   }
 
   async function loadProdutos(){
-    const out = await api("/api/admin/produtos", { method:"GET" });
-    produtos = out.data || [];
-    $("countProdutos").textContent = produtos.length;
-
-    renderProdutos();
+    const list = await api("/api/admin/produtos","GET");
+    $("listaProdutos").innerHTML = list.map(p=>`
+      <div class="itemRow">
+        <div><b>${escapeHtml(p.nome||"")}</b><div style="opacity:.7;font-size:12px">${escapeHtml(p.descricao||"")}</div></div>
+        <div class="mono">${escapeHtml(p.cliente_slug||"")}</div>
+        <div>${pill(!!p.ativo)}</div>
+        <div class="actions">
+          <button class="iconBtn" title="Ativar/Desativar" onclick='toggleProduto("${p.id}", ${!p.ativo})'>⏻</button>
+          <button class="iconBtn" title="Excluir" onclick='delProduto("${p.id}")'>🗑</button>
+        </div>
+      </div>
+    `).join("");
+  }
+  async function toggleProduto(id, ativo){
+    try{ await api("/api/admin/produtos","PATCH",{id, ativo}); await loadProdutos(); }
+    catch(e){ showMsg($("msgProdutos"), e.message); }
+  }
+  async function delProduto(id){
+    if(!confirm("Excluir produto?")) return;
+    try{ await api("/api/admin/produtos","DELETE",{id}); await loadProdutos(); }
+    catch(e){ showMsg($("msgProdutos"), e.message); }
   }
 
-  function fillClienteSelects(){
-    const k = $("kCliente");
-    const p = $("pCliente");
-    [k,p].forEach(sel=>{
-      sel.innerHTML = "";
-      clientes.forEach(c=>{
-        const opt = document.createElement("option");
-        opt.value = c.slug;
-        opt.textContent = `${c.nome} (${c.slug})`;
-        sel.appendChild(opt);
-      });
-    });
-    // atualiza categorias dependentes do cliente no produto
-    $("pCliente").onchange = ()=> fillCategoriaSelect();
-    $("kCliente").onchange = ()=>{}; // nada
-  }
-
-  function fillCategoriaSelect(){
-    const clienteSlug = $("pCliente").value || (clientes[0]?.slug || "");
-    const sel = $("pCategoria");
-    sel.innerHTML = "";
-
-    const list = categorias.filter(c=>c.cliente_slug === clienteSlug);
-    list.forEach(cat=>{
-      const opt = document.createElement("option");
-      opt.value = cat.id;
-      opt.textContent = cat.nome;
-      sel.appendChild(opt);
-    });
-  }
-
-  // ===== Render with kebab menu =====
-  function kebabMenu(actions){
-    const wrap = document.createElement("div");
-    wrap.className = "kebab";
-    wrap.innerHTML = "⋯";
-    const menu = document.createElement("div");
-    menu.className = "menu";
-    actions.forEach(a=>{
-      const b = document.createElement("button");
-      b.innerHTML = `<span>${a.label}</span><span>${a.icon || ""}</span>`;
-      if(a.danger) b.classList.add("danger");
-      b.onclick = (ev)=>{
-        ev.stopPropagation();
-        menu.classList.remove("open");
-        a.onClick();
+  // CREATE
+  $("btnCriarCliente").onclick = async ()=>{
+    try{
+      showMsg($("msgClientes"), "Salvando...", true);
+      const payload = {
+        nome: $("c_nome").value.trim(),
+        slug: $("c_slug").value.trim(),
+        whatsapp: $("c_whats").value.trim(),
+        tipo_negocio: $("c_tipo_negocio").value.trim(),
+        email: $("c_email").value.trim(),
+        senha: $("c_senha").value.trim(),
+        ativo: true
       };
-      menu.appendChild(b);
-    });
-    wrap.appendChild(menu);
-    wrap.onclick = (ev)=>{
-      ev.stopPropagation();
-      document.querySelectorAll(".menu.open").forEach(m=>m.classList.remove("open"));
-      menu.classList.toggle("open");
-    };
-    document.addEventListener("click", ()=> menu.classList.remove("open"), { once:true });
-    return wrap;
-  }
-
-  function renderClientes(){
-    const q = $("searchClientes").value.trim().toLowerCase();
-    const list = clientes.filter(c=>{
-      const s = (c.nome+" "+c.slug+" "+(c.whatsapp||"")+" "+(c.tipo||"")).toLowerCase();
-      return !q || s.includes(q);
-    });
-
-    const el = $("listClientes");
-    el.innerHTML = "";
-
-    list.forEach(c=>{
-      const it = document.createElement("div");
-      it.className = "item";
-
-      it.appendChild(colMain(c.nome, `slug: ${c.slug} • tipo: ${c.tipo||"-"}`));
-      it.appendChild(colText(c.slug, "Slug"));
-      it.appendChild(colText(c.whatsapp||"-", "WhatsApp"));
-      it.appendChild(colBadge(c.ativo ? "Ativo" : "Inativo", c.ativo));
-      it.appendChild(colText("—", "Acesso"));
-
-      const menu = kebabMenu([
-        { label:"Ver loja", icon:"👁️", onClick:()=> window.open(ghBase()+`?u=${encodeURIComponent(c.slug)}`, "_blank") },
-        { label:"Copiar link", icon:"🔗", onClick:()=> copyText(ghBase()+`?u=${encodeURIComponent(c.slug)}`) },
-        { label:"Editar", icon:"✏️", onClick:()=> loadClienteToForm(c) },
-        { label:"Duplicar", icon:"📄", onClick:()=> duplicateCliente(c) },
-        { label: c.ativo ? "Desativar" : "Ativar", icon:"⚡", onClick:()=> toggleCliente(c) },
-        { label:"Excluir", icon:"🗑️", danger:true, onClick:()=> deleteCliente(c) },
-      ]);
-      it.appendChild(menu);
-
-      el.appendChild(it);
-    });
-  }
-
-  function renderCategorias(){
-    const q = $("searchCategorias").value.trim().toLowerCase();
-    const el = $("listCategorias");
-    el.innerHTML = "";
-
-    const list = categorias.filter(k=>{
-      const s = (k.nome+" "+k.cliente_slug).toLowerCase();
-      return !q || s.includes(q);
-    });
-
-    list.forEach(k=>{
-      const it = document.createElement("div");
-      it.className = "item";
-      it.style.gridTemplateColumns = "1.1fr .8fr .6fr .45fr .45fr 40px";
-
-      it.appendChild(colMain(k.nome, `cliente: ${k.cliente_slug} • ordem: ${k.ordem ?? "-"}`));
-      it.appendChild(colText(k.cliente_slug, "Cliente"));
-      it.appendChild(colText(String(k.ordem ?? "-"), "Ordem"));
-      it.appendChild(colBadge(k.ativo ? "Ativa" : "Inativa", k.ativo));
-      it.appendChild(colText(String(k.id).slice(0,6)+"…", "ID"));
-
-      it.appendChild(kebabMenu([
-        { label:"Editar", icon:"✏️", onClick:()=> loadCategoriaToForm(k) },
-        { label:"Duplicar", icon:"📄", onClick:()=> duplicateCategoria(k) },
-        { label: k.ativo ? "Desativar" : "Ativar", icon:"⚡", onClick:()=> toggleCategoria(k) },
-        { label:"Excluir", icon:"🗑️", danger:true, onClick:()=> deleteCategoria(k) },
-      ]));
-
-      el.appendChild(it);
-    });
-  }
-
-  function renderProdutos(){
-    const q = $("searchProdutos").value.trim().toLowerCase();
-    const el = $("listProdutos");
-    el.innerHTML = "";
-
-    const list = produtos.filter(p=>{
-      const s = (p.nome+" "+(p.descricao||"")+" "+p.cliente_slug).toLowerCase();
-      return !q || s.includes(q);
-    });
-
-    list.forEach(p=>{
-      const cat = categorias.find(c=>c.id===p.categoria_id);
-      const it = document.createElement("div");
-      it.className = "item";
-      it.style.gridTemplateColumns = "1.2fr .7fr .7fr .45fr .45fr 40px";
-
-      it.appendChild(colMain(p.nome, `cliente: ${p.cliente_slug} • cat: ${cat?.nome || "-"}`));
-      it.appendChild(colText(cat?.nome || "-", "Categoria"));
-      it.appendChild(colText(fmtBRL(p.preco), "Preço"));
-      it.appendChild(colBadge(p.ativo ? "Ativo" : "Inativo", p.ativo));
-      it.appendChild(colText(String(p.id).slice(0,6)+"…", "ID"));
-
-      it.appendChild(kebabMenu([
-        { label:"Editar", icon:"✏️", onClick:()=> loadProdutoToForm(p) },
-        { label:"Duplicar", icon:"📄", onClick:()=> duplicateProduto(p) },
-        { label: p.ativo ? "Desativar" : "Ativar", icon:"⚡", onClick:()=> toggleProduto(p) },
-        { label:"Excluir", icon:"🗑️", danger:true, onClick:()=> deleteProduto(p) },
-      ]));
-
-      el.appendChild(it);
-    });
-  }
-
-  function colMain(title, sub){
-    const d = document.createElement("div");
-    d.className = "col";
-    d.innerHTML = `<h4>${escapeHtml(title)}</h4><small>${escapeHtml(sub||"")}</small>`;
-    return d;
-  }
-  function colText(val, label){
-    const d = document.createElement("div");
-    d.className = "col";
-    d.innerHTML = `<h4>${escapeHtml(String(val))}</h4><small>${escapeHtml(label)}</small>`;
-    return d;
-  }
-  function colBadge(text, ok){
-    const d = document.createElement("div");
-    d.className = "col";
-    const b = document.createElement("span");
-    b.className = "badge " + (ok ? "ok" : "off");
-    b.textContent = text;
-    d.appendChild(b);
-    return d;
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  }
-  function fmtBRL(v){
-    const n = Number(v || 0);
-    return n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  }
-  async function copyText(t){
-    try{ await navigator.clipboard.writeText(t); }catch{}
-  }
-
-  // ===== Actions - Clientes =====
-  $("btnReloadClientes").onclick = ()=> loadClientes();
-  $("searchClientes").oninput = ()=> renderClientes();
-
-  $("btnClearCliente").onclick = ()=>{
-    editClienteSlug = null;
-    $("cNome").value = "";
-    $("cSlug").value = "";
-    $("cWhats").value = "";
-    $("cTipo").value = "restaurante";
-    $("cAtivo").value = "true";
-    $("cEmail").value = "";
-    $("cSenha").value = "";
-    hideMsg($("msgCliente"));
-  };
-
-  function loadClienteToForm(c){
-    editClienteSlug = c.slug;
-    $("cNome").value = c.nome || "";
-    $("cSlug").value = c.slug || "";
-    $("cWhats").value = c.whatsapp || "";
-    $("cTipo").value = c.tipo || "restaurante";
-    $("cAtivo").value = String(!!c.ativo);
-    $("cEmail").value = "";  // não exibimos senha/email existente
-    $("cSenha").value = "";
-    showMsg($("msgCliente"), "Editando cliente: " + c.slug, "ok");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  async function duplicateCliente(c){
-    const slug2 = normSlug(c.slug + "-copia");
-    $("cNome").value = (c.nome||"") + " (Cópia)";
-    $("cSlug").value = slug2;
-    $("cWhats").value = c.whatsapp || "";
-    $("cTipo").value = c.tipo || "restaurante";
-    $("cAtivo").value = String(!!c.ativo);
-    editClienteSlug = null;
-    showMsg($("msgCliente"), "Pronto para salvar cópia. Defina email/senha se quiser acesso.", "ok");
-  }
-
-  async function toggleCliente(c){
-    await api("/api/admin/clientes", {
-      method:"PATCH",
-      body: JSON.stringify({ slug:c.slug, ativo: !c.ativo })
-    });
-    await loadClientes();
-  }
-
-  async function deleteCliente(c){
-    if(!confirm(`Excluir cliente "${c.nome}"? Isso apaga categorias/produtos.`)) return;
-    await api("/api/admin/clientes?slug="+encodeURIComponent(c.slug), { method:"DELETE" });
-    await loadAll();
-  }
-
-  $("formCliente").onsubmit = async (ev)=>{
-    ev.preventDefault();
-    hideMsg($("msgCliente"));
-
-    const payload = {
-      nome: $("cNome").value.trim(),
-      slug: normSlug($("cSlug").value.trim() || $("cNome").value.trim()),
-      whatsapp: $("cWhats").value.trim(),
-      tipo: $("cTipo").value,
-      ativo: $("cAtivo").value === "true",
-      email: $("cEmail").value.trim(),
-      senha: $("cSenha").value.trim(),
-    };
-
-    try{
-      const out = await api("/api/admin/clientes", {
-        method:"POST",
-        body: JSON.stringify(payload)
-      });
-
-      if(out.warning){
-        showMsg($("msgCliente"), "Salvo. Aviso: " + out.warning, "ok");
-      }else{
-        showMsg($("msgCliente"), "Salvo com sucesso.", "ok");
-      }
-
-      // limpa senha para não ficar exposta na tela
-      $("cSenha").value = "";
-      $("cEmail").value = "";
-
-      await loadAll();
+      await api("/api/admin/clientes","POST", payload);
+      showMsg($("msgClientes"), "Cliente criado ✅", true);
+      $("c_nome").value = $("c_slug").value = $("c_whats").value = $("c_email").value = $("c_senha").value = "";
+      $("c_tipo_negocio").value = "";
+      await loadClientes();
     }catch(e){
-      showMsg($("msgCliente"), "Erro: " + (e.message || String(e)), "err");
+      showMsg($("msgClientes"), e.message);
     }
   };
+  $("btnReloadClientes").onclick = loadClientes;
 
-  // ===== Actions - Categorias =====
-  $("btnReloadCategorias").onclick = ()=> loadCategorias();
-  $("searchCategorias").oninput = ()=> renderCategorias();
-
-  $("btnClearCategoria").onclick = ()=>{
-    editCategoriaId = null;
-    $("kNome").value = "";
-    $("kOrdem").value = "";
-    $("kAtivo").value = "true";
-    hideMsg($("msgCategoria"));
-  };
-
-  function loadCategoriaToForm(k){
-    editCategoriaId = k.id;
-    $("kCliente").value = k.cliente_slug;
-    $("kNome").value = k.nome || "";
-    $("kOrdem").value = k.ordem ?? "";
-    $("kAtivo").value = String(!!k.ativo);
-    showMsg($("msgCategoria"), "Editando categoria: " + k.nome, "ok");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  async function duplicateCategoria(k){
-    editCategoriaId = null;
-    $("kCliente").value = k.cliente_slug;
-    $("kNome").value = (k.nome||"") + " (Cópia)";
-    $("kOrdem").value = k.ordem ?? "";
-    $("kAtivo").value = String(!!k.ativo);
-    showMsg($("msgCategoria"), "Pronto para salvar cópia da categoria.", "ok");
-  }
-
-  async function toggleCategoria(k){
-    await api("/api/admin/categorias", {
-      method:"PATCH",
-      body: JSON.stringify({ id:k.id, ativo: !k.ativo })
-    });
-    await loadCategorias();
-  }
-
-  async function deleteCategoria(k){
-    if(!confirm(`Excluir categoria "${k.nome}"?`)) return;
-    await api("/api/admin/categorias?id="+encodeURIComponent(k.id), { method:"DELETE" });
-    await loadCategorias();
-    await loadProdutos();
-  }
-
-  $("formCategoria").onsubmit = async (ev)=>{
-    ev.preventDefault();
-    hideMsg($("msgCategoria"));
-
-    const payload = {
-      id: editCategoriaId,
-      cliente_slug: $("kCliente").value,
-      nome: $("kNome").value.trim(),
-      ordem: Number($("kOrdem").value || 0),
-      ativo: $("kAtivo").value === "true",
-    };
-
+  $("btnCriarCategoria").onclick = async ()=>{
     try{
-      await api("/api/admin/categorias", {
-        method:"POST",
-        body: JSON.stringify(payload)
+      showMsg($("msgCategorias"), "Salvando...", true);
+      await api("/api/admin/categorias","POST", {
+        cliente_slug: $("cat_cliente").value.trim(),
+        nome: $("cat_nome").value.trim(),
+        ordem: 0,
+        ativo: true
       });
-      showMsg($("msgCategoria"), "Categoria salva.", "ok");
-      editCategoriaId = null;
+      showMsg($("msgCategorias"), "Categoria criada ✅", true);
+      $("cat_nome").value = "";
       await loadCategorias();
-      await loadProdutos();
-    }catch(e){
-      showMsg($("msgCategoria"), "Erro: " + (e.message||String(e)), "err");
-    }
+    }catch(e){ showMsg($("msgCategorias"), e.message); }
   };
+  $("btnReloadCategorias").onclick = loadCategorias;
 
-  // ===== Actions - Produtos =====
-  $("btnReloadProdutos").onclick = ()=> loadProdutos();
-  $("searchProdutos").oninput = ()=> renderProdutos();
-
-  $("btnClearProduto").onclick = ()=>{
-    editProdutoId = null;
-    $("pNome").value = "";
-    $("pDesc").value = "";
-    $("pPreco").value = "";
-    $("pImagem").value = "";
-    $("pAtivo").value = "true";
-    hideMsg($("msgProduto"));
-  };
-
-  function loadProdutoToForm(p){
-    editProdutoId = p.id;
-    $("pCliente").value = p.cliente_slug;
-    fillCategoriaSelect();
-    $("pCategoria").value = p.categoria_id;
-    $("pNome").value = p.nome || "";
-    $("pDesc").value = p.descricao || "";
-    $("pPreco").value = p.preco ?? "";
-    $("pImagem").value = p.imagem_url || p.imagem || p.imagemUrl || "";
-    $("pAtivo").value = String(!!p.ativo);
-    showMsg($("msgProduto"), "Editando produto: " + p.nome, "ok");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  async function duplicateProduto(p){
-    editProdutoId = null;
-    $("pCliente").value = p.cliente_slug;
-    fillCategoriaSelect();
-    $("pCategoria").value = p.categoria_id;
-    $("pNome").value = (p.nome||"") + " (Cópia)";
-    $("pDesc").value = p.descricao || "";
-    $("pPreco").value = p.preco ?? "";
-    $("pImagem").value = p.imagem_url || "";
-    $("pAtivo").value = String(!!p.ativo);
-    showMsg($("msgProduto"), "Pronto para salvar cópia do produto.", "ok");
-  }
-
-  async function toggleProduto(p){
-    await api("/api/admin/produtos", {
-      method:"PATCH",
-      body: JSON.stringify({ id:p.id, ativo: !p.ativo })
-    });
-    await loadProdutos();
-  }
-
-  async function deleteProduto(p){
-    if(!confirm(`Excluir produto "${p.nome}"?`)) return;
-    await api("/api/admin/produtos?id="+encodeURIComponent(p.id), { method:"DELETE" });
-    await loadProdutos();
-  }
-
-  $("formProduto").onsubmit = async (ev)=>{
-    ev.preventDefault();
-    hideMsg($("msgProduto"));
-
-    const payload = {
-      id: editProdutoId,
-      cliente_slug: $("pCliente").value,
-      categoria_id: $("pCategoria").value ? Number($("pCategoria").value) : null,
-      nome: $("pNome").value.trim(),
-      descricao: $("pDesc").value.trim(),
-      preco: Number($("pPreco").value || 0),
-      imagem_url: $("pImagem").value.trim(),
-      ativo: $("pAtivo").value === "true",
-    };
-
+  $("btnCriarProduto").onclick = async ()=>{
     try{
-      await api("/api/admin/produtos", {
-        method:"POST",
-        body: JSON.stringify(payload)
+      showMsg($("msgProdutos"), "Salvando...", true);
+      await api("/api/admin/produtos","POST", {
+        cliente_slug: $("p_cliente").value.trim(),
+        categoria_id: $("p_catid").value.trim() || null,
+        nome: $("p_nome").value.trim(),
+        descricao: $("p_desc").value.trim(),
+        preco: Number(($("p_preco").value || "0").replace(",", ".")),
+        imagem_url: $("p_img").value.trim(),
+        ativo: true
       });
-      showMsg($("msgProduto"), "Produto salvo.", "ok");
-      editProdutoId = null;
+      showMsg($("msgProdutos"), "Produto criado ✅", true);
+      $("p_nome").value = $("p_desc").value = $("p_preco").value = $("p_img").value = "";
       await loadProdutos();
-    }catch(e){
-      showMsg($("msgProduto"), "Erro: " + (e.message||String(e)), "err");
-    }
+    }catch(e){ showMsg($("msgProdutos"), e.message); }
   };
+  $("btnReloadProdutos").onclick = loadProdutos;
 
-  // ===== Init =====
-  (async ()=>{
-    $("loginEmail").value = "";
-    $("loginPass").value = "";
-    await refreshUI();
-  })();
+  function escapeHtml(str){
+    return String(str ?? "").replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  // SESSION WATCH
+  async function refreshUI(){
+    const { data: { session } } = await sb.auth.getSession();
+    const logged = !!session;
+
+    $("loginView").classList.toggle("hidden", logged);
+    $("appView").classList.toggle("hidden", !logged);
+
+    if (logged){
+      $("whoEmail").textContent = session.user.email || "—";
+      // carrega dados
+      await Promise.allSettled([loadClientes(), loadCategorias(), loadProdutos()]);
+    }
+  }
+
+  sb.auth.onAuthStateChange(()=> refreshUI());
+  refreshUI();
 </script>
 </body>
 </html>
