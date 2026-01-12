@@ -8,218 +8,293 @@
 
   <style>
     :root{
-      --bg:#0b1320;
+      --bg:#fffdf2;
       --card:#ffffff;
+      --line:#f1e7bf;
+      --text:#111827;
       --muted:#6b7280;
-      --text:#0f172a;
-      --line:#e5e7eb;
-      --brand:#2563eb;
-      --brand2:#1d4ed8;
-      --danger:#ef4444;
-      --shadow: 0 24px 70px rgba(0,0,0,.18);
+      --brand:#ffcc00;
+      --brand2:#ffb100;
+      --shadow: 0 16px 40px rgba(17,24,39,.10);
       --radius: 18px;
       --radius2: 14px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,"Liberation Mono","Courier New", monospace;
+      --red:#ef4444;
+      --green:#22c55e;
     }
     *{box-sizing:border-box}
     body{
-      margin:0; font-family:var(--font);
-      background: radial-gradient(900px 600px at 20% 10%, rgba(37,99,235,.18), transparent 55%),
-                  radial-gradient(900px 600px at 90% 20%, rgba(34,197,94,.12), transparent 55%),
-                  linear-gradient(180deg, #07101c, #0b1320);
-      color:#e5e7eb;
-      min-height:100vh;
-      padding: 28px 16px 60px;
-    }
-    .wrap{max-width:1100px; margin:0 auto}
-    .hidden{display:none!important}
-
-    /* LOGIN (estilo iFood, card branco) */
-    .loginShell{display:grid; place-items:center; min-height: calc(100vh - 120px);}
-    .loginCard{
-      width:min(920px, 100%);
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 26px;
-      box-shadow: 0 40px 120px rgba(0,0,0,.45);
-      backdrop-filter: blur(12px);
-      padding: 22px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-    .loginLeft{
-      background: rgba(255,255,255,.06);
-      border: 1px dashed rgba(255,255,255,.20);
-      border-radius: 22px;
-      padding: 22px;
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-      justify-content:center;
-    }
-    .logo{
-      width:88px; height:88px; border-radius: 24px;
-      background: linear-gradient(135deg, rgba(37,99,235,.35), rgba(34,197,94,.18));
-      border: 1px solid rgba(255,255,255,.18);
-      display:grid; place-items:center;
-      font-weight:900; letter-spacing:1px;
-    }
-    .loginLeft h1{margin:0; font-size:28px}
-    .loginLeft p{margin:0; color:rgba(229,231,235,.78); line-height:1.35}
-
-    .loginRight{
-      background: #fff;
-      border-radius: 22px;
-      padding: 26px;
+      margin:0;
+      font-family: var(--font);
       color: var(--text);
-      box-shadow: var(--shadow);
+      background:
+        radial-gradient(900px 500px at 10% 0%, rgba(255,204,0,.18), transparent 60%),
+        radial-gradient(800px 460px at 90% 10%, rgba(255,177,0,.16), transparent 60%),
+        linear-gradient(180deg, #fffdf2, #fff8dc);
+      min-height:100vh;
+      padding: 14px 12px 70px;
     }
-    .loginRight h2{margin:0 0 6px; font-size:22px}
-    .loginRight .sub{margin:0 0 16px; color:var(--muted); font-size:14px}
-    label{display:block; font-weight:800; font-size:13px; margin:10px 0 6px}
-    input{
-      width:100%;
-      padding: 12px 12px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      outline:none;
-      font-size: 14px;
-    }
-    input:focus{border-color: rgba(37,99,235,.55); box-shadow: 0 0 0 4px rgba(37,99,235,.12);}
-    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top: 14px}
+    .wrap{max-width: 1180px; margin:0 auto;}
+    .hidden{display:none!important}
 
     .btn{
       cursor:pointer;
-      border:none;
-      padding: 12px 14px;
-      border-radius: 12px;
-      font-weight:900;
-      display:inline-flex; gap:10px; align-items:center; justify-content:center;
-      transition: transform .12s ease, filter .12s ease;
-      user-select:none;
+      border:0;
+      border-radius: 14px;
+      padding: 11px 12px;
+      font-weight: 950;
+      background:#fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 25px rgba(17,24,39,.06);
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transition: transform .12s ease;
+      white-space:nowrap;
     }
     .btn:active{transform: translateY(1px)}
-    .btn.primary{background: linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff; flex:1}
-    .btn.ghost{background:#fff; border:1px solid var(--line); color:#111827; flex:1}
-    .btn.danger{background: var(--danger); color:#fff}
-    .msg{margin-top:12px; font-weight:800; font-size:13px}
+    .btn.brand{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border-color: rgba(0,0,0,.06);
+    }
+    .btn.danger{background: var(--red); color:#fff; border-color: rgba(0,0,0,.06);}
+    .btn.ghost{background: transparent;}
+    .btn.small{padding: 9px 10px; border-radius: 12px; font-size: 13px;}
+    .iconBtn{
+      cursor:pointer;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background:#fff;
+      box-shadow: 0 10px 25px rgba(17,24,39,.06);
+      display:grid;
+      place-items:center;
+      font-weight: 950;
+    }
+
+    .card{
+      background: rgba(255,255,255,.85);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    /* LOGIN */
+    .loginShell{
+      min-height: calc(100vh - 90px);
+      display:grid;
+      place-items:center;
+    }
+    .loginCard{
+      width: min(520px, 100%);
+      background:#fff;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+    .loginTop{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .loginTop img{
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      background:#fff;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      padding: 8px;
+    }
+    .loginTop .t{font-weight: 950; font-size: 18px;}
+    .loginTop .s{color: var(--muted); font-size: 12.5px; margin-top:2px;}
+    label{display:block; font-weight: 900; font-size: 12.5px; margin: 10px 0 6px; color:#374151;}
+    input, select{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      outline: 0;
+      font-size: 14px;
+      background:#fff;
+    }
+    input:focus, select:focus{
+      border-color: rgba(255,177,0,.9);
+      box-shadow: 0 0 0 4px rgba(255,177,0,.16);
+    }
+    .msg{margin-top: 10px; font-weight: 900; font-size: 13px;}
     .msg.err{color:#b91c1c}
     .msg.ok{color:#065f46}
 
-    /* APP */
-    .app{
-      margin-top: 18px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 22px;
-      padding: 16px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 40px 120px rgba(0,0,0,.35);
+    /* APPBAR */
+    .appbar{
+      position: sticky;
+      top: 10px;
+      z-index: 20;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      margin-bottom: 12px;
     }
-    .top{
-      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+    .brand{
+      display:flex; align-items:center; gap:10px; min-width:0;
+    }
+    .brand img{
+      width: 44px; height: 44px; object-fit: contain;
+      border-radius: 12px; border:1px solid var(--line); background:#fff; padding: 6px;
+    }
+    .brandTxt{min-width:0}
+    .brandTxt .t{font-weight: 950; line-height:1.1}
+    .brandTxt .s{font-size: 12.5px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .rightTop{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{
+      font-family: var(--mono);
+      font-size: 12px;
       padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background:#fff;
+      color:#374151;
+      font-weight: 900;
+      display:flex; align-items:center; gap:8px;
     }
-    .top .who{
-      color:rgba(229,231,235,.80);
-      font-size:13px;
-    }
+    .dot{width:8px; height:8px; border-radius:99px; background: var(--green);}
+
+    /* TABS */
     .tabs{
-      display:flex; gap:10px; flex-wrap:wrap;
-      padding: 0 12px 12px;
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      padding: 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background:#fff;
+      margin-bottom: 12px;
     }
     .tab{
       cursor:pointer;
-      padding: 10px 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 10px 14px;
       border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      color:#e5e7eb;
-      font-weight:900;
+      font-weight: 950;
+      color: #374151;
     }
     .tab.active{
-      background: rgba(37,99,235,.22);
-      border-color: rgba(37,99,235,.35);
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border-color: rgba(0,0,0,.06);
+      color: #111827;
     }
 
-    .panel{
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
-      padding: 14px;
-      margin: 0 12px 14px;
-    }
-    .panel h3{margin:0 0 10px}
-    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
-    .grid3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px}
-    .field label{color:rgba(229,231,235,.85)}
-    .field input, .field select, .field textarea{
-      background: rgba(255,255,255,.06);
-      color:#e5e7eb;
-      border: 1px solid rgba(255,255,255,.16);
-      border-radius: 12px;
-      padding: 12px;
-      width:100%;
-      outline:none;
-    }
-    .field textarea{min-height:84px}
+    /* LIST */
     .list{
-      margin-top: 12px;
-      border-radius: 16px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.12);
-    }
-    .headRow, .itemRow{
-      display:grid;
-      grid-template-columns: 2fr 1.3fr 1.2fr 120px;
+      display:flex;
+      flex-direction:column;
       gap: 10px;
+    }
+    .rowItem{
+      background:#fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius2);
+      box-shadow: 0 12px 28px rgba(17,24,39,.06);
+      padding: 12px;
+      display:flex;
       align-items:center;
-      padding: 10px 12px;
+      justify-content:space-between;
+      gap: 10px;
+      min-width:0;
     }
-    .headRow{
-      background: rgba(255,255,255,.06);
-      font-weight:900;
-      color: rgba(229,231,235,.72);
-      font-size: 12px;
+    .rowMain{min-width:0}
+    .rowTitle{
+      font-weight: 950;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .itemRow{
-      background: rgba(0,0,0,.14);
-      border-top: 1px solid rgba(255,255,255,.08);
+    .rowMeta{
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12.5px;
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
     }
-    .pill{
-      display:inline-flex;
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
       padding: 6px 10px;
       border-radius: 999px;
-      font-weight:900;
+      border: 1px solid var(--line);
+      background:#fff;
       font-size: 12px;
-      background: rgba(34,197,94,.16);
-      border: 1px solid rgba(34,197,94,.30);
-      justify-content:center;
-      width: fit-content;
+      font-weight: 950;
+      color:#374151;
     }
-    .pill.off{
-      background: rgba(239,68,68,.16);
-      border-color: rgba(239,68,68,.30);
+
+    /* Actions menu */
+    .menuWrap{position: relative;}
+    .menu{
+      position:absolute;
+      right:0;
+      top: 52px;
+      background:#fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 6px;
+      min-width: 180px;
+      z-index: 40;
     }
-    .actions{display:flex; gap:8px; justify-content:flex-end}
-    .iconBtn{
-      width:36px; height:36px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      color:#e5e7eb;
+    .menu button{
+      width:100%;
+      text-align:left;
+      border:0;
+      background: transparent;
+      padding: 10px 10px;
+      border-radius: 10px;
       cursor:pointer;
-      display:grid; place-items:center;
-      font-weight:900;
+      font-weight: 900;
+      color:#111827;
     }
-    .iconBtn:hover{filter:brightness(1.08)}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-    @media (max-width: 920px){
-      .loginCard{grid-template-columns: 1fr}
-      .grid2,.grid3{grid-template-columns:1fr}
-      .headRow,.itemRow{grid-template-columns: 1.6fr 1fr .9fr 120px}
+    .menu button:hover{background: rgba(255,204,0,.22);}
+    .menu .danger{color:#b91c1c;}
+
+    /* Modal */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(17,24,39,.35);
+      display:grid;
+      place-items:center;
+      padding: 14px;
+      z-index: 60;
     }
+    .modal{
+      width: min(560px, 100%);
+      background:#fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .modalHead{
+      display:flex; align-items:center; justify-content:space-between; gap: 10px;
+      margin-bottom: 8px;
+    }
+    .modalHead h3{margin:0; font-size: 16px; font-weight: 950;}
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap: 10px;}
+    @media (max-width: 720px){ .grid2{grid-template-columns: 1fr;} }
   </style>
 </head>
 
@@ -227,51 +302,57 @@
 <div class="wrap">
 
   <!-- LOGIN -->
-  <section id="loginView" class="loginShell">
+  <div id="loginView" class="loginShell">
     <div class="loginCard">
-      <div class="loginLeft">
-        <div class="logo">ADM</div>
-        <h1>Admin Alfa</h1>
-        <p>Gerencie clientes, categorias e produtos (Supabase + Vercel API).</p>
-        <p style="opacity:.8;font-size:13px">Login por email/senha ou Google.</p>
+      <div class="loginTop">
+        <img src="../logo.png" alt="Logo" />
+        <div>
+          <div class="t">Admin Alfa</div>
+          <div class="s">Gerencie clientes, categorias e produtos.</div>
+        </div>
       </div>
 
-      <div class="loginRight">
-        <h2>Entre na sua conta</h2>
-        <p class="sub" id="loginStepHint">Digite seu e-mail para continuar.</p>
-
-        <!-- step 1 -->
-        <div id="stepEmail">
-          <label>Email</label>
-          <input id="email" type="email" placeholder="nome@email.com" autocomplete="email" />
-          <div class="row">
-            <button class="btn primary" id="btnNext">Continuar</button>
-          </div>
+      <!-- etapa 1 -->
+      <div id="stepEmail">
+        <label>Email</label>
+        <input id="loginEmail" placeholder="seu@email.com" autocomplete="email" />
+        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap">
+          <button class="btn brand" id="btnNext">Continuar</button>
+          <button class="btn" id="btnGoogle">Entrar com Google</button>
         </div>
-
-        <!-- step 2 -->
-        <div id="stepSenha" class="hidden">
-          <label>Senha</label>
-          <input id="senha" type="password" placeholder="••••••••" autocomplete="current-password" />
-          <div class="row">
-            <button class="btn primary" id="btnLogin">Entrar</button>
-            <button class="btn ghost" id="btnGoogle">Entrar com Google</button>
-          </div>
-          <div class="row" style="justify-content:flex-start">
-            <button class="btn ghost" id="btnVoltar">← Trocar e-mail</button>
-          </div>
-        </div>
-
-        <div id="msg" class="msg"></div>
       </div>
+
+      <!-- etapa 2 -->
+      <div id="stepPass" class="hidden">
+        <label>Email</label>
+        <input id="loginEmailRO" disabled />
+        <label>Senha</label>
+        <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap">
+          <button class="btn" id="btnBackStep">Voltar</button>
+          <button class="btn brand" id="btnLogin">Entrar</button>
+        </div>
+      </div>
+
+      <div id="loginMsg" class="msg"></div>
     </div>
-  </section>
+  </div>
 
   <!-- APP -->
-  <section id="appView" class="app hidden">
-    <div class="top">
-      <div class="who">Logado como: <b id="whoEmail" class="mono">—</b></div>
-      <button class="btn danger" id="btnLogout">Sair</button>
+  <div id="appView" class="hidden">
+
+    <div class="appbar">
+      <div class="brand">
+        <img src="../logo.png" alt="Logo" />
+        <div class="brandTxt">
+          <div class="t">Admin Alfa</div>
+          <div class="s" id="who">—</div>
+        </div>
+      </div>
+      <div class="rightTop">
+        <div class="pill"><span class="dot"></span> <span id="statusTxt">Logado</span></div>
+        <button class="btn danger" id="btnLogout">Sair</button>
+      </div>
     </div>
 
     <div class="tabs">
@@ -281,402 +362,692 @@
     </div>
 
     <!-- CLIENTES -->
-    <div class="panel" id="tab-clientes">
-      <h3>Criar cliente</h3>
-      <div class="grid3">
-        <div class="field">
-          <label>Nome</label>
-          <input id="c_nome" placeholder="Ex: Padaria do João" />
+    <div id="tab-clientes" class="card">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="min-width:240px; flex:1">
+          <label style="margin:0 0 6px">Buscar</label>
+          <input id="qClientes" placeholder="nome ou slug..." />
         </div>
-        <div class="field">
-          <label>Slug</label>
-          <input id="c_slug" placeholder="ex: padaria-do-joao" />
-        </div>
-        <div class="field">
-          <label>WhatsApp</label>
-          <input id="c_whats" placeholder="6299..." />
-        </div>
+        <button class="btn brand" id="btnNovoCliente">➕ Novo cliente</button>
+        <button class="btn" id="btnReloadClientes">🔄 Recarregar</button>
       </div>
-
-      <div class="grid3" style="margin-top:10px">
-        <div class="field">
-          <label>Tipo de negócio</label>
-          <select id="c_tipo_negocio">
-            <option value="">Selecione…</option>
-            <option>Restaurante</option>
-            <option>Padaria</option>
-            <option>Lanchonete</option>
-            <option>Mercado</option>
-            <option>Farmácia</option>
-            <option>Petshop</option>
-            <option>Outros</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Email do cliente</label>
-          <input id="c_email" placeholder="cliente@email.com" />
-        </div>
-
-        <div class="field">
-          <label>Senha do cliente</label>
-          <input id="c_senha" type="password" placeholder="Crie uma senha" />
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:12px">
-        <button class="btn primary" id="btnCriarCliente">Salvar</button>
-        <button class="btn ghost" id="btnReloadClientes">Recarregar</button>
-      </div>
-      <div id="msgClientes" class="msg"></div>
-
-      <div class="list" style="margin-top:14px">
-        <div class="headRow">
-          <div>Nome</div><div>Slug</div><div>Status</div><div style="text-align:right">Ações</div>
-        </div>
-        <div id="listaClientes"></div>
-      </div>
+      <div class="list" id="listClientes"></div>
     </div>
 
     <!-- CATEGORIAS -->
-    <div class="panel hidden" id="tab-categorias">
-      <h3>Categorias (por loja)</h3>
-      <div class="grid2">
-        <div class="field">
-          <label>Cliente (slug)</label>
-          <input id="cat_cliente" placeholder="ex: padaria-do-joao" />
+    <div id="tab-categorias" class="card hidden">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="min-width:240px; flex:1">
+          <label style="margin:0 0 6px">Buscar</label>
+          <input id="qCategorias" placeholder="nome..." />
         </div>
-        <div class="field">
-          <label>Nome da categoria</label>
-          <input id="cat_nome" placeholder="Ex: Pães" />
-        </div>
+        <button class="btn brand" id="btnNovaCategoria">➕ Nova categoria</button>
+        <button class="btn" id="btnReloadCategorias">🔄 Recarregar</button>
       </div>
-      <div class="row" style="margin-top:12px">
-        <button class="btn primary" id="btnCriarCategoria">Salvar</button>
-        <button class="btn ghost" id="btnReloadCategorias">Recarregar</button>
-      </div>
-      <div id="msgCategorias" class="msg"></div>
-
-      <div class="list" style="margin-top:14px">
-        <div class="headRow">
-          <div>Nome</div><div>Cliente</div><div>Status</div><div style="text-align:right">Ações</div>
-        </div>
-        <div id="listaCategorias"></div>
-      </div>
+      <div class="list" id="listCategorias"></div>
     </div>
 
     <!-- PRODUTOS -->
-    <div class="panel hidden" id="tab-produtos">
-      <h3>Produtos (por loja)</h3>
-      <div class="grid3">
-        <div class="field">
-          <label>Cliente (slug)</label>
-          <input id="p_cliente" placeholder="ex: padaria-do-joao" />
+    <div id="tab-produtos" class="card hidden">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="min-width:240px; flex:1">
+          <label style="margin:0 0 6px">Buscar</label>
+          <input id="qProdutos" placeholder="nome ou descrição..." />
         </div>
-        <div class="field">
-          <label>Categoria (id)</label>
-          <input id="p_catid" placeholder="id da categoria" />
-        </div>
-        <div class="field">
-          <label>Nome</label>
-          <input id="p_nome" placeholder="Ex: Pão francês" />
-        </div>
+        <button class="btn brand" id="btnNovoProduto">➕ Novo produto</button>
+        <button class="btn" id="btnReloadProdutos">🔄 Recarregar</button>
       </div>
-
-      <div class="grid3" style="margin-top:10px">
-        <div class="field">
-          <label>Preço</label>
-          <input id="p_preco" placeholder="4.50" />
-        </div>
-        <div class="field">
-          <label>Imagem URL</label>
-          <input id="p_img" placeholder="https://..." />
-        </div>
-        <div class="field">
-          <label>Descrição</label>
-          <input id="p_desc" placeholder="Opcional" />
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:12px">
-        <button class="btn primary" id="btnCriarProduto">Salvar</button>
-        <button class="btn ghost" id="btnReloadProdutos">Recarregar</button>
-      </div>
-      <div id="msgProdutos" class="msg"></div>
-
-      <div class="list" style="margin-top:14px">
-        <div class="headRow">
-          <div>Produto</div><div>Cliente</div><div>Status</div><div style="text-align:right">Ações</div>
-        </div>
-        <div id="listaProdutos"></div>
-      </div>
+      <div class="list" id="listProdutos"></div>
     </div>
+  </div>
 
-  </section>
+  <!-- MODAL -->
+  <div id="overlay" class="overlay hidden">
+    <div class="modal">
+      <div class="modalHead">
+        <h3 id="modalTitle">—</h3>
+        <button class="iconBtn" id="btnCloseModal">✕</button>
+      </div>
+      <div id="modalBody"></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap">
+        <button class="btn" id="btnCancelModal">Cancelar</button>
+        <button class="btn brand" id="btnSaveModal">Salvar</button>
+      </div>
+      <div id="modalMsg" class="msg"></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-  // CONFIG DO SEU PROJETO SUPABASE (publicável)
-  const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
-  const SUPABASE_ANON = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
+/* ================================
+   CONFIG
+================================= */
+const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
 
-  // SUA API VERCEL
-  const API_BASE = "https://cafeteria-gamma-orpin.vercel.app";
+const API_BASE = "https://cafeteria-gamma-orpin.vercel.app";
 
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
+/* ================================
+   HELPERS
+================================= */
+const el = (id)=>document.getElementById(id);
+const esc = (s)=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const money = (v)=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+async function withRetry(fn, tries=3){
+  let last;
+  for (let i=0;i<tries;i++){
+    try { return await fn(); }
+    catch(e){ last=e; await new Promise(r=>setTimeout(r, 350*(i+1))); }
+  }
+  throw last;
+}
+
+function setMsg(node, text, ok=false){
+  node.className = "msg " + (ok ? "ok" : "err");
+  node.textContent = text || "";
+}
+
+async function getToken(){
+  const { data } = await sb.auth.getSession();
+  return data?.session?.access_token || "";
+}
+
+async function api(path, opts={}){
+  const token = await getToken();
+  const res = await fetch(API_BASE + path, {
+    ...opts,
+    headers: {
+      "Content-Type":"application/json",
+      ...(opts.headers||{}),
+      "Authorization": "Bearer " + token
     }
   });
+  if (!res.ok){
+    const txt = await res.text().catch(()=> "");
+    throw new Error(txt || ("HTTP " + res.status));
+  }
+  return res.json().catch(()=> ({}));
+}
 
-  const $ = (id)=>document.getElementById(id);
-  const showMsg = (el, text, ok=false)=>{
-    el.className = "msg " + (ok ? "ok" : "err");
-    el.textContent = text || "";
-  };
+function closeMenus(){
+  document.querySelectorAll("[data-menu]").forEach(m=>m.remove());
+}
+document.addEventListener("click", (e)=>{
+  if (!e.target.closest(".menuWrap")) closeMenus();
+});
 
-  async function api(path, method="GET", body=null) {
-    const { data: { session } } = await sb.auth.getSession();
-    const token = session?.access_token || "";
+/* ================================
+   LOGIN FLOW
+================================= */
+function showLogin(){ el("loginView").classList.remove("hidden"); el("appView").classList.add("hidden"); }
+function showApp(){ el("loginView").classList.add("hidden"); el("appView").classList.remove("hidden"); }
 
-    const res = await fetch(API_BASE + path, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      body: body ? JSON.stringify(body) : null
+el("btnNext").onclick = ()=>{
+  const email = (el("loginEmail").value||"").trim();
+  if (!email) return setMsg(el("loginMsg"), "Digite seu email.");
+  el("loginEmailRO").value = email;
+  el("stepEmail").classList.add("hidden");
+  el("stepPass").classList.remove("hidden");
+  setMsg(el("loginMsg"), "", true);
+};
+
+el("btnBackStep").onclick = ()=>{
+  el("stepPass").classList.add("hidden");
+  el("stepEmail").classList.remove("hidden");
+  setMsg(el("loginMsg"), "", true);
+};
+
+el("btnLogin").onclick = async ()=>{
+  try{
+    setMsg(el("loginMsg"), "Entrando...");
+    const email = el("loginEmailRO").value.trim();
+    const pass  = el("loginPass").value;
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) throw error;
+    setMsg(el("loginMsg"), "Logado!", true);
+    await afterLogin();
+  }catch(err){
+    console.error(err);
+    setMsg(el("loginMsg"), "Falha no login: " + (err.message||err), false);
+  }
+};
+
+el("btnGoogle").onclick = async ()=>{
+  try{
+    setMsg(el("loginMsg"), "Abrindo Google...");
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.href }
     });
+    if (error) throw error;
+  }catch(err){
+    console.error(err);
+    setMsg(el("loginMsg"), "Erro no Google: " + (err.message||err), false);
+  }
+};
 
-    const json = await res.json().catch(()=> ({}));
-    if (!res.ok) throw new Error(json.error || ("HTTP " + res.status));
-    return json;
+el("btnLogout").onclick = async ()=>{
+  await sb.auth.signOut();
+  showLogin();
+};
+
+/* ================================
+   TABS
+================================= */
+document.querySelectorAll(".tab").forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    const name = b.dataset.tab;
+    ["clientes","categorias","produtos"].forEach(t=>{
+      el("tab-"+t).classList.toggle("hidden", t!==name);
+    });
+  };
+});
+
+/* ================================
+   DATA (ADMIN via Vercel API)
+================================= */
+let state = { clientes:[], categorias:[], produtos:[] };
+
+async function loadAll(){
+  await Promise.all([loadClientes(), loadCategorias(), loadProdutos()]);
+}
+
+async function loadClientes(){
+  try{
+    const data = await withRetry(()=>api("/api/admin/clientes"));
+    state.clientes = Array.isArray(data) ? data : (data.data||[]);
+    renderClientes();
+  }catch(err){
+    console.error(err);
+    el("listClientes").innerHTML = `<div style="color:#6b7280">Erro ao carregar clientes.</div>`;
+  }
+}
+
+async function loadCategorias(){
+  try{
+    const data = await withRetry(()=>api("/api/admin/categorias"));
+    state.categorias = Array.isArray(data) ? data : (data.data||[]);
+    renderCategorias();
+  }catch(err){
+    console.error(err);
+    el("listCategorias").innerHTML = `<div style="color:#6b7280">Erro ao carregar categorias.</div>`;
+  }
+}
+
+async function loadProdutos(){
+  try{
+    const data = await withRetry(()=>api("/api/admin/produtos"));
+    state.produtos = Array.isArray(data) ? data : (data.data||[]);
+    renderProdutos();
+  }catch(err){
+    console.error(err);
+    el("listProdutos").innerHTML = `<div style="color:#6b7280">Erro ao carregar produtos.</div>`;
+  }
+}
+
+/* ---------- RENDER: CLIENTES ---------- */
+function renderClientes(){
+  const q = (el("qClientes").value||"").trim().toLowerCase();
+  let list = state.clientes.slice();
+  if (q) list = list.filter(c => (c.nome||"").toLowerCase().includes(q) || (c.slug||"").toLowerCase().includes(q));
+
+  if (!list.length){
+    el("listClientes").innerHTML = `<div style="color:#6b7280">Nenhum cliente.</div>`;
+    return;
   }
 
-  // LOGIN FLOW iFood
-  $("btnNext").onclick = ()=>{
-    const email = $("email").value.trim();
-    if (!email) return showMsg($("msg"), "Informe seu e-mail.");
-    $("stepEmail").classList.add("hidden");
-    $("stepSenha").classList.remove("hidden");
-    $("loginStepHint").textContent = "Agora digite sua senha ou use Google.";
-    showMsg($("msg"), "", true);
-    $("senha").focus();
-  };
-  $("btnVoltar").onclick = ()=>{
-    $("stepSenha").classList.add("hidden");
-    $("stepEmail").classList.remove("hidden");
-    $("loginStepHint").textContent = "Digite seu e-mail para continuar.";
-    showMsg($("msg"), "", true);
-  };
+  el("listClientes").innerHTML = list.map(c=>{
+    return `
+      <div class="rowItem">
+        <div class="rowMain">
+          <div class="rowTitle">${esc(c.nome||"—")}</div>
+          <div class="rowMeta">
+            <span class="badge">slug: <span style="font-family:var(--mono)">${esc(c.slug||"")}</span></span>
+            <span class="badge">tipo: ${esc(c.tipo_negocio||"-")}</span>
+            <span class="badge">Whats: <span style="font-family:var(--mono)">${esc(c.whatsapp||"-")}</span></span>
+            <span class="badge">${c.ativo ? "Ativo" : "Inativo"}</span>
+          </div>
+        </div>
 
-  $("btnLogin").onclick = async ()=>{
-    try{
-      showMsg($("msg"), "Entrando...", true);
-      const email = $("email").value.trim();
-      const senha = $("senha").value.trim();
-      const { error } = await sb.auth.signInWithPassword({ email, password: senha });
-      if (error) throw error;
-      showMsg($("msg"), "OK!", true);
-    }catch(e){
-      showMsg($("msg"), e.message || "Erro no login.");
-    }
-  };
-
-  $("btnGoogle").onclick = async ()=>{
-    try{
-      showMsg($("msg"), "Abrindo Google...", true);
-      const { error } = await sb.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: location.href }
-      });
-      if (error) throw error;
-    }catch(e){
-      showMsg($("msg"), e.message || "Erro no Google.");
-    }
-  };
-
-  $("btnLogout").onclick = async ()=>{
-    await sb.auth.signOut();
-  };
-
-  // UI tabs
-  document.querySelectorAll(".tab").forEach(btn=>{
-    btn.onclick = ()=>{
-      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      const t = btn.dataset.tab;
-      ["clientes","categorias","produtos"].forEach(x=>{
-        $("tab-"+x).classList.toggle("hidden", x !== t);
-      });
-    };
-  });
-
-  // RENDER LISTAS
-  const pill = (ativo)=> `<span class="pill ${ativo? "":"off"}">${ativo? "Ativo":"Off"}</span>`;
-  const icon = (txt)=> txt;
-
-  async function loadClientes(){
-    const list = await api("/api/admin/clientes","GET");
-    $("listaClientes").innerHTML = list.map(c=>`
-      <div class="itemRow">
-        <div><b>${escapeHtml(c.nome||"")}</b><div style="opacity:.7;font-size:12px">${escapeHtml(c.tipo_negocio||"")}</div></div>
-        <div class="mono">${escapeHtml(c.slug||"")}</div>
-        <div>${pill(!!c.ativo)}</div>
-        <div class="actions">
-          <button class="iconBtn" title="Ativar/Desativar" onclick='toggleCliente("${c.id}", ${!c.ativo})'>${icon("⏻")}</button>
-          <button class="iconBtn" title="Excluir" onclick='delCliente("${c.id}")'>${icon("🗑")}</button>
+        <div class="menuWrap">
+          <button class="iconBtn" onclick="toggleMenuClientes('${esc(c.slug)}', this)">⋯</button>
         </div>
       </div>
-    `).join("");
+    `;
+  }).join("");
+}
+
+window.toggleMenuClientes = (slug, btn)=>{
+  closeMenus();
+  const wrap = btn.closest(".menuWrap");
+  const div = document.createElement("div");
+  div.className = "menu";
+  div.setAttribute("data-menu","1");
+  div.innerHTML = `
+    <button onclick="openClienteEdit('${slug}')">✏️ Editar</button>
+    <button onclick="toggleClienteAtivo('${slug}')">🟡 Ativar/Desativar</button>
+    <button class="danger" onclick="deleteCliente('${slug}')">🗑 Excluir</button>
+  `;
+  wrap.appendChild(div);
+};
+
+async function toggleClienteAtivo(slug){
+  try{
+    const c = state.clientes.find(x=>String(x.slug)===String(slug));
+    if (!c) return;
+    await api("/api/admin/clientes", { method:"PUT", body: JSON.stringify({ slug, ativo: !c.ativo }) });
+    await loadClientes();
+  }catch(e){ alert("Erro: " + (e.message||e)); }
+}
+async function deleteCliente(slug){
+  if (!confirm("Excluir cliente?")) return;
+  try{
+    await api("/api/admin/clientes", { method:"DELETE", body: JSON.stringify({ slug }) });
+    await loadAll();
+  }catch(e){ alert("Erro: " + (e.message||e)); }
+}
+
+/* ---------- RENDER: CATEGORIAS ---------- */
+function renderCategorias(){
+  const q = (el("qCategorias").value||"").trim().toLowerCase();
+  let list = state.categorias.slice();
+  if (q) list = list.filter(c => (c.nome||"").toLowerCase().includes(q));
+
+  if (!list.length){
+    el("listCategorias").innerHTML = `<div style="color:#6b7280">Nenhuma categoria.</div>`;
+    return;
   }
 
-  async function toggleCliente(id, ativo){
-    try{
-      await api("/api/admin/clientes","PATCH",{id, ativo});
-      await loadClientes();
-    }catch(e){ showMsg($("msgClientes"), e.message); }
-  }
-  async function delCliente(id){
-    if(!confirm("Excluir cliente?")) return;
-    try{
-      await api("/api/admin/clientes","DELETE",{id});
-      await loadClientes();
-    }catch(e){ showMsg($("msgClientes"), e.message); }
-  }
-
-  async function loadCategorias(){
-    const list = await api("/api/admin/categorias","GET");
-    $("listaCategorias").innerHTML = list.map(c=>`
-      <div class="itemRow">
-        <div><b>${escapeHtml(c.nome||"")}</b></div>
-        <div class="mono">${escapeHtml(c.cliente_slug||"")}</div>
-        <div>${pill(!!c.ativo)}</div>
-        <div class="actions">
-          <button class="iconBtn" title="Ativar/Desativar" onclick='toggleCategoria("${c.id}", ${!c.ativo})'>⏻</button>
-          <button class="iconBtn" title="Excluir" onclick='delCategoria("${c.id}")'>🗑</button>
+  el("listCategorias").innerHTML = list.map(c=>`
+    <div class="rowItem">
+      <div class="rowMain">
+        <div class="rowTitle">${esc(c.nome||"—")}</div>
+        <div class="rowMeta">
+          <span class="badge">loja: <span style="font-family:var(--mono)">${esc(c.cliente_slug||"")}</span></span>
+          <span class="badge">ordem: <span style="font-family:var(--mono)">${esc(c.ordem??0)}</span></span>
+          <span class="badge">${c.ativo ? "Ativo" : "Inativo"}</span>
         </div>
       </div>
-    `).join("");
-  }
-  async function toggleCategoria(id, ativo){
-    try{ await api("/api/admin/categorias","PATCH",{id, ativo}); await loadCategorias(); }
-    catch(e){ showMsg($("msgCategorias"), e.message); }
-  }
-  async function delCategoria(id){
-    if(!confirm("Excluir categoria?")) return;
-    try{ await api("/api/admin/categorias","DELETE",{id}); await loadCategorias(); }
-    catch(e){ showMsg($("msgCategorias"), e.message); }
+      <div class="menuWrap">
+        <button class="iconBtn" onclick="toggleMenuCategorias('${c.id}', this)">⋯</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+window.toggleMenuCategorias = (id, btn)=>{
+  closeMenus();
+  const wrap = btn.closest(".menuWrap");
+  const div = document.createElement("div");
+  div.className="menu";
+  div.setAttribute("data-menu","1");
+  div.innerHTML = `
+    <button onclick="openCategoriaEdit('${id}')">✏️ Editar</button>
+    <button onclick="toggleCategoriaAtivo('${id}')">🟡 Ativar/Desativar</button>
+    <button class="danger" onclick="deleteCategoria('${id}')">🗑 Excluir</button>
+  `;
+  wrap.appendChild(div);
+};
+
+async function toggleCategoriaAtivo(id){
+  try{
+    const c = state.categorias.find(x=>String(x.id)===String(id));
+    if (!c) return;
+    await api("/api/admin/categorias", { method:"PUT", body: JSON.stringify({ id, ativo: !c.ativo }) });
+    await loadCategorias();
+  }catch(e){ alert("Erro: " + (e.message||e)); }
+}
+async function deleteCategoria(id){
+  if (!confirm("Excluir categoria?")) return;
+  try{
+    await api("/api/admin/categorias", { method:"DELETE", body: JSON.stringify({ id }) });
+    await loadAll();
+  }catch(e){ alert("Erro: " + (e.message||e)); }
+}
+
+/* ---------- RENDER: PRODUTOS ---------- */
+function renderProdutos(){
+  const q = (el("qProdutos").value||"").trim().toLowerCase();
+  let list = state.produtos.slice();
+  if (q) list = list.filter(p => (p.nome||"").toLowerCase().includes(q) || (p.descricao||"").toLowerCase().includes(q));
+
+  if (!list.length){
+    el("listProdutos").innerHTML = `<div style="color:#6b7280">Nenhum produto.</div>`;
+    return;
   }
 
-  async function loadProdutos(){
-    const list = await api("/api/admin/produtos","GET");
-    $("listaProdutos").innerHTML = list.map(p=>`
-      <div class="itemRow">
-        <div><b>${escapeHtml(p.nome||"")}</b><div style="opacity:.7;font-size:12px">${escapeHtml(p.descricao||"")}</div></div>
-        <div class="mono">${escapeHtml(p.cliente_slug||"")}</div>
-        <div>${pill(!!p.ativo)}</div>
-        <div class="actions">
-          <button class="iconBtn" title="Ativar/Desativar" onclick='toggleProduto("${p.id}", ${!p.ativo})'>⏻</button>
-          <button class="iconBtn" title="Excluir" onclick='delProduto("${p.id}")'>🗑</button>
+  el("listProdutos").innerHTML = list.map(p=>{
+    const img = (p.imagem_url || p.imagem || "");
+    return `
+      <div class="rowItem">
+        <div class="rowMain">
+          <div class="rowTitle">${esc(p.nome||"—")}</div>
+          <div class="rowMeta">
+            <span class="badge">loja: <span style="font-family:var(--mono)">${esc(p.cliente_slug||"")}</span></span>
+            <span class="badge">preço: <span style="font-family:var(--mono)">${money(p.preco)}</span></span>
+            <span class="badge">img: ${img ? "sim" : "não"}</span>
+            <span class="badge">${p.ativo ? "Ativo" : "Inativo"}</span>
+          </div>
+        </div>
+        <div class="menuWrap">
+          <button class="iconBtn" onclick="toggleMenuProdutos('${p.id}', this)">⋯</button>
         </div>
       </div>
-    `).join("");
-  }
-  async function toggleProduto(id, ativo){
-    try{ await api("/api/admin/produtos","PATCH",{id, ativo}); await loadProdutos(); }
-    catch(e){ showMsg($("msgProdutos"), e.message); }
-  }
-  async function delProduto(id){
-    if(!confirm("Excluir produto?")) return;
-    try{ await api("/api/admin/produtos","DELETE",{id}); await loadProdutos(); }
-    catch(e){ showMsg($("msgProdutos"), e.message); }
-  }
+    `;
+  }).join("");
+}
 
-  // CREATE
-  $("btnCriarCliente").onclick = async ()=>{
+window.toggleMenuProdutos = (id, btn)=>{
+  closeMenus();
+  const wrap = btn.closest(".menuWrap");
+  const div = document.createElement("div");
+  div.className="menu";
+  div.setAttribute("data-menu","1");
+  div.innerHTML = `
+    <button onclick="openProdutoEdit('${id}')">✏️ Editar</button>
+    <button onclick="toggleProdutoAtivo('${id}')">🟡 Ativar/Desativar</button>
+    <button class="danger" onclick="deleteProduto('${id}')">🗑 Excluir</button>
+  `;
+  wrap.appendChild(div);
+};
+
+async function toggleProdutoAtivo(id){
+  try{
+    const p = state.produtos.find(x=>String(x.id)===String(id));
+    if (!p) return;
+    await api("/api/admin/produtos", { method:"PUT", body: JSON.stringify({ id, ativo: !p.ativo }) });
+    await loadProdutos();
+  }catch(e){ alert("Erro: " + (e.message||e)); }
+}
+async function deleteProduto(id){
+  if (!confirm("Excluir produto?")) return;
+  try{
+    await api("/api/admin/produtos", { method:"DELETE", body: JSON.stringify({ id }) });
+    await loadAll();
+  }catch(e){ alert("Erro: " + (e.message||e)); }
+}
+
+/* ================================
+   MODAL FORMS
+================================= */
+let modalMode = null;
+let modalPayload = null;
+
+function openModal(title, bodyHtml, onSave){
+  el("modalTitle").textContent = title;
+  el("modalBody").innerHTML = bodyHtml;
+  el("overlay").classList.remove("hidden");
+  el("modalMsg").textContent = "";
+  el("btnSaveModal").onclick = onSave;
+}
+function closeModal(){
+  el("overlay").classList.add("hidden");
+  el("modalBody").innerHTML = "";
+  el("btnSaveModal").onclick = null;
+}
+el("btnCloseModal").onclick = closeModal;
+el("btnCancelModal").onclick = closeModal;
+
+el("btnNovoCliente").onclick = ()=> openClienteCreate();
+el("btnReloadClientes").onclick = loadClientes;
+el("qClientes").addEventListener("input", renderClientes);
+
+el("btnNovaCategoria").onclick = ()=> openCategoriaCreate();
+el("btnReloadCategorias").onclick = loadCategorias;
+el("qCategorias").addEventListener("input", renderCategorias);
+
+el("btnNovoProduto").onclick = ()=> openProdutoCreate();
+el("btnReloadProdutos").onclick = loadProdutos;
+el("qProdutos").addEventListener("input", renderProdutos);
+
+/* CLIENTE create/edit */
+function clienteFormHtml(c={}){
+  return `
+    <div class="grid2">
+      <div>
+        <label>Nome</label>
+        <input id="f_nome" value="${esc(c.nome||"")}" placeholder="Ex: Padaria do João"/>
+      </div>
+      <div>
+        <label>Slug</label>
+        <input id="f_slug" value="${esc(c.slug||"")}" placeholder="ex: padaria-do-joao"/>
+      </div>
+      <div>
+        <label>WhatsApp</label>
+        <input id="f_whats" value="${esc(c.whatsapp||"")}" placeholder="6299..."/>
+      </div>
+      <div>
+        <label>Tipo de negócio</label>
+        <select id="f_tipo">
+          ${["restaurante","mercado","padaria","lanchonete","farmacia","petshop"].map(t=>`
+            <option value="${t}" ${String(c.tipo_negocio||"")==t ? "selected":""}>${t}</option>
+          `).join("")}
+        </select>
+      </div>
+    </div>
+    <label style="margin-top:10px">Ativo</label>
+    <select id="f_ativo">
+      <option value="true" ${c.ativo!==false ? "selected":""}>Sim</option>
+      <option value="false" ${c.ativo===false ? "selected":""}>Não</option>
+    </select>
+  `;
+}
+
+function openClienteCreate(){
+  openModal("Novo cliente", clienteFormHtml({ativo:true,tipo_negocio:"restaurante"}), async ()=>{
     try{
-      showMsg($("msgClientes"), "Salvando...", true);
       const payload = {
-        nome: $("c_nome").value.trim(),
-        slug: $("c_slug").value.trim(),
-        whatsapp: $("c_whats").value.trim(),
-        tipo_negocio: $("c_tipo_negocio").value.trim(),
-        email: $("c_email").value.trim(),
-        senha: $("c_senha").value.trim(),
-        ativo: true
+        nome: el("f_nome").value.trim(),
+        slug: el("f_slug").value.trim(),
+        whatsapp: el("f_whats").value.trim(),
+        tipo_negocio: el("f_tipo").value,
+        ativo: el("f_ativo").value === "true"
       };
-      await api("/api/admin/clientes","POST", payload);
-      showMsg($("msgClientes"), "Cliente criado ✅", true);
-      $("c_nome").value = $("c_slug").value = $("c_whats").value = $("c_email").value = $("c_senha").value = "";
-      $("c_tipo_negocio").value = "";
+      await api("/api/admin/clientes", { method:"POST", body: JSON.stringify(payload) });
+      closeModal();
+      await loadAll();
+    }catch(e){
+      setMsg(el("modalMsg"), "Erro ao salvar: " + (e.message||e));
+    }
+  });
+}
+
+window.openClienteEdit = (slug)=>{
+  const c = state.clientes.find(x=>String(x.slug)===String(slug)) || {};
+  openModal("Editar cliente", clienteFormHtml(c), async ()=>{
+    try{
+      const payload = {
+        slug: slug,
+        nome: el("f_nome").value.trim(),
+        whatsapp: el("f_whats").value.trim(),
+        tipo_negocio: el("f_tipo").value,
+        ativo: el("f_ativo").value === "true"
+      };
+      await api("/api/admin/clientes", { method:"PUT", body: JSON.stringify(payload) });
+      closeModal();
       await loadClientes();
     }catch(e){
-      showMsg($("msgClientes"), e.message);
+      setMsg(el("modalMsg"), "Erro ao salvar: " + (e.message||e));
     }
-  };
-  $("btnReloadClientes").onclick = loadClientes;
+  });
+};
 
-  $("btnCriarCategoria").onclick = async ()=>{
+/* CATEGORIA create/edit */
+function categoriaFormHtml(c={}){
+  return `
+    <div class="grid2">
+      <div>
+        <label>Loja (cliente_slug)</label>
+        <input id="f_cli" value="${esc(c.cliente_slug||"")}" placeholder="ex: padaria-do-joao"/>
+      </div>
+      <div>
+        <label>Nome</label>
+        <input id="f_nome" value="${esc(c.nome||"")}" placeholder="Ex: Pães"/>
+      </div>
+      <div>
+        <label>Ordem</label>
+        <input id="f_ordem" value="${esc(c.ordem??0)}" />
+      </div>
+      <div>
+        <label>Ativo</label>
+        <select id="f_ativo">
+          <option value="true" ${c.ativo!==false ? "selected":""}>Sim</option>
+          <option value="false" ${c.ativo===false ? "selected":""}>Não</option>
+        </select>
+      </div>
+    </div>
+  `;
+}
+function openCategoriaCreate(){
+  openModal("Nova categoria", categoriaFormHtml({ativo:true,ordem:0}), async ()=>{
     try{
-      showMsg($("msgCategorias"), "Salvando...", true);
-      await api("/api/admin/categorias","POST", {
-        cliente_slug: $("cat_cliente").value.trim(),
-        nome: $("cat_nome").value.trim(),
-        ordem: 0,
-        ativo: true
-      });
-      showMsg($("msgCategorias"), "Categoria criada ✅", true);
-      $("cat_nome").value = "";
+      const payload = {
+        cliente_slug: el("f_cli").value.trim(),
+        nome: el("f_nome").value.trim(),
+        ordem: Number(el("f_ordem").value||0),
+        ativo: el("f_ativo").value==="true"
+      };
+      await api("/api/admin/categorias", { method:"POST", body: JSON.stringify(payload) });
+      closeModal();
+      await loadAll();
+    }catch(e){ setMsg(el("modalMsg"), "Erro: " + (e.message||e)); }
+  });
+}
+window.openCategoriaEdit = (id)=>{
+  const c = state.categorias.find(x=>String(x.id)===String(id)) || {};
+  openModal("Editar categoria", categoriaFormHtml(c), async ()=>{
+    try{
+      const payload = {
+        id,
+        cliente_slug: el("f_cli").value.trim(),
+        nome: el("f_nome").value.trim(),
+        ordem: Number(el("f_ordem").value||0),
+        ativo: el("f_ativo").value==="true"
+      };
+      await api("/api/admin/categorias", { method:"PUT", body: JSON.stringify(payload) });
+      closeModal();
       await loadCategorias();
-    }catch(e){ showMsg($("msgCategorias"), e.message); }
-  };
-  $("btnReloadCategorias").onclick = loadCategorias;
+    }catch(e){ setMsg(el("modalMsg"), "Erro: " + (e.message||e)); }
+  });
+};
 
-  $("btnCriarProduto").onclick = async ()=>{
+/* PRODUTO create/edit */
+function produtoFormHtml(p={}){
+  const img = p.imagem_url || p.imagem || "";
+  return `
+    <div class="grid2">
+      <div>
+        <label>Loja (cliente_slug)</label>
+        <input id="f_cli" value="${esc(p.cliente_slug||"")}" placeholder="ex: padaria-do-joao"/>
+      </div>
+      <div>
+        <label>Categoria ID</label>
+        <input id="f_cat" value="${esc(p.categoria_id||"")}" placeholder="id da categoria"/>
+      </div>
+      <div>
+        <label>Nome</label>
+        <input id="f_nome" value="${esc(p.nome||"")}" placeholder="Ex: Pão francês"/>
+      </div>
+      <div>
+        <label>Preço</label>
+        <input id="f_preco" value="${esc(p.preco??0)}" />
+      </div>
+    </div>
+
+    <label>Descrição</label>
+    <input id="f_desc" value="${esc(p.descricao||"")}" placeholder="Opcional"/>
+
+    <label>Imagem (URL)</label>
+    <input id="f_img" value="${esc(img)}" placeholder="https://..."/>
+
+    <div class="grid2" style="margin-top:10px">
+      <div>
+        <label>Ordem</label>
+        <input id="f_ordem" value="${esc(p.ordem??0)}" />
+      </div>
+      <div>
+        <label>Ativo</label>
+        <select id="f_ativo">
+          <option value="true" ${p.ativo!==false ? "selected":""}>Sim</option>
+          <option value="false" ${p.ativo===false ? "selected":""}>Não</option>
+        </select>
+      </div>
+    </div>
+  `;
+}
+
+function openProdutoCreate(){
+  openModal("Novo produto", produtoFormHtml({ativo:true,ordem:0,preco:0}), async ()=>{
     try{
-      showMsg($("msgProdutos"), "Salvando...", true);
-      await api("/api/admin/produtos","POST", {
-        cliente_slug: $("p_cliente").value.trim(),
-        categoria_id: $("p_catid").value.trim() || null,
-        nome: $("p_nome").value.trim(),
-        descricao: $("p_desc").value.trim(),
-        preco: Number(($("p_preco").value || "0").replace(",", ".")),
-        imagem_url: $("p_img").value.trim(),
-        ativo: true
-      });
-      showMsg($("msgProdutos"), "Produto criado ✅", true);
-      $("p_nome").value = $("p_desc").value = $("p_preco").value = $("p_img").value = "";
+      const payload = {
+        cliente_slug: el("f_cli").value.trim(),
+        categoria_id: el("f_cat").value ? Number(el("f_cat").value) : null,
+        nome: el("f_nome").value.trim(),
+        descricao: el("f_desc").value.trim(),
+        preco: Number(el("f_preco").value||0),
+        ordem: Number(el("f_ordem").value||0),
+        ativo: el("f_ativo").value==="true",
+        // compat: envia nos dois campos se existirem no schema
+        imagem_url: el("f_img").value.trim(),
+        imagem: el("f_img").value.trim()
+      };
+      await api("/api/admin/produtos", { method:"POST", body: JSON.stringify(payload) });
+      closeModal();
+      await loadAll();
+    }catch(e){ setMsg(el("modalMsg"), "Erro: " + (e.message||e)); }
+  });
+}
+
+window.openProdutoEdit = (id)=>{
+  const p = state.produtos.find(x=>String(x.id)===String(id)) || {};
+  openModal("Editar produto", produtoFormHtml(p), async ()=>{
+    try{
+      const payload = {
+        id,
+        cliente_slug: el("f_cli").value.trim(),
+        categoria_id: el("f_cat").value ? Number(el("f_cat").value) : null,
+        nome: el("f_nome").value.trim(),
+        descricao: el("f_desc").value.trim(),
+        preco: Number(el("f_preco").value||0),
+        ordem: Number(el("f_ordem").value||0),
+        ativo: el("f_ativo").value==="true",
+        imagem_url: el("f_img").value.trim(),
+        imagem: el("f_img").value.trim()
+      };
+      await api("/api/admin/produtos", { method:"PUT", body: JSON.stringify(payload) });
+      closeModal();
       await loadProdutos();
-    }catch(e){ showMsg($("msgProdutos"), e.message); }
-  };
-  $("btnReloadProdutos").onclick = loadProdutos;
+    }catch(e){ setMsg(el("modalMsg"), "Erro: " + (e.message||e)); }
+  });
+};
 
-  function escapeHtml(str){
-    return String(str ?? "").replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
+/* ================================
+   SESSION / INIT
+================================= */
+async function afterLogin(){
+  const { data } = await sb.auth.getSession();
+  const user = data?.session?.user;
+  el("who").textContent = user?.email ? ("Conta: " + user.email) : "—";
+  showApp();
+  await loadAll();
+}
 
-  // SESSION WATCH
-  async function refreshUI(){
-    const { data: { session } } = await sb.auth.getSession();
-    const logged = !!session;
+(async function init(){
+  const { data } = await sb.auth.getSession();
+  if (data?.session) await afterLogin();
+  else showLogin();
 
-    $("loginView").classList.toggle("hidden", logged);
-    $("appView").classList.toggle("hidden", !logged);
-
-    if (logged){
-      $("whoEmail").textContent = session.user.email || "—";
-      // carrega dados
-      await Promise.allSettled([loadClientes(), loadCategorias(), loadProdutos()]);
-    }
-  }
-
-  sb.auth.onAuthStateChange(()=> refreshUI());
-  refreshUI();
+  sb.auth.onAuthStateChange((evt, session)=>{
+    if (session) afterLogin();
+  });
+})();
 </script>
 </body>
 </html>
