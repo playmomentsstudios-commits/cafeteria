@@ -42,50 +42,101 @@
         radial-gradient(900px 700px at 80% 15%, rgba(46,230,197,.18), transparent 55%),
         radial-gradient(1100px 900px at 50% 95%, rgba(43,105,255,.20), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 26px 16px 86px;
+      padding: 18px 16px 86px;
     }
     a{color:inherit; text-decoration:none}
     .wrap{max-width: 1200px; margin:0 auto}
 
-    /* Topbar */
+    /* =========================
+       TOPBAR (AJUSTADO)
+    ========================= */
     .topbar{
-      display:flex; gap:16px; align-items:center; justify-content:space-between;
-      padding: 16px 18px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      position: sticky;
+      top: 12px;
+      z-index: 50;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+
+      padding: 12px 14px;
+      border-radius: 18px;
+
+      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
       border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
+      box-shadow: 0 16px 50px rgba(0,0,0,.38);
       backdrop-filter: var(--glass);
     }
-    .brand{display:flex; gap:12px; align-items:center;}
-    .logo{
-      width:52px; height:52px; border-radius: 16px;
-      background: linear-gradient(135deg, rgba(43,105,255,.25), rgba(46,230,197,.15));
-      border: 1px dashed rgba(255,255,255,.25);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900; letter-spacing:.6px;
-      color: rgba(231,238,252,.88);
-      user-select:none;
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
     }
-    .brand h1{margin:0; font-size: 18px; line-height: 1.1}
-    .brand p{margin:4px 0 0; color: var(--muted); font-size: 12.5px}
+    .logo{
+      width:44px; height:44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(43,105,255,.26), rgba(46,230,197,.14));
+      border: 1px solid rgba(255,255,255,.14);
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 1000;
+      letter-spacing:.6px;
+      user-select:none;
+      flex: 0 0 auto;
+    }
+    .brandTxt{min-width:0}
+    .brandTxt h1{
+      margin:0;
+      font-size: 15.5px;
+      line-height: 1.1;
+      letter-spacing: .2px;
+      font-weight: 950;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .brandTxt p{
+      margin:4px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topActions{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+      flex: 0 0 auto;
+    }
 
     .btn{
       cursor:pointer;
       border: none;
       color: var(--text);
-      padding: 11px 14px;
+      padding: 10px 13px;
       border-radius: 14px;
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 10px 30px rgba(0,0,0,.20);
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
       transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      display:inline-flex; align-items:center; gap:9px;
-      font-weight:800;
+      display:inline-flex;
+      align-items:center;
+      gap: 9px;
+      font-weight: 900;
       white-space:nowrap;
       user-select:none;
     }
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18)}
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+    }
     .btn:active{transform: translateY(0)}
     .btn.primary{
       background: linear-gradient(135deg, var(--primary), var(--primary2));
@@ -103,13 +154,40 @@
     }
     .btn.small{
       padding: 9px 12px;
-      border-radius: 12px;
+      border-radius: 999px;
       font-size: 13px;
     }
 
-    /* Hero */
+    /* CTA Admin (mais iFood) */
+    .btnAdmin{
+      border-radius: 999px;
+      padding: 10px 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 14px 36px rgba(0,0,0,.28);
+    }
+    .btnAdmin .icon{
+      width: 18px; height: 18px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 6px;
+      background: rgba(46,230,197,.16);
+      border: 1px solid rgba(46,230,197,.24);
+      font-size: 12px;
+    }
+    .btnAdmin:hover{
+      border-color: rgba(46,230,197,.35);
+      background:
+        linear-gradient(180deg, rgba(46,230,197,.10), rgba(255,255,255,.03));
+    }
+
+    /* =========================
+       HERO
+    ========================= */
     .hero{
-      margin-top: 18px;
+      margin-top: 16px;
       padding: 22px;
       border-radius: var(--radius);
       background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
@@ -175,7 +253,7 @@
     .sectionHead h3{margin:0; font-size: 18px}
     .sectionHead .sub{margin:0; color: var(--muted); font-size: 12.5px}
 
-    /* Chips/filters */
+    /* Chips */
     .chips{
       display:flex; gap:8px; flex-wrap:wrap;
       padding: 8px;
@@ -201,7 +279,7 @@
       color: var(--text);
     }
 
-    /* Clientes grid 2 por linha */
+    /* Clientes */
     .gridClientes{
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -271,7 +349,7 @@
     .titleCliente .n{font-weight: 900; font-size: 18px}
     .titleCliente .m{color: var(--muted); font-size: 12.5px}
 
-    /* Produtos 4 por linha */
+    /* Produtos */
     .gridProdutos{
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -312,7 +390,7 @@
     .price{font-family: var(--mono); font-weight: 900}
     .btnAdd{padding: 10px 12px; border-radius: 14px}
 
-    /* Carrinho fixo */
+    /* Carrinho */
     .cartBar{
       position: fixed;
       left: 0; right: 0; bottom: 0;
@@ -323,10 +401,7 @@
       display:flex; gap:12px; align-items:center; justify-content:space-between;
       z-index: 100;
     }
-    .cartBar .total{
-      font-weight: 900;
-      font-family: var(--mono);
-    }
+    .cartBar .total{font-weight: 900; font-family: var(--mono);}
     .cartBar .muted{color: var(--muted); font-size: 12.5px}
 
     /* Footer */
@@ -365,10 +440,12 @@
     }
     @media (max-width: 720px){
       .topbar{flex-direction:column; align-items:stretch}
+      .topActions{justify-content:space-between}
       .gridClientes{grid-template-columns: 1fr}
       .gridProdutos{grid-template-columns: 1fr}
       .footerGrid{grid-template-columns: 1fr}
       .footerGrid .links{justify-content:flex-start}
+      .btnAdmin{width:100%; justify-content:center}
     }
   </style>
 </head>
@@ -380,14 +457,18 @@
   <div class="topbar">
     <div class="brand">
       <div class="logo">CD</div>
-      <div>
+      <div class="brandTxt">
         <h1>Cardápio Digital</h1>
         <p>Estilo iFood: encontre lojas e produtos e finalize no WhatsApp.</p>
       </div>
     </div>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end">
-      <a class="btn ghost small" href="./admin/" target="_blank">🛠️ Painel Admin</a>
+    <div class="topActions">
+      <a class="btn btnAdmin" href="./admin/" target="_blank" rel="noopener">
+        <span class="icon">🛠️</span>
+        <span>Painel Admin</span>
+      </a>
+
       <button class="btn primary small" id="btnHome" style="display:none">🏠 Home</button>
     </div>
   </div>
@@ -535,7 +616,7 @@ async function fetchWithRetry(url, options = {}) {
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   global: { fetch: fetchWithRetry },
-  auth: { persistSession: false } // Home não precisa sessão
+  auth: { persistSession: false }
 });
 
 /* ================================
