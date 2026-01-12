@@ -1,121 +1,55 @@
-// api/admin/categorias.js
-import { requireAdmin } from "../_lib/auth.js";
 import { supabaseAdmin } from "../_lib/supabaseAdmin.js";
-
-const ALLOWED_ORIGINS = [
-  "https://playmomentsstudios-commits.github.io",
-  "http://localhost:3000",
-  "http://localhost:5173",
-];
-
-function setCors(req, res) {
-  const origin = req.headers.origin || "";
-  const isVercel = origin.endsWith(".vercel.app");
-  const isAllowed = ALLOWED_ORIGINS.includes(origin) || isVercel;
-
-  res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "authorization, content-type, x-requested-with"
-  );
-
-  if (isAllowed) res.setHeader("Access-Control-Allow-Origin", origin);
-}
-
-function json(res, status, body) {
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.end(JSON.stringify(body));
-}
-
-async function readBody(req) {
-  if (req.method === "GET" || req.method === "DELETE") return {};
-  return new Promise((resolve) => {
-    let data = "";
-    req.on("data", (c) => (data += c));
-    req.on("end", () => {
-      if (!data) return resolve({});
-      try {
-        resolve(JSON.parse(data));
-      } catch {
-        resolve({ __invalidJson: true });
-      }
-    });
-  });
-}
-
-function getQuery(req) {
-  const url = new URL(req.url, `https://${req.headers.host}`);
-  return Object.fromEntries(url.searchParams.entries());
-}
+import { applyCors, requireAdmin, readJson, send } from "../_lib/auth.js";
 
 export default async function handler(req, res) {
-  setCors(req, res);
+  if (applyCors(req, res)) return;
 
-  if (req.method === "OPTIONS") {
-    res.statusCode = 204;
-    return res.end();
-  }
-
-  const auth = await requireAdmin(req);
-  if (!auth.ok) return json(res, auth.status, { error: auth.error });
+  const admin = await requireAdmin(req, res);
+  if (!admin) return;
 
   const sb = supabaseAdmin();
-  const q = getQuery(req);
-  const body = await readBody(req);
-  if (body.__invalidJson) return json(res, 400, { error: "Invalid JSON body" });
 
   try {
-    // ===== LISTAR =====
     if (req.method === "GET") {
-      const cliente_slug = (q.cliente_slug || "").trim();
+      const url = new URL(req.url, "http://x");
+      const cliente_slug = url.searchParams.get("cliente_slug");
 
-      let query = sb.from("categorias").select("*").order("ordem", { ascending: true });
+      let q = sb.from("categorias").select("*").order("ordem", { ascending: true });
+      if (cliente_slug) q = q.eq("cliente_slug", cliente_slug);
 
-      if (cliente_slug) query = query.eq("cliente_slug", cliente_slug);
-
-      const { data, error } = await query;
-      if (error) return json(res, 400, { error: error.message });
-
-      return json(res, 200, { data });
+      const { data, error } = await q;
+      if (error) return send(res, 400, { error: error.message });
+      return send(res, 200, data || []);
     }
 
-    // ===== CRIAR =====
     if (req.method === "POST") {
-      const { cliente_slug, nome, ordem = 0, ativo = true } = body;
+      const body = await readJson(req);
+      const nome = (body.nome || "").trim();
+      const cliente_slug = (body.cliente_slug || "").trim();
+      const ordem = Number(body.ordem || 0);
+      const ativo = body.ativo !== false;
 
-      if (!cliente_slug || !nome) {
-        return json(res, 400, { error: "Campos obrigatórios: cliente_slug, nome" });
-      }
-
-      const payload = {
-        cliente_slug: String(cliente_slug).trim(),
-        nome: String(nome).trim(),
-        ordem: Number(ordem) || 0,
-        ativo: Boolean(ativo),
-      };
+      if (!nome || !cliente_slug) return send(res, 400, { error: "nome e cliente_slug obrigatórios" });
 
       const { data, error } = await sb
         .from("categorias")
-        .insert(payload)
+        .insert([{ nome, cliente_slug, ordem, ativo }])
         .select("*")
         .single();
 
-      if (error) return json(res, 400, { error: error.message });
-      return json(res, 201, { data });
+      if (error) return send(res, 400, { error: error.message });
+      return send(res, 201, data);
     }
 
-    // ===== ATUALIZAR =====
-    if (req.method === "PATCH") {
-      const { id, cliente_slug, nome, ordem, ativo } = body;
-      if (!id) return json(res, 400, { error: "id é obrigatório para atualizar" });
+    if (req.method === "PUT" || req.method === "PATCH") {
+      const body = await readJson(req);
+      const id = body.id;
+      if (!id) return send(res, 400, { error: "id é obrigatório" });
 
       const patch = {};
-      if (cliente_slug !== undefined) patch.cliente_slug = String(cliente_slug).trim();
-      if (nome !== undefined) patch.nome = String(nome).trim();
-      if (ordem !== undefined) patch.ordem = Number(ordem) || 0;
-      if (ativo !== undefined) patch.ativo = Boolean(ativo);
+      ["nome", "ordem", "ativo"].forEach(k => {
+        if (body[k] !== undefined) patch[k] = body[k];
+      });
 
       const { data, error } = await sb
         .from("categorias")
@@ -124,23 +58,22 @@ export default async function handler(req, res) {
         .select("*")
         .single();
 
-      if (error) return json(res, 400, { error: error.message });
-      return json(res, 200, { data });
+      if (error) return send(res, 400, { error: error.message });
+      return send(res, 200, data);
     }
 
-    // ===== EXCLUIR =====
     if (req.method === "DELETE") {
-      const { id } = q;
-      if (!id) return json(res, 400, { error: "Passe ?id= no querystring" });
+      const body = await readJson(req);
+      const id = body.id;
+      if (!id) return send(res, 400, { error: "id é obrigatório" });
 
       const { error } = await sb.from("categorias").delete().eq("id", id);
-      if (error) return json(res, 400, { error: error.message });
-
-      return json(res, 200, { ok: true });
+      if (error) return send(res, 400, { error: error.message });
+      return send(res, 200, { ok: true });
     }
 
-    return json(res, 405, { error: "Method not allowed" });
+    return send(res, 405, { error: "Method not allowed" });
   } catch (e) {
-    return json(res, 500, { error: e?.message || "Server error" });
+    return send(res, 500, { error: e?.message || "Server error" });
   }
 }
