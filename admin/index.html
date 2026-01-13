@@ -10,8 +10,6 @@
   <style>
     :root{
       --bg:#0b1220;
-      --card:#111a2b;
-      --card2:#0f1726;
       --line:rgba(255,255,255,.12);
       --text:#f7f7fb;
       --muted:rgba(247,247,251,.7);
@@ -22,20 +20,31 @@
       --ok:#1dd6a4;
       --danger:#ff5a67;
       --shadow:0 18px 60px rgba(0,0,0,.45);
-      --r:18px;
     }
     *{box-sizing:border-box}
+
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
       color:var(--text);
+      padding:18px 14px 90px;
+      min-height:100vh;
+
+      /* default (app) */
       background:
         radial-gradient(900px 600px at 20% 0%, rgba(255,210,74,.18), transparent 55%),
         radial-gradient(900px 600px at 80% 10%, rgba(255,187,26,.14), transparent 55%),
         linear-gradient(180deg, #070b14, var(--bg));
-      padding:18px 14px 90px;
-      min-height:100vh;
     }
+
+    /* Fundo full-screen só no login (coloque admin-bg.jpg na mesma pasta do index) */
+    body.is-login{
+      padding:0;
+      background:
+        linear-gradient(180deg, rgba(7,11,20,.55), rgba(11,18,32,.92)),
+        url("./admin-bg.jpg") center/cover no-repeat fixed;
+    }
+
     .wrap{max-width:1200px;margin:0 auto}
 
     .top{
@@ -109,7 +118,6 @@
     }
     .toolbar input{max-width:360px}
 
-    /* GRID 4 */
     .grid4{
       display:grid;
       grid-template-columns:repeat(4,minmax(0,1fr));
@@ -188,9 +196,9 @@
       width:min(420px,92vw);
       border-radius:24px;
       padding:20px;
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 25px 80px rgba(0,0,0,.55);
       backdrop-filter: blur(12px);
       text-align:center;
     }
@@ -313,7 +321,7 @@
   </style>
 </head>
 
-<body>
+<body class="is-login">
 
 <div class="wrap" id="app" style="display:none">
 
@@ -326,8 +334,8 @@
       </div>
     </div>
     <div class="row">
-      <button class="btn ghost" id="btnReload">🔄</button>
-      <button class="btn y" id="btnSair">🚪</button>
+      <button class="btn ghost" id="btnReload" title="Recarregar">🔄</button>
+      <button class="btn y" id="btnSair" title="Sair">🚪</button>
     </div>
   </div>
 
@@ -362,8 +370,7 @@
         <div class="field">
           <label>Tipo de negócio</label>
           <select id="c_tipo">
-            <option value="">Selecione…</option
-                                         
+            <option value="">Selecione…</option>
             <option>Restaurante</option>
             <option>Mercado</option>
             <option>Padaria</option>
@@ -502,7 +509,6 @@
       <input id="search" placeholder="Buscar..." />
     </div>
 
-    <!-- Topo Cadastros -->
     <div id="cadBox" style="display:none">
       <div class="cadTop">
         <div class="row" style="align-items:center">
@@ -648,12 +654,14 @@
   // ====== CONFIG ======
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc25teHNweXl3d291aGNkd2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MzI3NzIsImV4cCI6MjA4MzUwODc3Mn0.dxj35rJ_g_952_VvwV4mjFraB1b0BLdsxHw_wYiQNQI";
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); let session = null;
-  
-  // ✅ Mantém o que funciona: endpoints separados (/clientes, /categorias, /produtos)
+
+  // Backend Vercel
   const API_BASE = "https://cafeteria-gamma-orpin.vercel.app/api/admin";
 
+  // Admin Alfa
   const ALFA_EMAIL = "playmomentsstudios@gmail.com";
+
+  // ✅ apenas UMA instância
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ====== STATE ======
@@ -662,18 +670,24 @@
   let clientes = [];
   let categorias = [];
   let produtos = [];
-
-  // cadastros
   let cadRows = [];
   let cadastroAtivo = true;
 
   // modal
   let editingSlug = null;
 
+  // evita loop de login por refresh de token
+  let booting = false;
+  let bootedOnce = false;
+
   // ====== UI HELPERS ======
   const el = (id)=>document.getElementById(id);
   const show = (id)=>el(id).style.display="block";
   const hide = (id)=>el(id).style.display="none";
+
+  function setModeLogin(isLogin){
+    document.body.classList.toggle("is-login", !!isLogin);
+  }
 
   function escapeHtml(str){
     return String(str ?? "").replace(/[&<>"']/g, (m)=>({
@@ -723,6 +737,8 @@
     const m = document.getElementById(id);
     if (m) m.style.display = "block";
   }
+  window.openMenu = openMenu;
+
   window.addEventListener("click", (e)=>{
     if (!e.target.closest(".menuWrap")) document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
   });
@@ -736,10 +752,14 @@
   async function requireAlfa(){
     if(!session) return false;
     if(isAlfa()) return true;
+
     try{ await sb.auth.signOut(); }catch(_e){}
     session = null;
+
     el("app").style.display="none";
     show("login");
+    setModeLogin(true);
+
     loginMsg("Acesso negado: este painel é apenas para o Admin Alfa.");
     return false;
   }
@@ -749,7 +769,7 @@
     const token = session?.access_token;
     const headers = {
       "Content-Type":"application/json",
-      "Authorization": "Bearer " + token
+      "Authorization": "Bearer " + (token || "")
     };
     const opts = { method, headers };
     if (body) opts.body = JSON.stringify(body);
@@ -847,23 +867,26 @@
 
       listEl.innerHTML = list.map(c=>{
         const mid = "m_cli_"+c.slug;
+        const slugJS = JSON.stringify(c.slug || "");
+        const emailJS = JSON.stringify(c.email || "");
+
         return `
           <div class="item">
             <div class="itemTop">
               <div>
                 <div class="ttl">${escapeHtml(c.nome||"—")}</div>
                 <div class="meta">${escapeHtml(c.slug||"")}</div>
-                ${c.email ? `<div class="meta">Email: ${escapeHtml(c.email)}</div>` : `<div class="meta">Email: —</div>`}
+                <div class="meta">Email: ${escapeHtml(c.email||"—")}</div>
               </div>
 
               <div class="menuWrap">
                 <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
                 <div class="menu" id="${mid}">
-                  <button onclick="verPublicado('${c.slug}')">🌐 Ver publicado</button>
-                  <button onclick="openEditModal('${c.slug}')">✏️ Editar</button>
-                  <button onclick="gerarLinkSenha('${escapeHtml(c.email||"")}')">🔑 Link de senha</button>
-                  <button onclick="toggleCliente('${c.slug}', ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
-                  <button class="danger" onclick="delCliente('${c.slug}')">🗑 Excluir</button>
+                  <button onclick="verPublicado(${slugJS})">🌐 Ver publicado</button>
+                  <button onclick="openEditModal(${slugJS})">✏️ Editar</button>
+                  <button onclick="gerarLinkSenha(${emailJS})">🔑 Link de senha</button>
+                  <button onclick="toggleCliente(${slugJS}, ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
+                  <button class="danger" onclick="delCliente(${slugJS})">🗑 Excluir</button>
                 </div>
               </div>
             </div>
@@ -1320,15 +1343,11 @@
     };
 
     if(!payload.nome) return modalMsg("Preencha o nome.");
-    if(!payload.whatsapp) return modalMsg("Preencha o WhatsApp.");
 
     try{
       modalMsg("");
       el("btnSaveModal").disabled = true;
 
-      // ✅ usa o endpoint que já existe no seu backend:
-      // PUT /clientes { slug, ...campos }
-      // (mantém compatibilidade; se seu backend não aceitar alguns campos, ele só ignora ou você ajusta depois)
       await api("/clientes","PUT", payload);
 
       msg("Cliente atualizado ✅","ok");
@@ -1341,29 +1360,25 @@
     }
   }
 
-  // Link de senha (recovery) - precisa existir no backend
-  // Se ainda não tiver, ele mostra erro amigável.
+  // Link de senha (recovery) - depende do backend existir
   window.gerarLinkSenha = async function(email){
-    const em = (email||"").trim();
-    const alvo = em || prompt("Email do cliente:", "");
-    if(!alvo) return;
+    const em = (email||"").trim() || prompt("Email do cliente:", "");
+    if(!em) return;
 
     try{
-      // ✅ caminho provável: POST /reset-senha { email }
-      const r = await api("/reset-senha","POST",{ email: alvo });
-
+      const r = await api("/reset-senha","POST",{ email: em });
       const link = r.recovery_link || r.link || r.url;
+
       if(link){
         alert("🔑 Link de senha (envie para o cliente):\n\n" + link);
       }else{
-        alert("✅ Pedido feito, mas seu backend não retornou o link.\nVerifique o endpoint /reset-senha.");
+        alert("✅ Endpoint respondeu, mas não retornou o link.\nAjuste o /reset-senha para devolver { recovery_link }.");
       }
     }catch(e){
       alert("❌ Falha ao gerar link de senha: " + (e?.message || e));
     }
   }
 
-  // binds modal
   el("btnCloseModal").addEventListener("click", closeModal);
   el("btnCancelModal").addEventListener("click", closeModal);
   el("btnSaveModal").addEventListener("click", saveCliente);
@@ -1410,9 +1425,12 @@
 
   el("btnGoogle").addEventListener("click", async ()=>{
     try{
+      // ✅ redirect fixo (troque se seu caminho for outro)
+      const fixedRedirect = window.location.origin + window.location.pathname;
+
       await sb.auth.signInWithOAuth({
         provider:"google",
-        options:{ redirectTo: window.location.href }
+        options:{ redirectTo: fixedRedirect }
       });
     }catch(e){
       loginMsg(e.message || "Falha no Google");
@@ -1420,38 +1438,64 @@
   });
 
   async function afterLogin(){
+    if(booting) return;
+    booting = true;
+
     hide("login");
+    setModeLogin(false);
     el("app").style.display="block";
-    await bootLoad();
+
+    try{
+      await bootLoad();
+      bootedOnce = true;
+    }finally{
+      booting = false;
+    }
   }
 
   el("btnSair").addEventListener("click", async ()=>{
-    await sb.auth.signOut();
+    try{ await sb.auth.signOut(); }catch(_e){}
     session = null;
     el("app").style.display="none";
     show("login");
+    setModeLogin(true);
   });
 
   el("btnReload").addEventListener("click", bootLoad);
 
   // init
   (async ()=>{
+    setModeLogin(true);
+
     const { data } = await sb.auth.getSession();
     session = data.session || null;
 
     if (session){
       const ok = await requireAlfa();
       if(ok) await afterLogin();
-      else show("login");
+      else { show("login"); setModeLogin(true); }
     }else{
       show("login");
+      setModeLogin(true);
     }
 
-    sb.auth.onAuthStateChange(async (_event, s)=>{
+    sb.auth.onAuthStateChange(async (event, s)=>{
       session = s;
+
+      if(event === "SIGNED_OUT"){
+        el("app").style.display="none";
+        show("login");
+        setModeLogin(true);
+        return;
+      }
+
+      // SIGNED_IN / TOKEN_REFRESHED
       if(session){
         const ok = await requireAlfa();
-        if(ok) await afterLogin();
+        if(ok){
+          // evita re-boot infinito
+          if(!bootedOnce) await afterLogin();
+        }
       }
     });
   })();
