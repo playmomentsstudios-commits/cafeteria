@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro de Comércio • Portal da Chapada</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.12);
+      --text:#f7f7fb;
+      --muted:rgba(247,247,251,.72);
+      --y:#ffd24a;
+      --y2:#ffbb1a;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --r:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 20% 0%, rgba(255,210,74,.18), transparent 55%),
+        radial-gradient(900px 600px at 80% 10%, rgba(255,187,26,.14), transparent 55%),
+        linear-gradient(180deg, #070b14, var(--bg));
+      padding:18px 14px 70px;
+    }
+    .wrap{max-width:900px;margin:0 auto}
+    .top{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;border-radius:24px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line); box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .logo{
+      width:48px;height:48px;border-radius:16px;overflow:hidden;
+      background:rgba(255,255,255,.06);border:1px solid var(--line);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .logo img{width:100%;height:100%;object-fit:cover}
+    .brand h1{margin:0;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
+
+    .card{
+      margin-top:14px;
+      border-radius:24px;
+      padding:16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .h{margin:0 0 8px;font-size:16px}
+    .sub{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.35}
+
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:780px){ .grid2{grid-template-columns:1fr} }
+
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    input,select,textarea{
+      width:100%;
+      padding:11px 12px;border-radius:14px;
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:96px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:rgba(255,210,74,.55)}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .btn{
+      border:none;cursor:pointer;
+      padding:11px 14px;border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      color:var(--text);
+      font-weight:900;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn.y{background:linear-gradient(135deg,var(--y),var(--y2)); color:#201400; border-color:rgba(0,0,0,.08)}
+    .msg{
+      margin-top:12px;padding:12px;border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.20);
+      color:var(--muted);
+      font-size:13px;
+      display:none;
+    }
+    .msg.ok{border-color:rgba(29,214,164,.40); color:#c9fff0}
+    .msg.err{border-color:rgba(255,90,103,.45); color:#ffd0d5}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      font-weight:900;font-size:12px;color:var(--muted);
+    }
+    .badge.ok{background:rgba(29,214,164,.14); border-color:rgba(29,214,164,.35); color:#c9fff0}
+    .badge.off{opacity:.7}
+    a{color:inherit}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo"><img src="logo.png" onerror="this.style.display='none';this.parentElement.textContent='PC'"></div>
+        <div style="min-width:0">
+          <h1>Cadastro de Comércio</h1>
+          <p>Portal da Chapada • cadastro gratuito (sujeito à aprovação)</p>
+        </div>
+      </div>
+      <a class="btn" href="./">⬅️ Voltar</a>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <h2 class="h">Cadastre seu negócio</h2>
+          <p class="sub">
+            Preencha os dados abaixo. Você receberá uma mensagem de confirmação aqui na tela,
+            e nosso time aprova para evitar duplicidade e manter a qualidade do portal.
+          </p>
+        </div>
+        <span id="statusBadge" class="badge">Verificando disponibilidade…</span>
+      </div>
+
+      <div id="closed" class="msg err" style="display:none">
+        O cadastro público está <b>temporariamente fechado</b>. Tente novamente mais tarde.
+      </div>
+
+      <form id="form" style="margin-top:14px">
+        <div class="grid2">
+          <div>
+            <label>Nome do negócio *</label>
+            <input id="nome" required placeholder="Ex: Mercado Bom Preço" />
+          </div>
+          <div>
+            <label>Cidade *</label>
+            <select id="cidade" required>
+              <option value="">Selecione…</option>
+              <option>Cavalcante (GO)</option>
+              <option>Alto Paraíso (GO)</option>
+              <option>São Jorge (GO)</option>
+              <option>Colinas do Sul (GO)</option>
+              <option>Teresina de Goiás (GO)</option>
+              <option>Campos Belos (GO)</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Categoria do negócio *</label>
+            <input id="categoria" required placeholder="Ex: Mercado, Restaurante, Pousada..." />
+          </div>
+          <div>
+            <label>WhatsApp *</label>
+            <input id="whatsapp" required placeholder="(62) 9xxxx-xxxx" />
+          </div>
+
+          <div>
+            <label>Email (para contato)</label>
+            <input id="email" type="email" placeholder="seu@email.com" />
+          </div>
+          <div>
+            <label>Instagram (opcional)</label>
+            <input id="instagram" placeholder="@seunegocio" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1;min-width:240px">
+            <label>Endereço (opcional)</label>
+            <input id="endereco" placeholder="Rua, número, bairro (se quiser)" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
+            <label>Mensagem (opcional)</label>
+            <textarea id="mensagem" placeholder="Horários, informações extras, etc."></textarea>
+          </div>
+        </div>
+
+        <div class="row" style="justify-content:flex-end">
+          <button class="btn y" id="btnEnviar" type="submit">✅ Enviar cadastro</button>
+        </div>
+
+        <div class="msg ok" id="okMsg"></div>
+        <div class="msg err" id="errMsg"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 class="h">Dica rápida</h3>
+      <p class="sub">
+        Se seu negócio já está cadastrado, você pode solicitar alterações pelo WhatsApp do Portal da Chapada.
+      </p>
+    </div>
+  </div>
+
+<script>
+  const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const el = (id)=>document.getElementById(id);
+
+  function showMsg(id, text){
+    const box = el(id);
+    box.style.display = "block";
+    box.textContent = text;
+  }
+  function hideMsg(id){
+    const box = el(id);
+    box.style.display = "none";
+    box.textContent = "";
+  }
+
+  async function checkConfig(){
+    const badge = el("statusBadge");
+    const { data, error } = await sb
+      .from("portal_config")
+      .select("valor")
+      .eq("chave","cadastro_publico_ativo")
+      .single();
+
+    const ativo = error ? true : String(data?.valor||"true") === "true";
+
+    badge.className = "badge " + (ativo ? "ok":"off");
+    badge.textContent = ativo ? "Cadastro aberto ✅" : "Cadastro fechado ⛔";
+
+    el("form").style.display = ativo ? "block" : "none";
+    el("closed").style.display = ativo ? "none" : "block";
+  }
+
+  el("form").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    hideMsg("okMsg"); hideMsg("errMsg");
+
+    const payload = {
+      nome_negocio: el("nome").value.trim(),
+      cidade: el("cidade").value.trim(),
+      categoria: el("categoria").value.trim(),
+      whatsapp: el("whatsapp").value.trim(),
+      email: el("email").value.trim() || null,
+      instagram: el("instagram").value.trim() || null,
+      endereco: el("endereco").value.trim() || null,
+      mensagem: el("mensagem").value.trim() || null,
+      status: "pendente"
+    };
+
+    if (!payload.nome_negocio || !payload.cidade || !payload.categoria || !payload.whatsapp){
+      showMsg("errMsg","Preencha os campos obrigatórios (*)");
+      return;
+    }
+
+    el("btnEnviar").disabled = true;
+    el("btnEnviar").textContent = "Enviando…";
+
+    const { error } = await sb
+      .from("cadastros_clientes")
+      .insert(payload);
+
+    el("btnEnviar").disabled = false;
+    el("btnEnviar").textContent = "✅ Enviar cadastro";
+
+    if (error){
+      showMsg("errMsg","Erro ao enviar: " + error.message);
+      return;
+    }
+
+    showMsg("okMsg","Cadastro enviado com sucesso ✅ Agora é só aguardar a aprovação do Portal da Chapada.");
+    el("nome").value=""; el("cidade").value=""; el("categoria").value=""; el("whatsapp").value="";
+    el("email").value=""; el("instagram").value=""; el("endereco").value=""; el("mensagem").value="";
+  });
+
+  checkConfig();
+</script>
+</body>
+</html>
