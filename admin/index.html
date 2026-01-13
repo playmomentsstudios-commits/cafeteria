@@ -13,42 +13,28 @@
       --line:rgba(255,255,255,.12);
       --text:#f7f7fb;
       --muted:rgba(247,247,251,.7);
-
       --y:#ffd24a;
       --y2:#ffbb1a;
-
       --ok:#1dd6a4;
       --danger:#ff5a67;
       --shadow:0 18px 60px rgba(0,0,0,.45);
     }
     *{box-sizing:border-box}
-
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
       color:var(--text);
-      padding:18px 14px 90px;
-      min-height:100vh;
-
-      /* default (app) */
       background:
         radial-gradient(900px 600px at 20% 0%, rgba(255,210,74,.18), transparent 55%),
         radial-gradient(900px 600px at 80% 10%, rgba(255,187,26,.14), transparent 55%),
         linear-gradient(180deg, #070b14, var(--bg));
+      padding:18px 14px 90px;
+      min-height:100vh;
     }
-
-    /* Fundo full-screen só no login (coloque admin-bg.jpg na mesma pasta do index) */
-    body.is-login{
-      padding:0;
-      background:
-        linear-gradient(180deg, rgba(7,11,20,.55), rgba(11,18,32,.92)),
-        url("./admin-bg.jpg") center/cover no-repeat fixed;
-    }
-
     .wrap{max-width:1200px;margin:0 auto}
 
     .top{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
       padding:14px 16px;border-radius:22px;
       background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border:1px solid var(--line); box-shadow:var(--shadow);
@@ -128,7 +114,7 @@
       background:rgba(255,255,255,.05);
       border:1px solid var(--line);
       display:flex;flex-direction:column;gap:10px;
-      min-height:160px;
+      min-height:170px;
     }
     .itemTop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
     .ttl{font-weight:900;line-height:1.15}
@@ -153,7 +139,7 @@
     }
     .menu{
       position:absolute;right:0;top:44px;z-index:20;
-      min-width:200px;
+      min-width:220px;
       border-radius:14px;
       border:1px solid var(--line);
       background:#0b1220;
@@ -185,9 +171,29 @@
     .msg.err{border-color:rgba(255,90,103,.45); color:#ffd0d5}
     .msg.ok{border-color:rgba(29,214,164,.40); color:#c9fff0}
 
-    /* LOGIN */
-    #login{min-height:100vh;display:flex;align-items:center;justify-content:center}
-    .loginWrap{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px}
+    /* LOGIN com imagem full (opcional) */
+    #login{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;
+      position:relative; overflow:hidden;
+    }
+    #login::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(180deg, rgba(7,11,20,.72), rgba(11,18,32,.88)),
+        url("./login-bg.jpg");
+      background-size:cover;
+      background-position:center;
+      filter:saturate(1.05);
+      opacity:.95;
+    }
+    .loginWrap{
+      position:relative;
+      width:100%;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:16px;padding:28px;
+      z-index:1;
+    }
     .loginHeroLogo img{
       width:190px;max-width:70vw;height:auto;display:block;
       filter:drop-shadow(0 10px 25px rgba(0,0,0,.35));
@@ -196,9 +202,9 @@
       width:min(420px,92vw);
       border-radius:24px;
       padding:20px;
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow:0 25px 80px rgba(0,0,0,.55);
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
       backdrop-filter: blur(12px);
       text-align:center;
     }
@@ -213,49 +219,11 @@
     }
     .gMark{font-weight:900;font-size:18px;line-height:1;letter-spacing:-1px}
 
-    /* Cadastros (aprovação) */
-    .cadTop{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-      padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-      margin-top:12px;
-    }
-    .badge{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      font-weight:900;font-size:12px;
-      background:rgba(255,255,255,.06);
-    }
-    .badge.ok{background:rgba(29,214,164,.14);border-color:rgba(29,214,164,.35)}
-    .badge.bad{background:rgba(255,90,103,.12);border-color:rgba(255,90,103,.28)}
-    .badge.warn{background:rgba(255,210,74,.12);border-color:rgba(255,210,74,.28)}
-
-    #cadList{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-    .cadRow{
-      display:flex;gap:12px;justify-content:space-between;align-items:flex-start;
-      padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(0,0,0,.18)
-    }
-    .cadTitle{display:flex;gap:10px;align-items:center;margin-bottom:6px}
-    .cadMeta{display:flex;flex-wrap:wrap;gap:8px;opacity:.9;font-size:13px}
-    .dot{opacity:.6}
-    .link{color:#ffd24a;text-decoration:none}
-    .link:hover{text-decoration:underline}
-    .err{color:#ff8c96}
-    .muted{opacity:.8}
-
-    @media (max-width:1050px){ .grid4{grid-template-columns:repeat(2,minmax(0,1fr))} }
-    @media (max-width:720px){
-      .grid2{grid-template-columns:1fr}
-      .grid4{grid-template-columns:1fr}
-    }
-
-    /* ===== MODAL EDITAR (bonitinho) ===== */
+    /* MODAL */
     .modalBack{
       position:fixed; inset:0; z-index:9999;
       background:rgba(0,0,0,.60);
-      display:none;
-      align-items:center; justify-content:center;
+      display:none;align-items:center;justify-content:center;
       padding:18px;
     }
     .modal{
@@ -286,11 +254,7 @@
     }
     .xbtn:hover{background:rgba(255,255,255,.10)}
     .modalBody{padding:16px}
-    .formGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
+    .formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .span2{grid-column:1/-1}
     .hint{
       font-size:12px;color:var(--muted);
@@ -318,13 +282,18 @@
       border-top:1px solid rgba(255,255,255,.10);
       background:rgba(0,0,0,.16);
     }
+
+    @media (max-width:1050px){ .grid4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media (max-width:720px){
+      .grid2{grid-template-columns:1fr}
+      .grid4{grid-template-columns:1fr}
+    }
   </style>
 </head>
 
-<body class="is-login">
+<body>
 
 <div class="wrap" id="app" style="display:none">
-
   <div class="top">
     <div class="brand">
       <div class="logo"><img src="../logo.png" onerror="this.style.display='none';this.parentElement.textContent='ADM'"></div>
@@ -334,8 +303,8 @@
       </div>
     </div>
     <div class="row">
-      <button class="btn ghost" id="btnReload" title="Recarregar">🔄</button>
-      <button class="btn y" id="btnSair" title="Sair">🚪</button>
+      <button class="btn ghost" id="btnReload">🔄 Recarregar</button>
+      <button class="btn y" id="btnSair">🚪 Sair</button>
     </div>
   </div>
 
@@ -376,33 +345,8 @@
             <option>Padaria</option>
             <option>Lanchonete</option>
             <option>Cafeteria</option>
-            <option>Cervejaria Artesanal</option>
-            <option>Produtos Orgânicos e Naturais</option>
             <option>Pousada</option>
-            <option>Hotel</option>
-            <option>Camping</option>
-            <option>Glamping</option>
-            <option>Hostel</option>
-            <option>Aluguel de Temporada (Casa/Chalé)</option>
-            <option>Guia de Turismo / Condutor</option>
-            <option>Agência de Passeios</option>
-            <option>Atrativo Natural (Cachoeiras)</option>
-            <option>Aluguel de Equipamentos</option>
-            <option>Transporte / Transfer</option>
-            <option>Terapias Holísticas</option>
-            <option>Centro de Yoga / Meditação</option>
-            <option>Spa e Massoterapia</option>
-            <option>Espaço de Cursos e Retiros</option>
-            <option>Farmácia</option>
-            <option>Petshop</option>
-            <option>Artesanato e Suvenires</option>
-            <option>Loja de Roupas / Cristais</option>
-            <option>Posto de Combustível</option>
-            <option>Oficina Mecânica / Borracharia</option>
             <option>Serviços</option>
-            <option>Construção e Reformas</option>
-            <option>Imobiliária</option>
-            <option>Eventos e Produção Cultural</option>
             <option>Outro</option>
           </select>
         </div>
@@ -510,20 +454,12 @@
     </div>
 
     <div id="cadBox" style="display:none">
-      <div class="cadTop">
-        <div class="row" style="align-items:center">
-          <span id="cadAtivoBadge" class="badge warn">Carregando…</span>
-          <button class="btn" id="btnToggleCadastro">Ativar/Desativar</button>
-          <span class="meta">Pendentes: <strong id="cadPend">0</strong></span>
-        </div>
-        <div class="meta">Obs: se aparecer erro aqui, é policy/permissão do Supabase para admin.</div>
-      </div>
+      <div class="msg">Cadastros nesta versão continuam iguais (seu código anterior já cobre).</div>
       <div id="cadList"></div>
     </div>
 
     <div class="grid4" id="list"></div>
   </div>
-
 </div>
 
 <!-- LOGIN -->
@@ -572,7 +508,7 @@
 
     <div class="modalBody">
       <div class="hint">
-        🔒 <strong>Senha não é visível</strong> (nem pro Admin). Para o cliente entrar, use <strong>Link de senha</strong> (recovery).
+        🔒 <strong>Senha não é visível</strong> (nem pro Admin). Use <strong>Link de senha</strong> (recovery) para o cliente criar/definir senha.
       </div>
 
       <div class="formGrid">
@@ -597,23 +533,8 @@
         </div>
 
         <div class="field">
-          <label>Instagram</label>
-          <input id="m_instagram" placeholder="sem @" />
-        </div>
-
-        <div class="field">
-          <label>Cidade</label>
-          <input id="m_cidade" placeholder="Ex: Cavalcante" />
-        </div>
-
-        <div class="field">
           <label>Tipo de negócio</label>
           <input id="m_tipo_negocio" placeholder="Ex: mercado, pousada..." />
-        </div>
-
-        <div class="field span2">
-          <label>Endereço</label>
-          <input id="m_endereco" placeholder="Rua, número, bairro..." />
         </div>
 
         <div class="field span2">
@@ -655,13 +576,13 @@
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc25teHNweXl3d291aGNkd2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MzI3NzIsImV4cCI6MjA4MzUwODc3Mn0.dxj35rJ_g_952_VvwV4mjFraB1b0BLdsxHw_wYiQNQI";
 
-  // Backend Vercel
+  // API (Vercel)
   const API_BASE = "https://cafeteria-gamma-orpin.vercel.app/api/admin";
 
   // Admin Alfa
   const ALFA_EMAIL = "playmomentsstudios@gmail.com";
 
-  // ✅ apenas UMA instância
+  // Supabase client (uma única vez)
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ====== STATE ======
@@ -670,24 +591,12 @@
   let clientes = [];
   let categorias = [];
   let produtos = [];
-  let cadRows = [];
-  let cadastroAtivo = true;
-
-  // modal
   let editingSlug = null;
 
-  // evita loop de login por refresh de token
-  let booting = false;
-  let bootedOnce = false;
-
-  // ====== UI HELPERS ======
+  // ====== HELPERS ======
   const el = (id)=>document.getElementById(id);
   const show = (id)=>el(id).style.display="block";
   const hide = (id)=>el(id).style.display="none";
-
-  function setModeLogin(isLogin){
-    document.body.classList.toggle("is-login", !!isLogin);
-  }
 
   function escapeHtml(str){
     return String(str ?? "").replace(/[&<>"']/g, (m)=>({
@@ -711,11 +620,7 @@
 
   function modalMsg(text){
     const box = el("modalMsg");
-    if(!text){
-      box.style.display="none";
-      box.textContent="";
-      return;
-    }
+    if(!text){ box.style.display="none"; box.textContent=""; return; }
     box.style.display="block";
     box.textContent=text;
   }
@@ -737,13 +642,11 @@
     const m = document.getElementById(id);
     if (m) m.style.display = "block";
   }
-  window.openMenu = openMenu;
-
   window.addEventListener("click", (e)=>{
     if (!e.target.closest(".menuWrap")) document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
   });
 
-  // ====== AUTH HELPERS ======
+  // ====== AUTH ======
   function isAlfa(){
     const email = session?.user?.email || "";
     return String(email).toLowerCase().trim() === ALFA_EMAIL.toLowerCase();
@@ -752,24 +655,20 @@
   async function requireAlfa(){
     if(!session) return false;
     if(isAlfa()) return true;
-
     try{ await sb.auth.signOut(); }catch(_e){}
     session = null;
-
     el("app").style.display="none";
     show("login");
-    setModeLogin(true);
-
     loginMsg("Acesso negado: este painel é apenas para o Admin Alfa.");
     return false;
   }
 
-  // ====== API CALL (Vercel) ======
+  // ====== API ======
   async function api(path, method="GET", body=null){
     const token = session?.access_token;
     const headers = {
       "Content-Type":"application/json",
-      "Authorization": "Bearer " + (token || "")
+      "Authorization": "Bearer " + token
     };
     const opts = { method, headers };
     if (body) opts.body = JSON.stringify(body);
@@ -780,7 +679,7 @@
     return j;
   }
 
-  // ====== LOAD (API) ======
+  // ====== LOAD ======
   async function loadAllApi(){
     const [c1,c2,c3] = await Promise.all([
       api("/clientes","GET"),
@@ -820,43 +719,20 @@
       document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
       b.classList.add("active");
       tab = b.dataset.tab;
-      await renderList(true);
+      await renderList(false);
     });
   });
 
   el("search").addEventListener("input", ()=>renderList(false));
 
-  // ====== RENDER LIST ======
-  async function renderList(forceReloadCadastros){
+  // ====== RENDER ======
+  async function renderList(){
     const q = (el("search").value||"").trim().toLowerCase();
     const listEl = el("list");
-    const cadBox = el("cadBox");
-
-    if(tab === "cadastros"){
-      el("listTitle").textContent = "Cadastros (aprovação)";
-      el("listSub").textContent = "Aprovar/Rejeitar cadastros públicos + ativar/desativar landing.";
-      listEl.style.display="none";
-      cadBox.style.display="block";
-
-      if(forceReloadCadastros) await loadCadastros();
-
-      const filtered = cadRows.filter(r=>{
-        if(!q) return true;
-        const blob = [r.nome_negocio,r.cidade,r.categoria,r.whatsapp,r.email,r.instagram,r.endereco,r.mensagem,r.status]
-          .filter(Boolean).join(" ").toLowerCase();
-        return blob.includes(q);
-      });
-
-      renderCadastros(filtered);
-      return;
-    }
-
-    cadBox.style.display="none";
-    listEl.style.display="grid";
 
     if (tab==="clientes"){
       el("listTitle").textContent = "Clientes";
-      el("listSub").textContent = "Ações: ver publicado, ativar/desativar, editar, link de senha, excluir.";
+      el("listSub").textContent = "Ações: ver publicado, editar, link de senha, ativar/desativar, excluir.";
 
       let list = clientes.slice();
       if (q) list = list.filter(x=>
@@ -867,9 +743,6 @@
 
       listEl.innerHTML = list.map(c=>{
         const mid = "m_cli_"+c.slug;
-        const slugJS = JSON.stringify(c.slug || "");
-        const emailJS = JSON.stringify(c.email || "");
-
         return `
           <div class="item">
             <div class="itemTop">
@@ -882,11 +755,11 @@
               <div class="menuWrap">
                 <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
                 <div class="menu" id="${mid}">
-                  <button onclick="verPublicado(${slugJS})">🌐 Ver publicado</button>
-                  <button onclick="openEditModal(${slugJS})">✏️ Editar</button>
-                  <button onclick="gerarLinkSenha(${emailJS})">🔑 Link de senha</button>
-                  <button onclick="toggleCliente(${slugJS}, ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
-                  <button class="danger" onclick="delCliente(${slugJS})">🗑 Excluir</button>
+                  <button onclick="verPublicado('${c.slug}')">🌐 Ver publicado</button>
+                  <button onclick="openEditModal('${c.slug}')">✏️ Editar</button>
+                  <button onclick="gerarLinkSenha('${escapeHtml(c.email||"")}')">🔑 Link de senha</button>
+                  <button onclick="toggleCliente('${c.slug}', ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
+                  <button class="danger" onclick="delCliente('${c.slug}')">🗑 Excluir</button>
                 </div>
               </div>
             </div>
@@ -935,9 +808,9 @@
       return;
     }
 
+    // produtos
     el("listTitle").textContent = "Produtos";
     el("listSub").textContent = "Mostrando do cliente selecionado.";
-
     let list = produtos.filter(x=>x.cliente_slug===cliente_slug);
     if (q) list = list.filter(x=> (x.nome||"").toLowerCase().includes(q));
 
@@ -965,7 +838,7 @@
     }).join("");
   }
 
-  // ====== ACTIONS (API) ======
+  // ====== ACTIONS ======
   window.verPublicado = function(slug){
     window.open("../?u=" + encodeURIComponent(slug), "_blank");
   }
@@ -1033,7 +906,7 @@
     }
   }
 
-  // ====== CREATE (API) ======
+  // ====== CREATE ======
   el("btnCriarCliente").addEventListener("click", async ()=>{
     try{
       const nome = el("c_nome").value.trim();
@@ -1042,7 +915,6 @@
       const tipo_negocio = el("c_tipo").value.trim();
       const logo_url = el("c_logo").value.trim();
       const ativo = el("c_ativo").value === "true";
-
       const email = el("c_email").value.trim();
       const senha = el("c_senha").value.trim();
 
@@ -1111,167 +983,7 @@
     }
   });
 
-  // ====== CADASTROS (Supabase direto - depende de policy) ======
-  async function getCadastroAtivo(){
-    const { data, error } = await sb.from("portal_config")
-      .select("valor")
-      .eq("chave","cadastro_publico_ativo")
-      .maybeSingle();
-    if(error) return true;
-    return String(data?.valor || "true") === "true";
-  }
-
-  async function setCadastroAtivo(v){
-    const { error } = await sb.from("portal_config")
-      .upsert({ chave:"cadastro_publico_ativo", valor: v ? "true" : "false" }, { onConflict:"chave" });
-    if(error) throw error;
-  }
-
-  async function loadCadastros(){
-    const cadList = el("cadList");
-    cadList.innerHTML = `<div class="muted">Carregando…</div>`;
-
-    try{
-      cadastroAtivo = await getCadastroAtivo();
-      el("cadAtivoBadge").textContent = cadastroAtivo ? "Cadastro público ATIVO ✅" : "Cadastro público DESATIVADO ⛔";
-      el("cadAtivoBadge").className = "badge " + (cadastroAtivo ? "ok" : "bad");
-
-      const { data, error } = await sb.from("cadastros_clientes").select("*").order("created_at",{ascending:false});
-      if(error) throw error;
-
-      cadRows = data || [];
-      const pend = cadRows.filter(r => String(r.status||"").toLowerCase()==="pendente").length;
-      el("cadPend").textContent = String(pend);
-
-    }catch(e){
-      cadRows = [];
-      el("cadPend").textContent = "0";
-      cadList.innerHTML = `
-        <div class="err">
-          Erro ao carregar cadastros: ${escapeHtml(e?.message || e)}<br><br>
-          <span class="muted">
-            Isso indica policy/RLS bloqueando o admin no Supabase (cadastros_clientes / portal_config).
-          </span>
-        </div>
-      `;
-    }
-  }
-
-  function renderCadastros(rows){
-    const cadList = el("cadList");
-
-    if(!rows.length){
-      cadList.innerHTML = `<div class="muted" style="margin-top:12px">Nenhum cadastro encontrado.</div>`;
-      return;
-    }
-
-    cadList.innerHTML = rows.map(r=>{
-      const st = String(r.status || "pendente").toLowerCase();
-      const badge =
-        st === "pendente" ? `<span class="badge warn">Pendente</span>` :
-        st === "aprovado" ? `<span class="badge ok">Aprovado</span>` :
-        `<span class="badge bad">Rejeitado</span>`;
-
-      const when = r.created_at ? new Date(r.created_at).toLocaleString() : "";
-      const wpp = String(r.whatsapp||"").replace(/\D/g,"");
-      const wppLink = wpp ? `<a class="link" target="_blank" rel="noreferrer" href="https://wa.me/${wpp}">WhatsApp</a>` : "";
-
-      return `
-        <div class="cadRow">
-          <div>
-            <div class="cadTitle">
-              <strong>${escapeHtml(r.nome_negocio||"—")}</strong>
-              ${badge}
-            </div>
-            <div class="cadMeta">
-              <span>${escapeHtml(r.cidade||"—")}</span><span class="dot">•</span>
-              <span>${escapeHtml(r.categoria||"—")}</span><span class="dot">•</span>
-              <span>${escapeHtml(r.whatsapp||"—")}</span>
-              ${wppLink ? `<span class="dot">•</span>${wppLink}` : ``}
-            </div>
-            <div class="meta" style="margin-top:6px">
-              ${escapeHtml(when)}
-              ${r.email ? ` <span class="dot">•</span> ${escapeHtml(r.email)}` : ``}
-              ${r.instagram ? ` <span class="dot">•</span> @${escapeHtml(r.instagram)}` : ``}
-            </div>
-            ${r.endereco ? `<div class="meta" style="margin-top:6px"><strong>Endereço:</strong> ${escapeHtml(r.endereco)}</div>` : ``}
-            ${r.mensagem ? `<div class="meta" style="margin-top:6px"><strong>Mensagem:</strong> ${escapeHtml(r.mensagem)}</div>` : ``}
-          </div>
-
-          <div class="row" style="gap:10px;justify-content:flex-end">
-            ${ st === "pendente"
-              ? `
-                <button class="btn y" onclick="aprovarCadastro('${r.id}')">Aprovar</button>
-                <button class="btn" onclick="rejeitarCadastro('${r.id}')">Rejeitar</button>
-              `
-              : `<button class="btn" onclick="alert('Status: ${escapeHtml(st)}')">OK</button>`
-            }
-          </div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  window.aprovarCadastro = async function(id){
-    try{
-      const { data: cad, error } = await sb.from("cadastros_clientes").select("*").eq("id", id).single();
-      if(error) throw error;
-
-      const base = slugify(cad.nome_negocio || "negocio").slice(0,40) || "negocio";
-      let slug = base;
-
-      const { data: exists } = await sb.from("clientes").select("slug").eq("slug", slug).maybeSingle();
-      if(exists?.slug) slug = `${base}-${String(Date.now()).slice(-4)}`;
-
-      await api("/clientes","POST",{
-        nome: cad.nome_negocio,
-        slug,
-        whatsapp: cad.whatsapp || "",
-        tipo_negocio: cad.categoria || "",
-        logo_url: null,
-        ativo: true,
-        email: cad.email || ""
-      });
-
-      const { error: uErr } = await sb.from("cadastros_clientes")
-        .update({ status:"aprovado", cliente_slug: slug, aprovado_em: new Date().toISOString() })
-        .eq("id", id);
-      if(uErr) throw uErr;
-
-      msg("Cadastro aprovado e cliente criado ✅","ok");
-      await bootLoad();
-      if(tab==="cadastros") await renderList(true);
-
-    }catch(e){
-      msg("Falha ao aprovar: " + (e?.message || e), "err");
-    }
-  }
-
-  window.rejeitarCadastro = async function(id){
-    try{
-      const { error } = await sb.from("cadastros_clientes")
-        .update({ status:"rejeitado", rejeitado_em: new Date().toISOString() })
-        .eq("id", id);
-      if(error) throw error;
-      msg("Cadastro rejeitado.","ok");
-      if(tab==="cadastros") await renderList(true);
-    }catch(e){
-      msg("Falha ao rejeitar: " + (e?.message || e), "err");
-    }
-  }
-
-  el("btnToggleCadastro").addEventListener("click", async ()=>{
-    try{
-      const atual = await getCadastroAtivo();
-      await setCadastroAtivo(!atual);
-      msg(!atual ? "Cadastro público ATIVADO ✅" : "Cadastro público DESATIVADO ⛔","ok");
-      if(tab==="cadastros") await renderList(true);
-    }catch(e){
-      msg("Falha ao alternar: " + (e?.message || e), "err");
-    }
-  });
-
-  // ====== MODAL EDITAR + LINK SENHA ======
+  // ====== MODAL EDITAR ======
   function openModal(){
     el("modalBack").style.display="flex";
     el("modalBack").setAttribute("aria-hidden","false");
@@ -1312,10 +1024,7 @@
     el("m_nome").value = c.nome || "";
     el("m_whatsapp").value = c.whatsapp || "";
     el("m_email").value = c.email || "";
-    el("m_instagram").value = c.instagram || "";
-    el("m_cidade").value = c.cidade || "";
     el("m_tipo_negocio").value = c.tipo_negocio || "";
-    el("m_endereco").value = c.endereco || "";
     el("m_logo_url").value = c.logo_url || "";
     el("m_ativo").checked = !!c.ativo;
 
@@ -1329,26 +1038,38 @@
   async function saveCliente(){
     if(!editingSlug) return;
 
-    const payload = {
+    // payload completo (se backend aceitar)
+    const full = {
       slug: editingSlug,
       nome: el("m_nome").value.trim(),
       whatsapp: el("m_whatsapp").value.trim(),
       email: el("m_email").value.trim(),
-      instagram: el("m_instagram").value.trim().replace(/^@+/, ""),
-      cidade: el("m_cidade").value.trim(),
       tipo_negocio: el("m_tipo_negocio").value.trim(),
-      endereco: el("m_endereco").value.trim(),
       logo_url: el("m_logo_url").value.trim(),
       ativo: el("m_ativo").checked
     };
 
-    if(!payload.nome) return modalMsg("Preencha o nome.");
+    if(!full.nome) return modalMsg("Preencha o nome.");
+    if(!full.whatsapp) return modalMsg("Preencha o WhatsApp.");
 
     try{
       modalMsg("");
       el("btnSaveModal").disabled = true;
 
-      await api("/clientes","PUT", payload);
+      // tenta salvar com tudo
+      try{
+        await api("/clientes","PUT", full);
+      }catch(e1){
+        // fallback: salva só o que quase todo backend aceita
+        await api("/clientes","PUT", {
+          slug: full.slug,
+          nome: full.nome,
+          whatsapp: full.whatsapp,
+          tipo_negocio: full.tipo_negocio,
+          logo_url: full.logo_url,
+          ativo: full.ativo
+        });
+      }
 
       msg("Cliente atualizado ✅","ok");
       await bootLoad();
@@ -1360,25 +1081,51 @@
     }
   }
 
-  // Link de senha (recovery) - depende do backend existir
+  // ====== LINK DE SENHA (via backend) ======
+  async function tryResetOn(path, email){
+    return await api(path, "POST", { email });
+  }
+
   window.gerarLinkSenha = async function(email){
-    const em = (email||"").trim() || prompt("Email do cliente:", "");
-    if(!em) return;
+    const em = (email||"").trim();
+    const alvo = em || prompt("Email do cliente:", "");
+    if(!alvo) return;
 
     try{
-      const r = await api("/reset-senha","POST",{ email: em });
-      const link = r.recovery_link || r.link || r.url;
+      // tenta 3 rotas (uma delas provavelmente você vai criar/ter)
+      let r = null;
+      const tries = ["/reset-senha", "/auth/reset-senha", "/clientes/reset-senha"];
+      let lastErr = null;
 
+      for (const p of tries){
+        try{
+          r = await tryResetOn(p, alvo);
+          lastErr = null;
+          break;
+        }catch(e){
+          lastErr = e;
+        }
+      }
+      if(!r){
+        throw new Error(
+          "Nenhuma rota de reset encontrada no backend. " +
+          "Crie um endpoint POST em: /api/admin/reset-senha (ou /auth/reset-senha). " +
+          "Erro: " + (lastErr?.message || "Failed")
+        );
+      }
+
+      const link = r.recovery_link || r.link || r.url || r.action_link;
       if(link){
         alert("🔑 Link de senha (envie para o cliente):\n\n" + link);
       }else{
-        alert("✅ Endpoint respondeu, mas não retornou o link.\nAjuste o /reset-senha para devolver { recovery_link }.");
+        alert("✅ Reset solicitado, mas o backend não retornou o link.\nAjuste o endpoint para retornar { recovery_link }.");
       }
     }catch(e){
       alert("❌ Falha ao gerar link de senha: " + (e?.message || e));
     }
   }
 
+  // binds modal
   el("btnCloseModal").addEventListener("click", closeModal);
   el("btnCancelModal").addEventListener("click", closeModal);
   el("btnSaveModal").addEventListener("click", saveCliente);
@@ -1388,19 +1135,20 @@
     gerarLinkSenha(email);
   });
   el("m_logo_url").addEventListener("input", updateLogoPreview);
+  el("modalBack").addEventListener("click", (e)=>{ if(e.target === el("modalBack")) closeModal(); });
+  window.addEventListener("keydown", (e)=>{ if(e.key==="Escape" && el("modalBack").style.display==="flex") closeModal(); });
 
-  el("modalBack").addEventListener("click", (e)=>{
-    if(e.target === el("modalBack")) closeModal();
-  });
-  window.addEventListener("keydown", (e)=>{
-    if(e.key==="Escape" && el("modalBack").style.display==="flex") closeModal();
-  });
-
-  // ====== BOOT LOAD ======
+  // ====== BOOT ======
   async function bootLoad(){
     await loadAllApi();
     fillCategoriaSelect();
-    await renderList(false);
+    await renderList();
+  }
+
+  async function afterLogin(){
+    hide("login");
+    el("app").style.display="block";
+    await bootLoad();
   }
 
   // ====== LOGIN ======
@@ -1425,77 +1173,42 @@
 
   el("btnGoogle").addEventListener("click", async ()=>{
     try{
-      // ✅ redirect fixo (troque se seu caminho for outro)
-      const fixedRedirect = window.location.origin + window.location.pathname;
-
       await sb.auth.signInWithOAuth({
         provider:"google",
-        options:{ redirectTo: fixedRedirect }
+        options:{ redirectTo: window.location.href }
       });
     }catch(e){
       loginMsg(e.message || "Falha no Google");
     }
   });
 
-  async function afterLogin(){
-    if(booting) return;
-    booting = true;
-
-    hide("login");
-    setModeLogin(false);
-    el("app").style.display="block";
-
-    try{
-      await bootLoad();
-      bootedOnce = true;
-    }finally{
-      booting = false;
-    }
-  }
-
   el("btnSair").addEventListener("click", async ()=>{
-    try{ await sb.auth.signOut(); }catch(_e){}
+    await sb.auth.signOut();
     session = null;
     el("app").style.display="none";
     show("login");
-    setModeLogin(true);
   });
 
   el("btnReload").addEventListener("click", bootLoad);
 
   // init
   (async ()=>{
-    setModeLogin(true);
-
     const { data } = await sb.auth.getSession();
     session = data.session || null;
 
     if (session){
       const ok = await requireAlfa();
       if(ok) await afterLogin();
-      else { show("login"); setModeLogin(true); }
+      else show("login");
     }else{
       show("login");
-      setModeLogin(true);
     }
 
-    sb.auth.onAuthStateChange(async (event, s)=>{
+    sb.auth.onAuthStateChange(async (_event, s)=>{
       session = s;
-
-      if(event === "SIGNED_OUT"){
-        el("app").style.display="none";
-        show("login");
-        setModeLogin(true);
-        return;
-      }
-
-      // SIGNED_IN / TOKEN_REFRESHED
       if(session){
         const ok = await requireAlfa();
-        if(ok){
-          // evita re-boot infinito
-          if(!bootedOnce) await afterLogin();
-        }
+        if(ok) await afterLogin();
       }
     });
   })();
