@@ -11,7 +11,6 @@
     :root{
       --bg1:#0b1220;
       --bg2:#0a0f18;
-      --card: rgba(0,0,0,.25);
       --bd: rgba(255,255,255,.10);
       --txt: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.65);
@@ -31,7 +30,6 @@
       overflow-x:hidden;
     }
 
-    /* ===== Layout ===== */
     .wrap{max-width:1180px;margin:0 auto;padding:22px}
     .top{
       display:flex;align-items:center;justify-content:space-between;gap:14px;
@@ -62,9 +60,7 @@
     .btn.y:hover{background:rgba(241,196,15,1)}
     .btn.small{padding:8px 10px;font-size:12px;border-radius:10px}
 
-    .tabs{
-      display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;
-    }
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;}
     .tab{
       cursor:pointer;
       border:1px solid rgba(255,255,255,.14);
@@ -73,10 +69,7 @@
       padding:8px 12px;border-radius:999px;
       font-weight:750;font-size:12px;
     }
-    .tab.active{
-      background:rgba(241,196,15,.18);
-      border-color:rgba(241,196,15,.45);
-    }
+    .tab.active{background:rgba(241,196,15,.18);border-color:rgba(241,196,15,.45);}
 
     .grid{
       display:grid;
@@ -84,9 +77,7 @@
       gap:14px;
       margin-top:14px;
     }
-    @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
-    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
 
     .card{
       border:1px solid var(--bd);
@@ -147,33 +138,6 @@
       min-width:0;
     }
     .itemTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .kebab{cursor:pointer;user-select:none;padding:2px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18)}
-    .kebab:hover{background:rgba(0,0,0,.26)}
-    .menuWrap{position:relative}
-    .menu{
-      position:absolute;right:0;top:26px;
-      display:none;
-      min-width:170px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.78);
-      border-radius:14px;
-      padding:6px;
-      z-index:50;
-      backdrop-filter: blur(10px);
-    }
-    .menu button{
-      width:100%;
-      background:transparent;
-      border:0;
-      color:var(--txt);
-      padding:10px 10px;
-      text-align:left;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:650;
-      font-size:13px;
-    }
-    .menu button:hover{background:rgba(255,255,255,.08)}
     .pill{
       display:inline-flex;align-items:center;gap:6px;
       padding:4px 10px;border-radius:999px;
@@ -191,7 +155,7 @@
       border-radius:14px;
     }
 
-    /* ===== Aprovação ===== */
+    /* Aprovação */
     .aprovTop{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
     .aprovList{display:flex;flex-direction:column;gap:10px}
     .aprovItem{
@@ -199,7 +163,7 @@
       padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(0,0,0,.18)
     }
 
-    /* ===== Login (central + logo grande) ===== */
+    /* Login */
     #login{min-height:100vh}
     .loginWrap{
       min-height:100vh;width:100%;
@@ -231,6 +195,7 @@
     .gMark{font-weight:900;font-size:18px;line-height:1;letter-spacing:-1px}
     .msg{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);font-size:13px}
     .msg.err{border-color:rgba(231,76,60,.35)}
+    .msg.ok{border-color:rgba(46,204,113,.35)}
   </style>
 </head>
 
@@ -299,7 +264,7 @@
   <div class="grid">
     <div class="card">
       <h3>Criar Cliente</h3>
-      <p>Cria a loja + (opcional) cria login do cliente no Supabase Auth.</p>
+      <p>Cria a loja (cadastro público é grátis; destaque depois pode ser pago).</p>
 
       <div class="row" style="gap:12px">
         <div class="field">
@@ -346,25 +311,16 @@
         </div>
       </div>
 
-      <div class="row" style="gap:12px">
-        <div class="field">
-          <label>Email do cliente (opcional)</label>
-          <input id="c_email" placeholder="cliente@dominio.com" />
-        </div>
-        <div class="field">
-          <label>Senha do cliente (opcional)</label>
-          <input id="c_senha" type="password" placeholder="••••••••" />
-        </div>
-      </div>
-
       <div style="margin-top:12px">
         <button class="btn y" id="btnCriarCliente">➕ Criar cliente</button>
       </div>
+
+      <div id="uiMsg" class="msg" style="display:none;margin-top:12px"></div>
     </div>
 
     <div class="card">
       <h3>Cadastros</h3>
-      <p>Selecione um cliente e cadastre categorias/produtos com segurança.</p>
+      <p>Selecione um cliente e cadastre categorias/produtos.</p>
 
       <div class="row" style="gap:12px">
         <div class="field">
@@ -437,42 +393,30 @@
 </div>
 
 <script>
-  // ===== CONFIG =====
-  // ⚠️ Cole aqui o seu SUPABASE_URL e SUPABASE_ANON_KEY do projeto
+  // =========================
+  // CONFIG
+  // =========================
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc25teHNweXl3d291aGNkd2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MzI3NzIsImV4cCI6MjA4MzUwODc3Mn0.dxj35rJ_g_952_VvwV4mjFraB1b0BLdsxHw_wYiQNQI";
-
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  let session = null;
 
-  // ===== Admin Alfa enforcement =====
   const ALFA_EMAIL = "playmomentsstudios@gmail.com";
-  function isAlfa(){
-    const email = session?.user?.email || "";
-    return String(email).toLowerCase().trim() === ALFA_EMAIL.toLowerCase();
-  }
-  async function requireAlfa(){
-    if(!session) return false;
-    if(isAlfa()) return true;
-    try{ await sb.auth.signOut(); }catch(_e){}
-    session = null;
-    el("app").style.display="none";
-    show("login");
-    const box = document.getElementById("loginMsg");
-    if(box){ box.style.display="block"; box.textContent="Acesso negado: este painel é apenas para o Admin Alfa."; }
-    return false;
-  }
 
-  // ===== STATE =====
+  // =========================
+  // STATE
+  // =========================
+  let session = null;
   let tab = "clientes";
   let clientes = [], categorias = [], produtos = [];
   let cadastros = [];
   let cadastroPublicoAtivo = true;
 
-  // ===== HELPERS =====
-  function el(id){ return document.getElementById(id); }
-  function show(id){ el(id).style.display="block"; }
-  function hide(id){ el(id).style.display="none"; }
+  // =========================
+  // HELPERS
+  // =========================
+  const el = (id)=>document.getElementById(id);
+  const show = (id)=>el(id).style.display="block";
+  const hide = (id)=>el(id).style.display="none";
 
   function escapeHtml(str){
     return String(str ?? "")
@@ -490,19 +434,56 @@
       .trim().replace(/\s+/g,"-").replace(/-+/g,"-");
   }
 
-  function openMenu(id){
-    document.querySelectorAll(".menu").forEach(m=>{ if(m.id!==id) m.style.display="none"; });
-    const m = document.getElementById(id);
-    if(!m) return;
-    m.style.display = (m.style.display==="block") ? "none" : "block";
+  function uiMessage(type, text){
+    const box = el("uiMsg");
+    if(!box) return;
+    box.className = "msg " + (type==="ok" ? "ok" : "err");
+    box.textContent = text;
+    box.style.display = "block";
+    setTimeout(()=>{ box.style.display="none"; }, 3500);
   }
-  window.addEventListener("click", (e)=>{
-    if(!e.target.closest(".menuWrap")){
-      document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
-    }
-  });
 
-  // ===== AUTH =====
+  // =========================
+  // AUTH + ENFORCEMENT
+  // =========================
+  function isAlfaEmail(){
+    const email = session?.user?.email || "";
+    return String(email).toLowerCase().trim() === ALFA_EMAIL.toLowerCase();
+  }
+
+  async function requireAlfa(){
+    if(!session) return false;
+
+    if(!isAlfaEmail()){
+      try{ await sb.auth.signOut(); }catch(_e){}
+      session = null;
+      hide("app"); show("login");
+      const box = el("loginMsg");
+      box.style.display="block";
+      box.textContent="Acesso negado: este painel é apenas para o Admin Alfa.";
+      return false;
+    }
+
+    // Checa se é admin (via RPC). NÃO acessa tabela users.
+    const { data, error } = await sb.rpc("is_portal_admin");
+    if(error){
+      console.error("RPC is_portal_admin error:", error);
+      hide("app"); show("login");
+      const box = el("loginMsg");
+      box.style.display="block";
+      box.textContent="Falha ao validar admin (RPC): " + error.message;
+      return false;
+    }
+    if(!data){
+      hide("app"); show("login");
+      const box = el("loginMsg");
+      box.style.display="block";
+      box.textContent="Seu usuário não está autorizado como Admin no Portal (portal_admins).";
+      return false;
+    }
+    return true;
+  }
+
   async function signInEmail(){
     const email = el("email").value.trim();
     const password = el("senha").value;
@@ -516,8 +497,10 @@
       return;
     }
     session = data.session;
+
     const ok = await requireAlfa();
     if(!ok) return;
+
     await afterLogin();
   }
 
@@ -538,11 +521,12 @@
   async function logout(){
     await sb.auth.signOut();
     session = null;
-    hide("app");
-    show("login");
+    hide("app"); show("login");
   }
 
-  // ===== LOADERS =====
+  // =========================
+  // LOADERS (SEM tabela users)
+  // =========================
   async function loadClientes(){
     const { data, error } = await sb.from("clientes").select("*").order("created_at",{ascending:false});
     if(error) throw error;
@@ -568,9 +552,14 @@
   }
 
   async function loadCadastroPublicoConfig(){
-    const { data, error } = await sb.from("portal_config").select("valor").eq("chave","cadastro_publico_ativo").maybeSingle();
+    const { data, error } = await sb
+      .from("portal_config")
+      .select("valor")
+      .eq("chave","cadastro_publico_ativo")
+      .maybeSingle();
+
     if(!error){
-      cadastroPublicoAtivo = String(data?.valor || "true") === "true";
+      cadastroPublicoAtivo = String(data?.valor ?? "true") === "true";
     }
   }
 
@@ -586,17 +575,26 @@
       alert("Falha ao alternar cadastro público: " + (e?.message || e));
     }
   }
+  window.toggleCadastroPublico = toggleCadastroPublico;
 
   async function loadAll(){
-    await loadClientes();
-    await loadCategorias();
-    await loadProdutos();
-    await loadCadastroPublicoConfig();
-    await loadCadastros();
-    fillSelects();
-    renderList();
+    try{
+      await loadClientes();
+      await loadCategorias();
+      await loadProdutos();
+      await loadCadastroPublicoConfig();
+      await loadCadastros();
+      fillSelects();
+      renderList();
+    }catch(e){
+      console.error("LOADALL ERROR:", e);
+      alert("Erro ao carregar dados: " + (e?.message || JSON.stringify(e)));
+    }
   }
 
+  // =========================
+  // SELECTS
+  // =========================
   function fillSelects(){
     const sel = el("sel_cliente");
     sel.innerHTML = clientes.map(c=>`<option value="${escapeHtml(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`).join("");
@@ -606,13 +604,17 @@
   function fillCategoriasForSelected(){
     const clienteSlug = el("sel_cliente").value;
     const selCat = el("sel_categoria");
-    const list = categorias.filter(x=>x.cliente_id===clienteSlug || x.cliente_slug===clienteSlug || x.cliente===clienteSlug || x.slug_cliente===clienteSlug);
-    // fallback: se categorias não tiver cliente_slug, mostra todas
+
+    // Seu schema usa cliente_slug nas categorias (já ajustado no banco)
+    const list = categorias.filter(x => String(x.cliente_slug||"") === String(clienteSlug||""));
     const use = list.length ? list : categorias;
+
     selCat.innerHTML = use.map(c=>`<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join("");
   }
 
-  // ===== ACTIONS: criar cliente/categoria/produto =====
+  // =========================
+  // ACTIONS: CRUD básico
+  // =========================
   async function criarCliente(){
     const nome = el("c_nome").value.trim();
     const slug = (el("c_slug").value.trim() || slugify(nome));
@@ -622,7 +624,8 @@
     const tipo_negocio = el("c_tipo_negocio").value || null;
 
     if(!nome || !slug){
-      return alert("Preencha nome e slug.");
+      uiMessage("err","Preencha nome e slug.");
+      return;
     }
 
     const payload = {
@@ -636,10 +639,12 @@
     };
 
     const { error } = await sb.from("clientes").insert(payload);
-    if(error) return alert("Erro ao criar cliente: " + error.message);
+    if(error){
+      uiMessage("err","Erro ao criar cliente: " + error.message);
+      return;
+    }
 
-    // opcional: criar auth user (se você já tiver rotina server-side, aqui fica só o cadastro)
-    alert("Cliente criado!");
+    uiMessage("ok","Cliente criado!");
     await loadClientes();
     fillSelects();
     renderList();
@@ -650,17 +655,15 @@
     const nome = el("cat_nome").value.trim();
     const ordem = Number(el("cat_ordem").value || 0);
 
-    if(!clienteSlug || !nome) return alert("Selecione cliente e preencha nome da categoria.");
+    if(!clienteSlug || !nome){
+      alert("Selecione cliente e preencha nome da categoria.");
+      return;
+    }
 
-    const payload = {
-      cliente_slug: clienteSlug,
-      nome,
-      ordem,
-      ativo: true
-    };
+    const payload = { cliente_slug: clienteSlug, nome, ordem, ativo: true };
 
     const { error } = await sb.from("categorias").insert(payload);
-    if(error) return alert("Erro ao criar categoria: " + error.message);
+    if(error){ alert("Erro ao criar categoria: " + error.message); return; }
 
     el("cat_nome").value="";
     await loadCategorias();
@@ -677,21 +680,22 @@
     const preco = Number(el("p_preco").value || 0);
     const imagem_url = el("p_img").value.trim() || null;
 
-    if(!clienteSlug || !categoriaId || !nome) return alert("Selecione cliente, categoria e preencha nome do produto.");
+    if(!clienteSlug || !categoriaId || !nome){
+      alert("Selecione cliente, categoria e preencha nome do produto.");
+      return;
+    }
 
     const payload = {
       cliente_slug: clienteSlug,
       categoria_id: categoriaId,
-      nome,
-      descricao,
-      preco,
+      nome, descricao, preco,
       imagem_url,
       ativo: true,
       ordem: 0
     };
 
     const { error } = await sb.from("produtos").insert(payload);
-    if(error) return alert("Erro ao criar produto: " + error.message);
+    if(error){ alert("Erro ao criar produto: " + error.message); return; }
 
     el("p_nome").value="";
     el("p_desc").value="";
@@ -702,7 +706,9 @@
     alert("Produto criado!");
   }
 
-  // ===== Aprovação =====
+  // =========================
+  // APROVAÇÃO
+  // =========================
   async function aprovarCadastro(id){
     try{
       const { data: cad, error } = await sb.from("cadastros_clientes").select("*").eq("id", id).single();
@@ -711,7 +717,8 @@
       const base = slugify(cad.nome_negocio || "negocio").slice(0,40) || "negocio";
       let slug = base;
 
-      const { data: ex } = await sb.from("clientes").select("slug").eq("slug", slug).maybeSingle();
+      const { data: ex, error: exErr } = await sb.from("clientes").select("slug").eq("slug", slug).maybeSingle();
+      if(exErr) throw exErr;
       if(ex?.slug) slug = `${base}-${String(Date.now()).slice(-4)}`;
 
       const payload = {
@@ -720,7 +727,11 @@
         whatsapp: cad.whatsapp || "",
         ativo: true,
         tipo: "portal",
-        tipo_negocio: String(cad.categoria || "comercio").toLowerCase()
+        tipo_negocio: String(cad.categoria || "comercio").toLowerCase(),
+        cidade: cad.cidade || null,
+        instagram: cad.instagram || null,
+        endereco: cad.endereco || null,
+        email: cad.email || null
       };
 
       const { error: cErr } = await sb.from("clientes").insert(payload);
@@ -740,6 +751,7 @@
       alert("Falha ao aprovar: " + (e?.message || e));
     }
   }
+  window.aprovarCadastro = aprovarCadastro;
 
   async function rejeitarCadastro(id){
     try{
@@ -755,8 +767,11 @@
       alert("Falha ao rejeitar: " + (e?.message || e));
     }
   }
+  window.rejeitarCadastro = rejeitarCadastro;
 
-  // ===== RENDER: Aprovação =====
+  // =========================
+  // RENDER
+  // =========================
   function renderAprovacao(q, listEl){
     el("listTitle").textContent = "Cadastros (aprovação)";
     el("listSubtitle").textContent = "Aprovar/Rejeitar cadastros públicos + ativar/desativar landing.";
@@ -824,7 +839,6 @@
     }).join("") + `</div>`;
   }
 
-  // ===== RENDER LIST =====
   function renderList(){
     const q = (el("search").value||"").trim().toLowerCase();
     const listEl = el("list");
@@ -835,36 +849,23 @@
 
     if (tab==="clientes"){
       el("listTitle").textContent = "Clientes";
-      el("listSubtitle").textContent = "Ações: ver publicado, ativar/desativar, excluir.";
+      el("listSubtitle").textContent = "Lista de clientes cadastrados (Admin Alfa).";
 
       let list = clientes.slice();
-      if (q) list = list.filter(x=>
+      if (q) list = list.filter(x =>
         (x.nome||"").toLowerCase().includes(q) || (x.slug||"").toLowerCase().includes(q)
       );
 
       listEl.className="items";
-      listEl.innerHTML = list.map(c=>{
-        const mid = "m_cli_"+c.slug;
-        return `
-          <div class="item">
-            <div class="itemTop">
-              <div style="min-width:0">
-                <div class="ttl">${escapeHtml(c.nome||"—")}</div>
-                <div class="meta">${escapeHtml(c.slug||"")}</div>
-              </div>
-              <div class="menuWrap">
-                <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
-                <div class="menu" id="${mid}">
-                  <button onclick="alert('Ver publicado: '+ '${c.slug}')">👁️ Ver publicado</button>
-                  <button onclick="alert('Ativar/Desativar (implementar)')">✅ Ativar/Desativar</button>
-                  <button onclick="alert('Excluir (implementar)')">🗑️ Excluir</button>
-                </div>
-              </div>
-            </div>
-            <div class="meta" style="margin-top:8px">${escapeHtml(c.tipo_negocio||c.tipo||"")}</div>
+      listEl.innerHTML = list.length ? list.map(c=>`
+        <div class="item">
+          <div class="ttl">${escapeHtml(c.nome||"—")}</div>
+          <div class="meta">${escapeHtml(c.slug||"")}</div>
+          <div class="meta" style="margin-top:8px">
+            ${escapeHtml(c.cidade||"")} ${c.cidade ? "• " : ""}${escapeHtml(c.tipo_negocio||c.tipo||"")}
           </div>
-        `;
-      }).join("");
+        </div>
+      `).join("") : `<div class="empty">Nenhum cliente encontrado.</div>`;
       return;
     }
 
@@ -876,14 +877,12 @@
       if (q) list = list.filter(x=> (x.nome||"").toLowerCase().includes(q));
 
       listEl.className="items";
-      listEl.innerHTML = list.map(c=>{
-        return `
-          <div class="item">
-            <div class="ttl">${escapeHtml(c.nome||"—")}</div>
-            <div class="meta">ordem: ${c.ordem ?? 0} • ativo: ${c.ativo ? "sim" : "não"}</div>
-          </div>
-        `;
-      }).join("");
+      listEl.innerHTML = list.length ? list.map(c=>`
+        <div class="item">
+          <div class="ttl">${escapeHtml(c.nome||"—")}</div>
+          <div class="meta">cliente: ${escapeHtml(c.cliente_slug||"")} • ordem: ${c.ordem ?? 0} • ativo: ${c.ativo ? "sim" : "não"}</div>
+        </div>
+      `).join("") : `<div class="empty">Nenhuma categoria encontrada.</div>`;
       return;
     }
 
@@ -895,26 +894,28 @@
       if (q) list = list.filter(x=> (x.nome||"").toLowerCase().includes(q));
 
       listEl.className="items";
-      listEl.innerHTML = list.map(p=>{
-        return `
-          <div class="item">
-            <div class="ttl">${escapeHtml(p.nome||"—")}</div>
-            <div class="meta">R$ ${Number(p.preco||0).toFixed(2)} • ativo: ${p.ativo ? "sim" : "não"}</div>
-          </div>
-        `;
-      }).join("");
+      listEl.innerHTML = list.length ? list.map(p=>`
+        <div class="item">
+          <div class="ttl">${escapeHtml(p.nome||"—")}</div>
+          <div class="meta">cliente: ${escapeHtml(p.cliente_slug||"")} • R$ ${Number(p.preco||0).toFixed(2)} • ativo: ${p.ativo ? "sim" : "não"}</div>
+        </div>
+      `).join("") : `<div class="empty">Nenhum produto encontrado.</div>`;
       return;
     }
   }
 
-  // ===== After login =====
+  // =========================
+  // After login
+  // =========================
   async function afterLogin(){
     hide("login");
     show("app");
     await loadAll();
   }
 
-  // ===== UI binds =====
+  // =========================
+  // UI binds
+  // =========================
   document.querySelectorAll(".tab").forEach(b=>{
     b.addEventListener("click", ()=>{
       document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
@@ -936,7 +937,9 @@
   el("btnCriarCategoria").onclick = criarCategoria;
   el("btnCriarProduto").onclick = criarProduto;
 
-  // ===== Boot =====
+  // =========================
+  // Boot
+  // =========================
   (async ()=>{
     const { data } = await sb.auth.getSession();
     session = data.session;
@@ -944,6 +947,7 @@
     if (session){
       const ok = await requireAlfa();
       if(ok) await afterLogin();
+      else { show("login"); hide("app"); }
     }else{
       show("login"); hide("app");
     }
