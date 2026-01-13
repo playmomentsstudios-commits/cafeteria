@@ -160,6 +160,17 @@
     .loginCard h2{margin:0 0 6px}
     .loginCard p{margin:0 0 12px;color:var(--muted);font-size:12px}
     .loginForm{margin-top:10px;text-align:left}
+    .loginForm label{font-size:12px;color:var(--muted)}
+    input{
+      width:100%;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      padding:10px 12px;
+      color:var(--txt);
+      outline:none;
+      font-size:13px;
+    }
     .sp10{height:10px}
     .loginActions{justify-content:center;margin-top:14px;gap:10px}
     .btn.gIcon{
@@ -169,6 +180,96 @@
     .gMark{font-weight:900;font-size:18px;line-height:1;letter-spacing:-1px}
     .msg{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);font-size:13px}
     .msg.err{border-color:rgba(231,76,60,.35)}
+
+    /* ===== Modal bonitinho ===== */
+    .modalBack{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:9999;
+    }
+    .modal{
+      width:min(720px, 96vw);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      background:rgba(0,0,0,.75);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    }
+    .modalHead{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+    }
+    .modalHead .title{font-weight:900}
+    .modalHead .sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .x{
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:var(--txt);
+      width:38px;height:38px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;
+    }
+    .x:hover{background:rgba(255,255,255,.09)}
+    .modalBody{padding:14px 16px}
+    .formGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 760px){
+      .formGrid{grid-template-columns:1fr}
+    }
+    .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .field label{font-size:12px;color:var(--muted)}
+    .field input, .field select{
+      width:100%;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      padding:10px 12px;
+      color:var(--txt);
+      outline:none;
+      font-size:13px;
+    }
+    .row2{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .toggle{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      border-radius:12px;
+    }
+    .toggle input{width:18px;height:18px}
+    .preview{
+      display:flex;gap:12px;align-items:center;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      border-radius:12px;
+    }
+    .prevImg{
+      width:54px;height:54px;border-radius:14px;
+      overflow:hidden;border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      display:flex;align-items:center;justify-content:center;
+      flex:0 0 auto;
+    }
+    .prevImg img{width:100%;height:100%;object-fit:cover}
+    .modalFoot{
+      display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;
+      padding:14px 16px;
+      border-top:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+    }
+    .hint{font-size:12px;color:var(--muted)}
   </style>
 </head>
 
@@ -236,7 +337,7 @@
     <div class="listTop">
       <div>
         <div class="ttl" id="listTitle">Clientes</div>
-        <div class="meta" id="listSubtitle">Link de senha é a forma certa (não existe “ver senha”).</div>
+        <div class="meta" id="listSubtitle">Editar dados + gerar link de senha.</div>
       </div>
       <input id="search" placeholder="Buscar..." style="min-width:240px">
     </div>
@@ -246,12 +347,103 @@
 
 </div>
 
+<!-- MODAL EDITAR CLIENTE -->
+<div class="modalBack" id="modalBack" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modalHead">
+      <div>
+        <div class="title" id="mTitle">Editar cliente</div>
+        <div class="sub" id="mSub">Atualize os dados do negócio.</div>
+      </div>
+      <button class="x" id="btnCloseModal" title="Fechar">✕</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="hint" style="margin-bottom:10px;">
+        ⚠️ Senha não é visível. Para acesso use <strong>Link de senha</strong>.
+      </div>
+
+      <div class="formGrid">
+        <div class="field" style="grid-column:1/-1">
+          <label>Slug (não edita)</label>
+          <input id="m_slug" disabled />
+        </div>
+
+        <div class="field">
+          <label>Nome</label>
+          <input id="m_nome" />
+        </div>
+
+        <div class="field">
+          <label>WhatsApp</label>
+          <input id="m_whatsapp" placeholder="6299..." />
+        </div>
+
+        <div class="field">
+          <label>Email (login)</label>
+          <input id="m_email" placeholder="cliente@email.com" />
+        </div>
+
+        <div class="field">
+          <label>Instagram</label>
+          <input id="m_instagram" placeholder="sem @" />
+        </div>
+
+        <div class="field">
+          <label>Cidade</label>
+          <input id="m_cidade" placeholder="Ex: Cavalcante" />
+        </div>
+
+        <div class="field">
+          <label>Tipo de negócio</label>
+          <input id="m_tipo_negocio" placeholder="Ex: mercado, pousada..." />
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <label>Endereço</label>
+          <input id="m_endereco" placeholder="Rua, número, bairro..." />
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <label>Logo URL (opcional)</label>
+          <input id="m_logo_url" placeholder="https://.../logo.png" />
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <div class="row2">
+            <div class="toggle">
+              <input type="checkbox" id="m_ativo" />
+              <label for="m_ativo" style="margin:0;color:var(--txt)">Ativo (publicado)</label>
+            </div>
+
+            <div class="preview" style="flex:1;min-width:220px">
+              <div class="prevImg"><img id="m_logo_prev" alt="logo preview" /></div>
+              <div style="min-width:0">
+                <div class="ttl" style="font-size:13px;margin-bottom:2px">Preview</div>
+                <div class="meta" id="m_logo_text">Sem logo</div>
+              </div>
+            </div>
+
+            <button class="btn small" id="btnLinkSenhaModal">🔑 Link de senha</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="modalMsg" class="msg err" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <div class="modalFoot">
+      <button class="btn" id="btnCancel">Cancelar</button>
+      <button class="btn y" id="btnSave">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // ===== CONFIG (já preenchido com seus dados) =====
+  // ===== CONFIG (seus dados) =====
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc25teHNweXl3d291aGNkd2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MzI3NzIsImV4cCI6MjA4MzUwODc3Mn0.dxj35rJ_g_952_VvwV4mjFraB1b0BLdsxHw_wYiQNQI";
 
-  // Sua API da Vercel (base /api)
   const API_BASE = "https://cafeteria-gamma-orpin.vercel.app/api";
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -260,6 +452,7 @@
   let tab = "clientes";
   let clientes = [];
   let cadastros = [];
+  let editingSlug = null;
 
   function el(id){ return document.getElementById(id); }
   function show(id){ el(id).style.display="block"; }
@@ -288,6 +481,7 @@
     return json;
   }
 
+  // ===== AUTH =====
   async function signInEmail(){
     const email = el("email").value.trim();
     const password = el("senha").value;
@@ -325,17 +519,18 @@
     show("login");
   }
 
+  // ===== LOAD =====
   async function loadAll(){
-    // precisa existir na Vercel: /api/admin/listar
     const data = await apiFetch("/admin/listar");
     clientes = data.clientes || [];
     cadastros = data.cadastros || [];
     renderList();
   }
 
+  // ===== RENDER =====
   function renderClientes(q){
     el("listTitle").textContent = "Clientes";
-    el("listSubtitle").textContent = "Editar dados + gerar link para definir senha.";
+    el("listSubtitle").textContent = "Editar dados + gerar link de senha.";
 
     let list = clientes.slice();
     if (q) list = list.filter(x =>
@@ -352,7 +547,6 @@
     el("list").innerHTML = list.map(c=>{
       const ativoPill = c.ativo ? `<span class="pill ok">Ativo</span>` : `<span class="pill bad">Inativo</span>`;
       const email = c.email ? escapeHtml(c.email) : "—";
-
       return `
         <div class="item">
           <div class="ttl">${escapeHtml(c.nome||"—")}</div>
@@ -366,8 +560,8 @@
           <div class="meta" style="margin-top:8px">Email: <strong>${email}</strong></div>
 
           <div class="row" style="margin-top:10px;flex-wrap:wrap">
-            <button class="btn small" onclick="editarClientePrompt('${escapeHtml(c.slug)}')">✏️ Editar</button>
-            <button class="btn y small" onclick="resetSenhaClientePrompt('${escapeHtml(c.email||"")}')">🔑 Link de senha</button>
+            <button class="btn small" onclick="openEdit('${escapeHtml(c.slug)}')">✏️ Editar</button>
+            <button class="btn y small" onclick="resetSenhaCliente('${escapeHtml(c.email||"")}')">🔑 Link de senha</button>
           </div>
         </div>
       `;
@@ -410,9 +604,7 @@
           </div>
 
           <div class="row" style="gap:10px;flex-wrap:wrap;justify-content:flex-end">
-            ${st==="pendente" ? `
-              <button class="btn y small" onclick="aprovarCadastro('${r.id}')">Aprovar</button>
-            ` : ``}
+            ${st==="pendente" ? `<button class="btn y small" onclick="aprovarCadastro('${r.id}')">Aprovar</button>` : ``}
           </div>
         </div>
       `;
@@ -425,93 +617,160 @@
     if(tab==="cadastros") return renderCadastros(q);
   }
 
+  // ===== ACTIONS =====
   async function aprovarCadastro(id){
     try{
-      // precisa existir na Vercel: /api/admin/aprovar-cadastro
       const resp = await apiFetch("/admin/aprovar-cadastro", {
         method:"POST",
         body: JSON.stringify({ cadastro_id: id })
       });
-
       if(resp.recovery_link){
-        alert("✅ Aprovado!\n\nLink de senha (copie e envie ao cliente):\n\n" + resp.recovery_link);
+        alert("✅ Aprovado!\n\nLink de senha:\n\n" + resp.recovery_link);
       }else{
-        alert("✅ Aprovado! Usuário criado/vinculado.");
+        alert("✅ Aprovado!");
       }
-
       await loadAll();
     }catch(e){
       alert("Falha ao aprovar: " + (e?.message || e));
     }
   }
+  window.aprovarCadastro = aprovarCadastro;
 
-  async function resetSenhaClientePrompt(email){
+  async function resetSenhaCliente(email){
     const em = (email||"").trim();
-    const alvo = prompt("Email do cliente para gerar link de senha:", em);
+    const alvo = em || prompt("Email do cliente:", "");
     if(!alvo) return;
+
     try{
-      // precisa existir na Vercel: /api/admin/reset-senha
       const resp = await apiFetch("/admin/reset-senha", {
         method:"POST",
         body: JSON.stringify({ email: alvo })
       });
-      alert("🔑 Link de senha gerado:\n\n" + (resp.recovery_link || "(sem link)"));
+      alert("🔑 Link de senha:\n\n" + (resp.recovery_link || "(sem link)"));
     }catch(e){
       alert("Falha ao gerar link: " + (e?.message || e));
     }
   }
+  window.resetSenhaCliente = resetSenhaCliente;
 
-  // Edição (por enquanto prompt). Próximo passo: modal + endpoint PUT.
-  async function editarClientePrompt(slug){
+  // ===== MODAL =====
+  function setModalMsg(msg){
+    const box = el("modalMsg");
+    if(!msg){
+      box.style.display="none";
+      box.textContent="";
+      return;
+    }
+    box.style.display="block";
+    box.textContent=msg;
+  }
+
+  function updateLogoPreview(){
+    const url = el("m_logo_url").value.trim();
+    const img = el("m_logo_prev");
+    const txt = el("m_logo_text");
+
+    if(!url){
+      img.style.display="none";
+      txt.textContent="Sem logo";
+      return;
+    }
+    img.style.display="block";
+    img.src = url;
+    txt.textContent=url;
+    img.onerror = ()=>{
+      img.style.display="none";
+      txt.textContent="URL inválida (não carregou)";
+    };
+  }
+
+  function openModal(){
+    el("modalBack").style.display="flex";
+    el("modalBack").setAttribute("aria-hidden","false");
+    setModalMsg("");
+  }
+  function closeModal(){
+    el("modalBack").style.display="none";
+    el("modalBack").setAttribute("aria-hidden","true");
+    editingSlug = null;
+    setModalMsg("");
+  }
+
+  function openEdit(slug){
     const c = clientes.find(x => x.slug === slug);
     if(!c) return alert("Cliente não encontrado.");
 
-    const novoNome = prompt("Nome:", c.nome || "");
-    if(novoNome === null) return;
+    editingSlug = slug;
 
-    const novoWhats = prompt("WhatsApp:", c.whatsapp || "");
-    if(novoWhats === null) return;
+    el("m_slug").value = c.slug || "";
+    el("m_nome").value = c.nome || "";
+    el("m_whatsapp").value = c.whatsapp || "";
+    el("m_email").value = c.email || "";
+    el("m_instagram").value = c.instagram || "";
+    el("m_cidade").value = c.cidade || "";
+    el("m_tipo_negocio").value = c.tipo_negocio || c.tipo || "";
+    el("m_endereco").value = c.endereco || "";
+    el("m_logo_url").value = c.logo_url || "";
+    el("m_ativo").checked = !!c.ativo;
 
-    const novaCidade = prompt("Cidade:", c.cidade || "");
-    if(novaCidade === null) return;
+    el("mTitle").textContent = "Editar cliente";
+    el("mSub").textContent = `${c.nome || "Cliente"} • ${c.slug}`;
 
-    const novoTipo = prompt("Tipo de negócio:", c.tipo_negocio || "");
-    if(novoTipo === null) return;
+    updateLogoPreview();
+    openModal();
+  }
+  window.openEdit = openEdit;
 
-    const novoEmail = prompt("Email:", c.email || "");
-    if(novoEmail === null) return;
+  async function saveEdit(){
+    if(!editingSlug) return;
 
-    // Endpoint de update (vamos criar já no próximo passo):
-    // /api/admin/editar-cliente
+    const payload = {
+      slug: editingSlug,
+      nome: el("m_nome").value.trim(),
+      whatsapp: el("m_whatsapp").value.trim(),
+      email: el("m_email").value.trim().toLowerCase(),
+      instagram: el("m_instagram").value.trim().replace(/^@+/, ""),
+      cidade: el("m_cidade").value.trim(),
+      tipo_negocio: el("m_tipo_negocio").value.trim(),
+      endereco: el("m_endereco").value.trim(),
+      logo_url: el("m_logo_url").value.trim(),
+      ativo: el("m_ativo").checked
+    };
+
+    if(!payload.nome) return setModalMsg("Preencha o nome.");
+    if(!payload.whatsapp) return setModalMsg("Preencha o WhatsApp.");
+    if(!payload.email) return setModalMsg("Preencha o email.");
+
     try{
-      await apiFetch("/admin/editar-cliente",{
+      setModalMsg("");
+      el("btnSave").disabled = true;
+
+      const resp = await apiFetch("/admin/editar-cliente", {
         method:"POST",
-        body: JSON.stringify({
-          slug,
-          nome: novoNome,
-          whatsapp: novoWhats,
-          cidade: novaCidade,
-          tipo_negocio: novoTipo,
-          email: novoEmail
-        })
+        body: JSON.stringify(payload)
       });
-      alert("✅ Cliente atualizado!");
+
+      if(resp.authEmailUpdated){
+        alert("✅ Cliente atualizado!\n\nEmail também foi sincronizado no Auth.");
+      }else{
+        alert("✅ Cliente atualizado!");
+      }
+
       await loadAll();
+      closeModal();
     }catch(e){
-      alert("Ainda não existe o endpoint /admin/editar-cliente.\n\nPróximo passo: eu te mando ele agora.\n\nErro: " + (e?.message||e));
+      setModalMsg("Erro ao salvar: " + (e?.message || e));
+    }finally{
+      el("btnSave").disabled = false;
     }
   }
-  window.editarClientePrompt = editarClientePrompt;
-  window.resetSenhaClientePrompt = resetSenhaClientePrompt;
-  window.aprovarCadastro = aprovarCadastro;
 
-  async function afterLogin(){
-    hide("login");
-    show("app");
-    await loadAll();
-  }
+  // fecha clicando fora
+  el("modalBack").addEventListener("click", (e)=>{
+    if(e.target === el("modalBack")) closeModal();
+  });
 
-  // Tabs
+  // ===== UI binds =====
   document.querySelectorAll(".tab").forEach(b=>{
     b.addEventListener("click", ()=>{
       document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
@@ -522,10 +781,22 @@
   });
 
   el("search").addEventListener("input", renderList);
+
   el("btnLogin").onclick = signInEmail;
   el("btnGoogle").onclick = signInGoogle;
   el("btnLogout").onclick = logout;
   el("btnReload").onclick = async ()=>{ await loadAll(); };
+
+  el("btnCloseModal").onclick = closeModal;
+  el("btnCancel").onclick = closeModal;
+  el("btnSave").onclick = saveEdit;
+
+  el("m_logo_url").addEventListener("input", updateLogoPreview);
+  el("btnLinkSenhaModal").onclick = ()=>{
+    const email = el("m_email").value.trim();
+    if(!email) return setModalMsg("Preencha o email para gerar link de senha.");
+    resetSenhaCliente(email);
+  };
 
   // Boot
   (async ()=>{
@@ -533,7 +804,8 @@
     session = data.session;
 
     if (session){
-      await afterLogin();
+      hide("login"); show("app");
+      await loadAll();
     }else{
       show("login"); hide("app");
     }
@@ -541,7 +813,15 @@
     sb.auth.onAuthStateChange(async (_event, s)=>{
       session = s;
       if(session){
-        await afterLogin();
+        hide("login"); show("app");
+        await loadAll();
+      }
+    });
+
+    // ESC fecha modal
+    window.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape" && el("modalBack").style.display === "flex"){
+        closeModal();
       }
     });
   })();
