@@ -2,175 +2,201 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Alfa • Portal da Chapada</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg1:#0b1220;
-      --bg2:#0a0f18;
-      --card: rgba(0,0,0,.25);
-      --bd: rgba(255,255,255,.10);
-      --txt: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.65);
-      --y:#f1c40f;
-      --ok:#2ecc71;
-      --bad:#e74c3c;
+      --bg:#0b1220;
+      --card:#111a2b;
+      --card2:#0f1726;
+      --line:rgba(255,255,255,.12);
+      --text:#f7f7fb;
+      --muted:rgba(247,247,251,.7);
+
+      --y:#ffd24a;
+      --y2:#ffbb1a;
+
+      --ok:#1dd6a4;
+      --danger:#ff5a67;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --r:18px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--txt);
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(241,196,15,.12), transparent 60%),
-                  radial-gradient(900px 500px at 80% 30%, rgba(46,204,113,.08), transparent 55%),
-                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 20% 0%, rgba(255,210,74,.18), transparent 55%),
+        radial-gradient(900px 600px at 80% 10%, rgba(255,187,26,.14), transparent 55%),
+        linear-gradient(180deg, #070b14, var(--bg));
+      padding:18px 14px 90px;
       min-height:100vh;
-      overflow-x:hidden;
     }
+    .wrap{max-width:1200px;margin:0 auto}
 
-    /* ===== Layout ===== */
-    .wrap{max-width:1180px;margin:0 auto;padding:22px}
     .top{
-      display:flex;align-items:center;justify-content:space-between;gap:14px;
-      padding:14px 16px;border:1px solid var(--bd);border-radius:18px;background:rgba(0,0,0,.22);
-      backdrop-filter: blur(10px);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line); box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
     }
     .brand{display:flex;align-items:center;gap:12px;min-width:0}
-    .brand .logo{
-      width:46px;height:46px;border-radius:14px;overflow:hidden;
-      border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);
+    .logo{
+      width:46px;height:46px;border-radius:16px;overflow:hidden;
+      background:rgba(255,255,255,.06);border:1px solid var(--line);
       display:flex;align-items:center;justify-content:center;
     }
-    .brand .logo img{width:100%;height:100%;object-fit:cover}
-    .brand h1{font-size:16px;margin:0;line-height:1.2}
-    .brand p{margin:0;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:520px}
+    .logo img{width:100%;height:100%;object-fit:cover}
+    .brand h1{margin:0;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
 
-    .row{display:flex;align-items:center;gap:10px}
     .btn{
-      cursor:pointer;border:1px solid rgba(255,255,255,.14);
+      border:none;cursor:pointer;
+      padding:10px 12px;border-radius:14px;
       background:rgba(255,255,255,.06);
-      color:var(--txt);
-      padding:10px 12px;border-radius:12px;
-      font-weight:650;font-size:13px;
+      border:1px solid var(--line);
+      color:var(--text);
+      font-weight:800;
       display:inline-flex;align-items:center;gap:8px;
     }
-    .btn:hover{background:rgba(255,255,255,.09)}
-    .btn.y{background:rgba(241,196,15,.95);color:#101010;border-color:rgba(241,196,15,.55)}
-    .btn.y:hover{background:rgba(241,196,15,1)}
-    .btn.small{padding:8px 10px;font-size:12px;border-radius:10px}
+    .btn.y{background:linear-gradient(135deg,var(--y),var(--y2)); color:#201400; border-color:rgba(0,0,0,.08)}
+    .btn.ghost{background:transparent}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn.small{padding:8px 10px;border-radius:12px;font-size:12px}
 
-    .tabs{
-      display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+    .card{
+      border-radius:22px;padding:16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
     }
+    .h{margin:0 0 10px;font-size:14px}
+    .sub{color:var(--muted);font-size:12px;margin:0 0 12px}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .field{flex:1;min-width:190px}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    input,select{
+      width:100%;
+      padding:11px 12px;border-radius:14px;
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      color:var(--text);
+      outline:none;
+    }
+    input:focus,select:focus{border-color:rgba(255,210,74,.55)}
+
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
     .tab{
+      padding:10px 12px;border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);font-weight:900;
       cursor:pointer;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      color:var(--txt);
-      padding:8px 12px;border-radius:999px;
-      font-weight:750;font-size:12px;
     }
-    .tab.active{
-      background:rgba(241,196,15,.18);
-      border-color:rgba(241,196,15,.45);
-    }
+    .tab.active{background:rgba(255,210,74,.18); color:var(--text); border-color:rgba(255,210,74,.45)}
 
-    .listWrap{
-      margin-top:14px;
-      border:1px solid var(--bd);
-      border-radius:18px;
-      background:rgba(0,0,0,.22);
-      backdrop-filter: blur(10px);
-      padding:14px;
+    .toolbar{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      margin:12px 0 0;
     }
-    .listTop{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-    .ttl{font-weight:850;font-size:14px}
-    .meta{color:var(--muted);font-size:12px}
-    .link{color:var(--y);text-decoration:none}
-    .link:hover{text-decoration:underline}
+    .toolbar input{max-width:360px}
 
-    .items{
+    /* GRID 4 */
+    .grid4{
       display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap:12px;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;margin-top:12px;
     }
-    @media (max-width: 1100px){ .items{grid-template-columns: repeat(3, 1fr)} }
-    @media (max-width: 820px){ .items{grid-template-columns: repeat(2, 1fr)} }
-    @media (max-width: 520px){ .items{grid-template-columns: 1fr} }
-
     .item{
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
-      border-radius:16px;
-      padding:12px;
-      min-width:0;
+      border-radius:18px;padding:12px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      display:flex;flex-direction:column;gap:10px;
+      min-height:160px;
     }
-
+    .itemTop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .ttl{font-weight:900;line-height:1.15}
+    .meta{color:var(--muted);font-size:12px}
     .pill{
       display:inline-flex;align-items:center;gap:6px;
-      padding:4px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.15);
-      font-size:12px;
-      color:var(--txt);
+      padding:6px 9px;border-radius:999px;
+      font-weight:900;font-size:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
     }
-    .pill.ok{background:rgba(46,204,113,.18)}
-    .pill.warn{background:rgba(241,196,15,.18)}
-    .pill.bad{background:rgba(231,76,60,.18)}
-
-    .empty{
-      opacity:.75;
-      padding:14px;
-      border:1px dashed rgba(255,255,255,.12);
+    .pill.ok{background:rgba(29,214,164,.14); border-color:rgba(29,214,164,.35)}
+    .pill.off{opacity:.65}
+    .menuWrap{position:relative}
+    .kebab{
+      width:38px;height:38px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      cursor:pointer;
+      font-weight:900;
+    }
+    .menu{
+      position:absolute;right:0;top:44px;z-index:20;
+      min-width:200px;
       border-radius:14px;
+      border:1px solid var(--line);
+      background:#0b1220;
+      box-shadow:0 20px 60px rgba(0,0,0,.55);
+      overflow:hidden;
+      display:none;
     }
+    .menu button{
+      width:100%;
+      text-align:left;
+      padding:10px 12px;
+      border:none;
+      background:transparent;
+      color:var(--text);
+      cursor:pointer;
+      font-weight:800;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .menu button:hover{background:rgba(255,255,255,.06)}
+    .menu button.danger{color:#ff7b86}
 
-    /* ===== Aprovação ===== */
-    .aprovList{display:flex;flex-direction:column;gap:10px}
-    .aprovItem{
-      display:flex;justify-content:space-between;gap:12px;align-items:flex-start;
-      padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(0,0,0,.18)
+    .msg{
+      margin-top:12px;padding:12px;border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.20);
+      color:var(--muted);
+      font-size:13px;
     }
+    .msg.err{border-color:rgba(255,90,103,.45); color:#ffd0d5}
+    .msg.ok{border-color:rgba(29,214,164,.40); color:#c9fff0}
 
-    /* ===== Login (central + logo grande) ===== */
-    #login{min-height:100vh}
-    .loginWrap{
-      min-height:100vh;width:100%;
-      display:flex;flex-direction:column;
-      align-items:center;justify-content:center;
-      gap:18px;padding:28px;
-    }
+    /* LOGIN */
+    #login{min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .loginWrap{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px}
     .loginHeroLogo img{
       width:190px;max-width:70vw;height:auto;display:block;
       filter:drop-shadow(0 10px 25px rgba(0,0,0,.35));
     }
     .loginCard{
       width:min(420px,92vw);
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:18px 18px 16px;
-      backdrop-filter: blur(10px);
-    }
-    .loginCard h2{margin:0 0 6px}
-    .loginCard p{margin:0 0 12px;color:var(--muted);font-size:12px}
-    .loginForm{margin-top:10px;text-align:left}
-    .loginForm label{font-size:12px;color:var(--muted)}
-    input{
-      width:100%;
+      border-radius:24px;
+      padding:20px;
       background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:12px;
-      padding:10px 12px;
-      color:var(--txt);
-      outline:none;
-      font-size:13px;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
+      text-align:center;
     }
+    .loginCard h2{margin:8px 0 0}
+    .loginCard p{margin:6px 0 14px;color:var(--muted);font-size:13px}
+    .loginForm{text-align:left;margin-top:8px}
     .sp10{height:10px}
     .loginActions{justify-content:center;margin-top:14px;gap:10px}
     .btn.gIcon{
@@ -178,102 +204,296 @@
       display:flex;align-items:center;justify-content:center
     }
     .gMark{font-weight:900;font-size:18px;line-height:1;letter-spacing:-1px}
-    .msg{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);font-size:13px}
-    .msg.err{border-color:rgba(231,76,60,.35)}
 
-    /* ===== Modal bonitinho ===== */
+    /* Cadastros (aprovação) */
+    .cadTop{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      margin-top:12px;
+    }
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      font-weight:900;font-size:12px;
+      background:rgba(255,255,255,.06);
+    }
+    .badge.ok{background:rgba(29,214,164,.14);border-color:rgba(29,214,164,.35)}
+    .badge.bad{background:rgba(255,90,103,.12);border-color:rgba(255,90,103,.28)}
+    .badge.warn{background:rgba(255,210,74,.12);border-color:rgba(255,210,74,.28)}
+
+    #cadList{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .cadRow{
+      display:flex;gap:12px;justify-content:space-between;align-items:flex-start;
+      padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(0,0,0,.18)
+    }
+    .cadTitle{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+    .cadMeta{display:flex;flex-wrap:wrap;gap:8px;opacity:.9;font-size:13px}
+    .dot{opacity:.6}
+    .link{color:#ffd24a;text-decoration:none}
+    .link:hover{text-decoration:underline}
+    .err{color:#ff8c96}
+    .muted{opacity:.8}
+
+    @media (max-width:1050px){ .grid4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media (max-width:720px){
+      .grid2{grid-template-columns:1fr}
+      .grid4{grid-template-columns:1fr}
+    }
+
+    /* ===== MODAL EDITAR (bonitinho) ===== */
     .modalBack{
-      position:fixed;inset:0;
-      background:rgba(0,0,0,.55);
+      position:fixed; inset:0; z-index:9999;
+      background:rgba(0,0,0,.60);
       display:none;
-      align-items:center;
-      justify-content:center;
+      align-items:center; justify-content:center;
       padding:18px;
-      z-index:9999;
     }
     .modal{
-      width:min(720px, 96vw);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:18px;
-      background:rgba(0,0,0,.75);
-      backdrop-filter: blur(10px);
+      width:min(860px, 96vw);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow:0 25px 80px rgba(0,0,0,.55);
+      backdrop-filter: blur(14px);
       overflow:hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,.45);
     }
     .modalHead{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
       padding:14px 16px;
       border-bottom:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
+      background:rgba(0,0,0,.18);
     }
-    .modalHead .title{font-weight:900}
-    .modalHead .sub{font-size:12px;color:var(--muted);margin-top:2px}
-    .x{
-      cursor:pointer;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      color:var(--txt);
-      width:38px;height:38px;border-radius:12px;
+    .modalTitle{font-weight:950;margin:0}
+    .modalSub{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .xbtn{
+      width:40px;height:40px;border-radius:14px;
       display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      cursor:pointer;
       font-weight:900;
+      color:var(--text);
     }
-    .x:hover{background:rgba(255,255,255,.09)}
-    .modalBody{padding:14px 16px}
+    .xbtn:hover{background:rgba(255,255,255,.10)}
+    .modalBody{padding:16px}
     .formGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:12px;
     }
-    @media (max-width: 760px){
-      .formGrid{grid-template-columns:1fr}
+    .span2{grid-column:1/-1}
+    .hint{
+      font-size:12px;color:var(--muted);
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      margin-bottom:12px;
     }
-    .field{display:flex;flex-direction:column;gap:6px;min-width:0}
-    .field label{font-size:12px;color:var(--muted)}
-    .field input, .field select{
-      width:100%;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:12px;
-      padding:10px 12px;
-      color:var(--txt);
-      outline:none;
-      font-size:13px;
-    }
-    .row2{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    .toggle{
-      display:flex;align-items:center;gap:10px;
-      padding:10px 12px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.05);
-      border-radius:12px;
-    }
-    .toggle input{width:18px;height:18px}
-    .preview{
-      display:flex;gap:12px;align-items:center;
-      padding:10px 12px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.05);
-      border-radius:12px;
+    .previewRow{
+      display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
     }
     .prevImg{
-      width:54px;height:54px;border-radius:14px;
-      overflow:hidden;border:1px solid rgba(255,255,255,.12);
+      width:56px;height:56px;border-radius:16px;overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
       display:flex;align-items:center;justify-content:center;
-      flex:0 0 auto;
     }
     .prevImg img{width:100%;height:100%;object-fit:cover}
     .modalFoot{
       display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;
       padding:14px 16px;
       border-top:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
+      background:rgba(0,0,0,.16);
     }
-    .hint{font-size:12px;color:var(--muted)}
   </style>
 </head>
 
 <body>
+
+<div class="wrap" id="app" style="display:none">
+
+  <div class="top">
+    <div class="brand">
+      <div class="logo"><img src="../logo.png" onerror="this.style.display='none';this.parentElement.textContent='ADM'"></div>
+      <div style="min-width:0">
+        <h1>Admin Alfa</h1>
+        <p>Gerencie clientes, categorias e produtos.</p>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn ghost" id="btnReload">🔄 Recarregar</button>
+      <button class="btn y" id="btnSair">🚪 Sair</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="clientes">Clientes</button>
+    <button class="tab" data-tab="categorias">Categorias</button>
+    <button class="tab" data-tab="produtos">Produtos</button>
+    <button class="tab" data-tab="cadastros">Cadastros</button>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 class="h">Criar Cliente</h3>
+      <p class="sub">Cria a loja + (opcional) cria login do cliente no Supabase Auth (via API).</p>
+
+      <div class="row">
+        <div class="field">
+          <label>Nome</label>
+          <input id="c_nome" placeholder="Ex: Padaria do Zé" />
+        </div>
+        <div class="field">
+          <label>Slug</label>
+          <input id="c_slug" placeholder="ex: padaria-do-ze" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>WhatsApp</label>
+          <input id="c_whats" placeholder="6299..." />
+        </div>
+        <div class="field">
+          <label>Tipo de negócio</label>
+          <select id="c_tipo">
+            <option value="">Selecione…</option>
+            <option>Restaurante</option>
+            <option>Mercado</option>
+            <option>Padaria</option>
+            <option>Lanchonete</option>
+            <option>Farmácia</option>
+            <option>Petshop</option>
+            <option>Pousada</option>
+            <option>Serviços</option>
+            <option>Outro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Logo URL (opcional)</label>
+          <input id="c_logo" placeholder="https://.../logo.png" />
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="c_ativo">
+            <option value="true">Ativo</option>
+            <option value="false">Inativo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Email do cliente (opcional)</label>
+          <input id="c_email" placeholder="cliente@dominio.com" />
+        </div>
+        <div class="field">
+          <label>Senha do cliente (opcional)</label>
+          <input id="c_senha" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <button class="btn y" id="btnCriarCliente">➕ Criar cliente</button>
+      </div>
+
+      <div id="msg" class="msg" style="display:none"></div>
+    </div>
+
+    <div class="card">
+      <h3 class="h">Cadastros</h3>
+      <p class="sub">Selecione um cliente e cadastre categorias/produtos com segurança.</p>
+
+      <div class="row">
+        <div class="field">
+          <label>Cliente selecionado</label>
+          <select id="selCliente"></select>
+        </div>
+        <div class="field">
+          <label>Categoria (para produto)</label>
+          <select id="selCategoria"></select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Nova categoria</label>
+          <input id="cat_nome" placeholder="Ex: Bebidas" />
+        </div>
+        <div class="field">
+          <label>Ordem</label>
+          <input id="cat_ordem" type="number" value="0" />
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn y" id="btnCriarCategoria">📁 Criar categoria</button>
+      </div>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0">
+
+      <div class="row">
+        <div class="field">
+          <label>Produto</label>
+          <input id="p_nome" placeholder="Ex: Pão de queijo" />
+        </div>
+        <div class="field">
+          <label>Preço</label>
+          <input id="p_preco" type="number" step="0.01" value="0" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Descrição</label>
+          <input id="p_desc" placeholder="opcional..." />
+        </div>
+        <div class="field">
+          <label>Imagem URL (opcional)</label>
+          <input id="p_img" placeholder="https://.../foto.jpg" />
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn y" id="btnCriarProduto">🧾 Criar produto</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="toolbar">
+      <div>
+        <h3 class="h" id="listTitle">Clientes</h3>
+        <p class="sub" id="listSub">Grid 4 colunas</p>
+      </div>
+      <input id="search" placeholder="Buscar..." />
+    </div>
+
+    <!-- Topo Cadastros -->
+    <div id="cadBox" style="display:none">
+      <div class="cadTop">
+        <div class="row" style="align-items:center">
+          <span id="cadAtivoBadge" class="badge warn">Carregando…</span>
+          <button class="btn" id="btnToggleCadastro">Ativar/Desativar</button>
+          <span class="meta">Pendentes: <strong id="cadPend">0</strong></span>
+        </div>
+        <div class="meta">Obs: se aparecer erro aqui, é policy/permissão do Supabase para admin.</div>
+      </div>
+      <div id="cadList"></div>
+    </div>
+
+    <div class="grid4" id="list"></div>
+  </div>
+
+</div>
 
 <!-- LOGIN -->
 <div id="login">
@@ -281,7 +501,7 @@
     <div class="loginHeroLogo">
       <img src="../logo.png" alt="Logo"
            onerror="this.style.display='none';document.getElementById('loginHeroFallback').style.display='block';" />
-      <div id="loginHeroFallback" style="display:none;font-weight:800;font-size:28px;letter-spacing:.5px;">Admin Alfa</div>
+      <div id="loginHeroFallback" style="display:none;font-weight:900;font-size:28px;letter-spacing:.5px;">Admin Alfa</div>
     </div>
 
     <div class="loginCard">
@@ -308,63 +528,24 @@
   </div>
 </div>
 
-<!-- APP -->
-<div class="wrap" id="app" style="display:none">
-
-  <div class="top">
-    <div class="brand">
-      <div class="logo">
-        <img src="../logo.png" onerror="this.style.display='none';this.parentElement.textContent='ADM'">
-      </div>
-      <div style="min-width:0">
-        <h1>Admin Alfa</h1>
-        <p>Gerencie clientes e aprovações.</p>
-      </div>
-    </div>
-
-    <div class="row">
-      <button class="btn" id="btnReload">🔄 Recarregar</button>
-      <button class="btn y" id="btnLogout">🚪 Sair</button>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" data-tab="clientes">Clientes</button>
-    <button class="tab" data-tab="cadastros">Cadastros</button>
-  </div>
-
-  <div class="listWrap">
-    <div class="listTop">
-      <div>
-        <div class="ttl" id="listTitle">Clientes</div>
-        <div class="meta" id="listSubtitle">Editar dados + gerar link de senha.</div>
-      </div>
-      <input id="search" placeholder="Buscar..." style="min-width:240px">
-    </div>
-
-    <div class="items" id="list"></div>
-  </div>
-
-</div>
-
 <!-- MODAL EDITAR CLIENTE -->
 <div class="modalBack" id="modalBack" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal" role="dialog" aria-modal="true">
     <div class="modalHead">
       <div>
-        <div class="title" id="mTitle">Editar cliente</div>
-        <div class="sub" id="mSub">Atualize os dados do negócio.</div>
+        <div class="modalTitle" id="mTitle">Editar cliente</div>
+        <div class="modalSub" id="mSub">Atualize os dados do negócio.</div>
       </div>
-      <button class="x" id="btnCloseModal" title="Fechar">✕</button>
+      <button class="xbtn" id="btnCloseModal" title="Fechar">✕</button>
     </div>
 
     <div class="modalBody">
-      <div class="hint" style="margin-bottom:10px;">
-        ⚠️ Senha não é visível. Para acesso use <strong>Link de senha</strong>.
+      <div class="hint">
+        🔒 <strong>Senha não é visível</strong> (nem pro Admin). Para o cliente entrar, use <strong>Link de senha</strong> (recovery).
       </div>
 
       <div class="formGrid">
-        <div class="field" style="grid-column:1/-1">
+        <div class="field span2">
           <label>Slug (não edita)</label>
           <input id="m_slug" disabled />
         </div>
@@ -399,32 +580,31 @@
           <input id="m_tipo_negocio" placeholder="Ex: mercado, pousada..." />
         </div>
 
-        <div class="field" style="grid-column:1/-1">
+        <div class="field span2">
           <label>Endereço</label>
           <input id="m_endereco" placeholder="Rua, número, bairro..." />
         </div>
 
-        <div class="field" style="grid-column:1/-1">
+        <div class="field span2">
           <label>Logo URL (opcional)</label>
           <input id="m_logo_url" placeholder="https://.../logo.png" />
         </div>
 
-        <div class="field" style="grid-column:1/-1">
-          <div class="row2">
-            <div class="toggle">
-              <input type="checkbox" id="m_ativo" />
-              <label for="m_ativo" style="margin:0;color:var(--txt)">Ativo (publicado)</label>
+        <div class="field span2">
+          <div class="previewRow">
+            <div class="prevImg"><img id="m_logo_prev" alt="preview" style="display:none"/></div>
+            <div style="min-width:220px">
+              <div class="ttl" style="font-size:13px;margin-bottom:2px">Preview</div>
+              <div class="meta" id="m_logo_text">Sem logo</div>
             </div>
 
-            <div class="preview" style="flex:1;min-width:220px">
-              <div class="prevImg"><img id="m_logo_prev" alt="logo preview" /></div>
-              <div style="min-width:0">
-                <div class="ttl" style="font-size:13px;margin-bottom:2px">Preview</div>
-                <div class="meta" id="m_logo_text">Sem logo</div>
-              </div>
+            <div class="row" style="margin-left:auto">
+              <label style="display:flex;align-items:center;gap:8px;margin:0;color:var(--text)">
+                <input type="checkbox" id="m_ativo" style="width:18px;height:18px"/>
+                Ativo (publicado)
+              </label>
+              <button class="btn y small" id="btnLinkSenha">🔑 Link de senha</button>
             </div>
-
-            <button class="btn small" id="btnLinkSenhaModal">🔑 Link de senha</button>
           </div>
         </div>
       </div>
@@ -433,240 +613,629 @@
     </div>
 
     <div class="modalFoot">
-      <button class="btn" id="btnCancel">Cancelar</button>
-      <button class="btn y" id="btnSave">Salvar</button>
+      <button class="btn" id="btnCancelModal">Cancelar</button>
+      <button class="btn y" id="btnSaveModal">Salvar</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ===== CONFIG (seus dados) =====
+  // ====== CONFIG ======
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc25teHNweXl3d291aGNkd2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MzI3NzIsImV4cCI6MjA4MzUwODc3Mn0.dxj35rJ_g_952_VvwV4mjFraB1b0BLdsxHw_wYiQNQI";
+  const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
 
-  const API_BASE = "https://cafeteria-gamma-orpin.vercel.app/api";
+  // ✅ Mantém o que funciona: endpoints separados (/clientes, /categorias, /produtos)
+  const API_BASE = "https://cafeteria-gamma-orpin.vercel.app/api/admin";
 
+  const ALFA_EMAIL = "playmomentsstudios@gmail.com";
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  let session = null;
 
+  // ====== STATE ======
+  let session = null;
   let tab = "clientes";
   let clientes = [];
-  let cadastros = [];
+  let categorias = [];
+  let produtos = [];
+
+  // cadastros
+  let cadRows = [];
+  let cadastroAtivo = true;
+
+  // modal
   let editingSlug = null;
 
-  function el(id){ return document.getElementById(id); }
-  function show(id){ el(id).style.display="block"; }
-  function hide(id){ el(id).style.display="none"; }
+  // ====== UI HELPERS ======
+  const el = (id)=>document.getElementById(id);
+  const show = (id)=>el(id).style.display="block";
+  const hide = (id)=>el(id).style.display="none";
 
   function escapeHtml(str){
-    return String(str ?? "")
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
+    return String(str ?? "").replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
   }
 
-  async function apiFetch(path, options = {}){
+  function msg(text, type=""){
+    const box = el("msg");
+    box.style.display = "block";
+    box.className = "msg " + (type||"");
+    box.textContent = text;
+    setTimeout(()=>{ box.style.display="none"; }, 4500);
+  }
+
+  function loginMsg(text){
+    const box = el("loginMsg");
+    box.style.display = "block";
+    box.textContent = text;
+  }
+
+  function modalMsg(text){
+    const box = el("modalMsg");
+    if(!text){
+      box.style.display="none";
+      box.textContent="";
+      return;
+    }
+    box.style.display="block";
+    box.textContent=text;
+  }
+
+  function slugify(s){
+    return String(s||"")
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+  }
+
+  function money(v){
+    return Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  }
+
+  function openMenu(id){
+    document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
+    const m = document.getElementById(id);
+    if (m) m.style.display = "block";
+  }
+  window.addEventListener("click", (e)=>{
+    if (!e.target.closest(".menuWrap")) document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
+  });
+
+  // ====== AUTH HELPERS ======
+  function isAlfa(){
+    const email = session?.user?.email || "";
+    return String(email).toLowerCase().trim() === ALFA_EMAIL.toLowerCase();
+  }
+
+  async function requireAlfa(){
+    if(!session) return false;
+    if(isAlfa()) return true;
+    try{ await sb.auth.signOut(); }catch(_e){}
+    session = null;
+    el("app").style.display="none";
+    show("login");
+    loginMsg("Acesso negado: este painel é apenas para o Admin Alfa.");
+    return false;
+  }
+
+  // ====== API CALL (Vercel) ======
+  async function api(path, method="GET", body=null){
     const token = session?.access_token;
     const headers = {
-      "Content-Type": "application/json",
-      ...(options.headers || {})
+      "Content-Type":"application/json",
+      "Authorization": "Bearer " + token
     };
-    if (token) headers["Authorization"] = "Bearer " + token;
+    const opts = { method, headers };
+    if (body) opts.body = JSON.stringify(body);
 
-    const res = await fetch(API_BASE + path, { ...options, headers });
-    const json = await res.json().catch(()=> ({}));
-    if (!res.ok) throw new Error(json.error || ("HTTP " + res.status));
-    return json;
+    const r = await fetch(API_BASE + path, opts);
+    const j = await r.json().catch(()=> ({}));
+    if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+    return j;
   }
 
-  // ===== AUTH =====
-  async function signInEmail(){
-    const email = el("email").value.trim();
-    const password = el("senha").value;
-    const box = el("loginMsg");
-    box.style.display="none";
+  // ====== LOAD (API) ======
+  async function loadAllApi(){
+    const [c1,c2,c3] = await Promise.all([
+      api("/clientes","GET"),
+      api("/categorias","GET"),
+      api("/produtos","GET")
+    ]);
+    clientes = c1.data || [];
+    categorias = c2.data || [];
+    produtos = c3.data || [];
 
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if(error){
-      box.style.display="block";
-      box.textContent = error.message;
-      return;
-    }
-    session = data.session;
-    await afterLogin();
+    fillClienteSelect();
+    fillCategoriaSelect();
   }
 
-  async function signInGoogle(){
-    const box = el("loginMsg");
-    box.style.display="none";
+  function fillClienteSelect(){
+    const s = el("selCliente");
+    s.innerHTML = clientes
+      .map(c=>`<option value="${escapeHtml(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`)
+      .join("");
+  }
 
-    const { error } = await sb.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.href }
+  function fillCategoriaSelect(){
+    const cliente_slug = el("selCliente").value;
+    const s = el("selCategoria");
+    const cats = categorias.filter(x=>x.cliente_slug===cliente_slug);
+    s.innerHTML = cats.map(c=>`<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join("");
+  }
+
+  el("selCliente").addEventListener("change", ()=>{
+    fillCategoriaSelect();
+    if (tab !== "clientes") renderList();
+  });
+
+  // ====== TABS ======
+  document.querySelectorAll(".tab").forEach(b=>{
+    b.addEventListener("click", async ()=>{
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      tab = b.dataset.tab;
+      await renderList(true);
     });
-    if(error){
-      box.style.display="block";
-      box.textContent = error.message;
-    }
-  }
+  });
 
-  async function logout(){
-    await sb.auth.signOut();
-    session = null;
-    hide("app");
-    show("login");
-  }
+  el("search").addEventListener("input", ()=>renderList(false));
 
-  // ===== LOAD =====
-  async function loadAll(){
-    const data = await apiFetch("/admin/listar");
-    clientes = data.clientes || [];
-    cadastros = data.cadastros || [];
-    renderList();
-  }
+  // ====== RENDER LIST ======
+  async function renderList(forceReloadCadastros){
+    const q = (el("search").value||"").trim().toLowerCase();
+    const listEl = el("list");
+    const cadBox = el("cadBox");
 
-  // ===== RENDER =====
-  function renderClientes(q){
-    el("listTitle").textContent = "Clientes";
-    el("listSubtitle").textContent = "Editar dados + gerar link de senha.";
+    if(tab === "cadastros"){
+      el("listTitle").textContent = "Cadastros (aprovação)";
+      el("listSub").textContent = "Aprovar/Rejeitar cadastros públicos + ativar/desativar landing.";
+      listEl.style.display="none";
+      cadBox.style.display="block";
 
-    let list = clientes.slice();
-    if (q) list = list.filter(x =>
-      (x.nome||"").toLowerCase().includes(q) ||
-      (x.slug||"").toLowerCase().includes(q) ||
-      (x.email||"").toLowerCase().includes(q)
-    );
+      if(forceReloadCadastros) await loadCadastros();
 
-    if(!list.length){
-      el("list").innerHTML = `<div class="empty">Nenhum cliente encontrado.</div>`;
+      const filtered = cadRows.filter(r=>{
+        if(!q) return true;
+        const blob = [r.nome_negocio,r.cidade,r.categoria,r.whatsapp,r.email,r.instagram,r.endereco,r.mensagem,r.status]
+          .filter(Boolean).join(" ").toLowerCase();
+        return blob.includes(q);
+      });
+
+      renderCadastros(filtered);
       return;
     }
 
-    el("list").innerHTML = list.map(c=>{
-      const ativoPill = c.ativo ? `<span class="pill ok">Ativo</span>` : `<span class="pill bad">Inativo</span>`;
-      const email = c.email ? escapeHtml(c.email) : "—";
+    cadBox.style.display="none";
+    listEl.style.display="grid";
+
+    if (tab==="clientes"){
+      el("listTitle").textContent = "Clientes";
+      el("listSub").textContent = "Ações: ver publicado, ativar/desativar, editar, link de senha, excluir.";
+
+      let list = clientes.slice();
+      if (q) list = list.filter(x=>
+        (x.nome||"").toLowerCase().includes(q) ||
+        (x.slug||"").toLowerCase().includes(q) ||
+        (x.email||"").toLowerCase().includes(q)
+      );
+
+      listEl.innerHTML = list.map(c=>{
+        const mid = "m_cli_"+c.slug;
+        return `
+          <div class="item">
+            <div class="itemTop">
+              <div>
+                <div class="ttl">${escapeHtml(c.nome||"—")}</div>
+                <div class="meta">${escapeHtml(c.slug||"")}</div>
+                ${c.email ? `<div class="meta">Email: ${escapeHtml(c.email)}</div>` : `<div class="meta">Email: —</div>`}
+              </div>
+
+              <div class="menuWrap">
+                <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
+                <div class="menu" id="${mid}">
+                  <button onclick="verPublicado('${c.slug}')">🌐 Ver publicado</button>
+                  <button onclick="openEditModal('${c.slug}')">✏️ Editar</button>
+                  <button onclick="gerarLinkSenha('${escapeHtml(c.email||"")}')">🔑 Link de senha</button>
+                  <button onclick="toggleCliente('${c.slug}', ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
+                  <button class="danger" onclick="delCliente('${c.slug}')">🗑 Excluir</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row" style="justify-content:space-between;align-items:center">
+              <span class="pill ${c.ativo ? "ok":"off"}">${c.ativo ? "Ativo":"Inativo"}</span>
+              <span class="meta">${escapeHtml(c.tipo_negocio||"")}</span>
+            </div>
+            <div class="meta">Whats: ${escapeHtml(c.whatsapp||"—")}</div>
+          </div>
+        `;
+      }).join("");
+      return;
+    }
+
+    const cliente_slug = el("selCliente").value;
+
+    if (tab==="categorias"){
+      el("listTitle").textContent = "Categorias";
+      el("listSub").textContent = "Mostrando do cliente selecionado.";
+
+      let list = categorias.filter(x=>x.cliente_slug===cliente_slug);
+      if (q) list = list.filter(x=> (x.nome||"").toLowerCase().includes(q));
+
+      listEl.innerHTML = list.map(c=>{
+        const mid = "m_cat_"+c.id;
+        return `
+          <div class="item">
+            <div class="itemTop">
+              <div>
+                <div class="ttl">${escapeHtml(c.nome||"—")}</div>
+                <div class="meta">ordem: ${Number(c.ordem||0)}</div>
+              </div>
+              <div class="menuWrap">
+                <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
+                <div class="menu" id="${mid}">
+                  <button onclick="toggleCategoria(${c.id}, ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
+                  <button class="danger" onclick="delCategoria(${c.id})">🗑 Excluir</button>
+                </div>
+              </div>
+            </div>
+            <span class="pill ${c.ativo ? "ok":"off"}">${c.ativo ? "Ativo":"Inativo"}</span>
+          </div>
+        `;
+      }).join("");
+      return;
+    }
+
+    el("listTitle").textContent = "Produtos";
+    el("listSub").textContent = "Mostrando do cliente selecionado.";
+
+    let list = produtos.filter(x=>x.cliente_slug===cliente_slug);
+    if (q) list = list.filter(x=> (x.nome||"").toLowerCase().includes(q));
+
+    listEl.innerHTML = list.map(p=>{
+      const mid = "m_prod_"+p.id;
       return `
         <div class="item">
-          <div class="ttl">${escapeHtml(c.nome||"—")}</div>
-          <div class="meta">${escapeHtml(c.slug||"")} • ${escapeHtml(c.cidade||"")}</div>
+          <div class="itemTop">
+            <div>
+              <div class="ttl">${escapeHtml(p.nome||"—")}</div>
+              <div class="meta">${money(p.preco)}</div>
+            </div>
+            <div class="menuWrap">
+              <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
+              <div class="menu" id="${mid}">
+                <button onclick="toggleProduto(${p.id}, ${!p.ativo})">${p.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
+                <button class="danger" onclick="delProduto(${p.id})">🗑 Excluir</button>
+              </div>
+            </div>
+          </div>
+          <span class="pill ${p.ativo ? "ok":"off"}">${p.ativo ? "Ativo":"Inativo"}</span>
+          <div class="meta">${escapeHtml(p.descricao||"")}</div>
+        </div>
+      `;
+    }).join("");
+  }
 
-          <div class="meta" style="margin-top:8px">
-            ${ativoPill}
-            <span class="pill warn">${escapeHtml(c.tipo_negocio||c.tipo||"")}</span>
+  // ====== ACTIONS (API) ======
+  window.verPublicado = function(slug){
+    window.open("../?u=" + encodeURIComponent(slug), "_blank");
+  }
+
+  window.toggleCliente = async function(slug, ativo){
+    try{
+      await api("/clientes","PUT",{ slug, ativo });
+      await bootLoad();
+      msg("Cliente atualizado ✅","ok");
+    }catch(e){
+      msg("Erro ao atualizar cliente: " + e.message, "err");
+    }
+  }
+
+  window.delCliente = async function(slug){
+    if (!confirm("Excluir cliente e tudo dele?")) return;
+    try{
+      await api("/clientes?slug="+encodeURIComponent(slug),"DELETE");
+      await bootLoad();
+      msg("Cliente excluído ✅","ok");
+    }catch(e){
+      msg("Erro ao excluir cliente: " + e.message, "err");
+    }
+  }
+
+  window.toggleCategoria = async function(id, ativo){
+    try{
+      await api("/categorias","PUT",{ id, ativo });
+      await bootLoad();
+      msg("Categoria atualizada ✅","ok");
+    }catch(e){
+      msg("Erro ao atualizar categoria: " + e.message, "err");
+    }
+  }
+
+  window.delCategoria = async function(id){
+    if (!confirm("Excluir categoria (e produtos dela)?")) return;
+    try{
+      await api("/categorias?id="+encodeURIComponent(id),"DELETE");
+      await bootLoad();
+      msg("Categoria excluída ✅","ok");
+    }catch(e){
+      msg("Erro ao excluir categoria: " + e.message, "err");
+    }
+  }
+
+  window.toggleProduto = async function(id, ativo){
+    try{
+      await api("/produtos","PUT",{ id, ativo });
+      await bootLoad();
+      msg("Produto atualizado ✅","ok");
+    }catch(e){
+      msg("Erro ao atualizar produto: " + e.message, "err");
+    }
+  }
+
+  window.delProduto = async function(id){
+    if (!confirm("Excluir produto?")) return;
+    try{
+      await api("/produtos?id="+encodeURIComponent(id),"DELETE");
+      await bootLoad();
+      msg("Produto excluído ✅","ok");
+    }catch(e){
+      msg("Erro ao excluir produto: " + e.message, "err");
+    }
+  }
+
+  // ====== CREATE (API) ======
+  el("btnCriarCliente").addEventListener("click", async ()=>{
+    try{
+      const nome = el("c_nome").value.trim();
+      const slug = el("c_slug").value.trim() || slugify(nome);
+      const whatsapp = el("c_whats").value.trim();
+      const tipo_negocio = el("c_tipo").value.trim();
+      const logo_url = el("c_logo").value.trim();
+      const ativo = el("c_ativo").value === "true";
+
+      const email = el("c_email").value.trim();
+      const senha = el("c_senha").value.trim();
+
+      if(!nome) throw new Error("Preencha o nome.");
+      if(!slug) throw new Error("Slug inválido.");
+
+      const payload = { nome, slug, whatsapp, tipo_negocio, logo_url, ativo };
+      if (email && senha) { payload.email = email; payload.senha = senha; }
+
+      const r = await api("/clientes","POST",payload);
+      msg(r.warning ? r.warning : "Cliente criado ✅", r.warning ? "" : "ok");
+
+      el("c_nome").value = "";
+      el("c_slug").value = "";
+      el("c_whats").value = "";
+      el("c_tipo").value = "";
+      el("c_logo").value = "";
+      el("c_email").value = "";
+      el("c_senha").value = "";
+
+      await bootLoad();
+    }catch(e){
+      msg("Erro ao criar cliente: " + e.message, "err");
+    }
+  });
+
+  el("btnCriarCategoria").addEventListener("click", async ()=>{
+    try{
+      const cliente_slug = el("selCliente").value;
+      const nome = el("cat_nome").value.trim();
+      const ordem = Number(el("cat_ordem").value||0);
+      if(!cliente_slug) throw new Error("Selecione um cliente.");
+      if(!nome) throw new Error("Digite o nome da categoria.");
+      await api("/categorias","POST",{ cliente_slug, nome, ordem, ativo:true });
+      msg("Categoria criada ✅","ok");
+      el("cat_nome").value="";
+      await bootLoad();
+    }catch(e){
+      msg("Erro ao criar categoria: " + e.message, "err");
+    }
+  });
+
+  el("btnCriarProduto").addEventListener("click", async ()=>{
+    try{
+      const cliente_slug = el("selCliente").value;
+      const categoria_id = el("selCategoria").value;
+      const nome = el("p_nome").value.trim();
+      const preco = Number(el("p_preco").value||0);
+      const descricao = el("p_desc").value.trim();
+      const imagem_url = el("p_img").value.trim();
+
+      if(!cliente_slug) throw new Error("Selecione um cliente.");
+      if(!categoria_id) throw new Error("Selecione uma categoria.");
+      if(!nome) throw new Error("Digite o nome do produto.");
+
+      await api("/produtos","POST",{ cliente_slug, categoria_id, nome, preco, descricao, imagem_url, ativo:true });
+      msg("Produto criado ✅","ok");
+
+      el("p_nome").value="";
+      el("p_preco").value="0";
+      el("p_desc").value="";
+      el("p_img").value="";
+      await bootLoad();
+    }catch(e){
+      msg("Erro ao criar produto: " + e.message, "err");
+    }
+  });
+
+  // ====== CADASTROS (Supabase direto - depende de policy) ======
+  async function getCadastroAtivo(){
+    const { data, error } = await sb.from("portal_config")
+      .select("valor")
+      .eq("chave","cadastro_publico_ativo")
+      .maybeSingle();
+    if(error) return true;
+    return String(data?.valor || "true") === "true";
+  }
+
+  async function setCadastroAtivo(v){
+    const { error } = await sb.from("portal_config")
+      .upsert({ chave:"cadastro_publico_ativo", valor: v ? "true" : "false" }, { onConflict:"chave" });
+    if(error) throw error;
+  }
+
+  async function loadCadastros(){
+    const cadList = el("cadList");
+    cadList.innerHTML = `<div class="muted">Carregando…</div>`;
+
+    try{
+      cadastroAtivo = await getCadastroAtivo();
+      el("cadAtivoBadge").textContent = cadastroAtivo ? "Cadastro público ATIVO ✅" : "Cadastro público DESATIVADO ⛔";
+      el("cadAtivoBadge").className = "badge " + (cadastroAtivo ? "ok" : "bad");
+
+      const { data, error } = await sb.from("cadastros_clientes").select("*").order("created_at",{ascending:false});
+      if(error) throw error;
+
+      cadRows = data || [];
+      const pend = cadRows.filter(r => String(r.status||"").toLowerCase()==="pendente").length;
+      el("cadPend").textContent = String(pend);
+
+    }catch(e){
+      cadRows = [];
+      el("cadPend").textContent = "0";
+      cadList.innerHTML = `
+        <div class="err">
+          Erro ao carregar cadastros: ${escapeHtml(e?.message || e)}<br><br>
+          <span class="muted">
+            Isso indica policy/RLS bloqueando o admin no Supabase (cadastros_clientes / portal_config).
+          </span>
+        </div>
+      `;
+    }
+  }
+
+  function renderCadastros(rows){
+    const cadList = el("cadList");
+
+    if(!rows.length){
+      cadList.innerHTML = `<div class="muted" style="margin-top:12px">Nenhum cadastro encontrado.</div>`;
+      return;
+    }
+
+    cadList.innerHTML = rows.map(r=>{
+      const st = String(r.status || "pendente").toLowerCase();
+      const badge =
+        st === "pendente" ? `<span class="badge warn">Pendente</span>` :
+        st === "aprovado" ? `<span class="badge ok">Aprovado</span>` :
+        `<span class="badge bad">Rejeitado</span>`;
+
+      const when = r.created_at ? new Date(r.created_at).toLocaleString() : "";
+      const wpp = String(r.whatsapp||"").replace(/\D/g,"");
+      const wppLink = wpp ? `<a class="link" target="_blank" rel="noreferrer" href="https://wa.me/${wpp}">WhatsApp</a>` : "";
+
+      return `
+        <div class="cadRow">
+          <div>
+            <div class="cadTitle">
+              <strong>${escapeHtml(r.nome_negocio||"—")}</strong>
+              ${badge}
+            </div>
+            <div class="cadMeta">
+              <span>${escapeHtml(r.cidade||"—")}</span><span class="dot">•</span>
+              <span>${escapeHtml(r.categoria||"—")}</span><span class="dot">•</span>
+              <span>${escapeHtml(r.whatsapp||"—")}</span>
+              ${wppLink ? `<span class="dot">•</span>${wppLink}` : ``}
+            </div>
+            <div class="meta" style="margin-top:6px">
+              ${escapeHtml(when)}
+              ${r.email ? ` <span class="dot">•</span> ${escapeHtml(r.email)}` : ``}
+              ${r.instagram ? ` <span class="dot">•</span> @${escapeHtml(r.instagram)}` : ``}
+            </div>
+            ${r.endereco ? `<div class="meta" style="margin-top:6px"><strong>Endereço:</strong> ${escapeHtml(r.endereco)}</div>` : ``}
+            ${r.mensagem ? `<div class="meta" style="margin-top:6px"><strong>Mensagem:</strong> ${escapeHtml(r.mensagem)}</div>` : ``}
           </div>
 
-          <div class="meta" style="margin-top:8px">Email: <strong>${email}</strong></div>
-
-          <div class="row" style="margin-top:10px;flex-wrap:wrap">
-            <button class="btn small" onclick="openEdit('${escapeHtml(c.slug)}')">✏️ Editar</button>
-            <button class="btn y small" onclick="resetSenhaCliente('${escapeHtml(c.email||"")}')">🔑 Link de senha</button>
+          <div class="row" style="gap:10px;justify-content:flex-end">
+            ${ st === "pendente"
+              ? `
+                <button class="btn y" onclick="aprovarCadastro('${r.id}')">Aprovar</button>
+                <button class="btn" onclick="rejeitarCadastro('${r.id}')">Rejeitar</button>
+              `
+              : `<button class="btn" onclick="alert('Status: ${escapeHtml(st)}')">OK</button>`
+            }
           </div>
         </div>
       `;
     }).join("");
   }
 
-  function renderCadastros(q){
-    el("listTitle").textContent = "Cadastros (aprovação)";
-    el("listSubtitle").textContent = "Aprovar cria usuário Auth e gera link de senha.";
-
-    let rows = cadastros.slice();
-    if(q){
-      rows = rows.filter(r=>{
-        const blob = [r.nome_negocio,r.cidade,r.categoria,r.whatsapp,r.email,r.instagram,r.endereco,r.mensagem,r.status]
-          .filter(Boolean).join(" ").toLowerCase();
-        return blob.includes(q);
-      });
-    }
-
-    if(!rows.length){
-      el("list").innerHTML = `<div class="empty">Nenhum cadastro encontrado.</div>`;
-      return;
-    }
-
-    el("list").innerHTML = `<div class="aprovList">` + rows.map(r=>{
-      const st = String(r.status||"pendente").toLowerCase();
-      const badge = st==="pendente" ? `<span class="pill warn">Pendente</span>` : st==="aprovado" ? `<span class="pill ok">Aprovado</span>` : `<span class="pill bad">Rejeitado</span>`;
-      const when = r.created_at ? new Date(r.created_at).toLocaleString() : "";
-      return `
-        <div class="aprovItem">
-          <div>
-            <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap">
-              <div class="ttl">${escapeHtml(r.nome_negocio||"—")}</div>
-              ${badge}
-            </div>
-            <div class="meta">${escapeHtml(r.cidade||"—")} • ${escapeHtml(r.categoria||"—")} • ${escapeHtml(r.whatsapp||"—")}</div>
-            <div class="meta">${when}${r.email ? " • "+escapeHtml(r.email) : ""}${r.instagram ? " • @"+escapeHtml(r.instagram) : ""}</div>
-            ${r.endereco ? `<div class="meta"><strong>Endereço:</strong> ${escapeHtml(r.endereco)}</div>` : ``}
-            ${r.mensagem ? `<div class="meta"><strong>Mensagem:</strong> ${escapeHtml(r.mensagem)}</div>` : ``}
-          </div>
-
-          <div class="row" style="gap:10px;flex-wrap:wrap;justify-content:flex-end">
-            ${st==="pendente" ? `<button class="btn y small" onclick="aprovarCadastro('${r.id}')">Aprovar</button>` : ``}
-          </div>
-        </div>
-      `;
-    }).join("") + `</div>`;
-  }
-
-  function renderList(){
-    const q = (el("search").value||"").trim().toLowerCase();
-    if(tab==="clientes") return renderClientes(q);
-    if(tab==="cadastros") return renderCadastros(q);
-  }
-
-  // ===== ACTIONS =====
-  async function aprovarCadastro(id){
+  window.aprovarCadastro = async function(id){
     try{
-      const resp = await apiFetch("/admin/aprovar-cadastro", {
-        method:"POST",
-        body: JSON.stringify({ cadastro_id: id })
+      const { data: cad, error } = await sb.from("cadastros_clientes").select("*").eq("id", id).single();
+      if(error) throw error;
+
+      const base = slugify(cad.nome_negocio || "negocio").slice(0,40) || "negocio";
+      let slug = base;
+
+      const { data: exists } = await sb.from("clientes").select("slug").eq("slug", slug).maybeSingle();
+      if(exists?.slug) slug = `${base}-${String(Date.now()).slice(-4)}`;
+
+      await api("/clientes","POST",{
+        nome: cad.nome_negocio,
+        slug,
+        whatsapp: cad.whatsapp || "",
+        tipo_negocio: cad.categoria || "",
+        logo_url: null,
+        ativo: true,
+        email: cad.email || ""
       });
-      if(resp.recovery_link){
-        alert("✅ Aprovado!\n\nLink de senha:\n\n" + resp.recovery_link);
-      }else{
-        alert("✅ Aprovado!");
-      }
-      await loadAll();
+
+      const { error: uErr } = await sb.from("cadastros_clientes")
+        .update({ status:"aprovado", cliente_slug: slug, aprovado_em: new Date().toISOString() })
+        .eq("id", id);
+      if(uErr) throw uErr;
+
+      msg("Cadastro aprovado e cliente criado ✅","ok");
+      await bootLoad();
+      if(tab==="cadastros") await renderList(true);
+
     }catch(e){
-      alert("Falha ao aprovar: " + (e?.message || e));
+      msg("Falha ao aprovar: " + (e?.message || e), "err");
     }
   }
-  window.aprovarCadastro = aprovarCadastro;
 
-  async function resetSenhaCliente(email){
-    const em = (email||"").trim();
-    const alvo = em || prompt("Email do cliente:", "");
-    if(!alvo) return;
-
+  window.rejeitarCadastro = async function(id){
     try{
-      const resp = await apiFetch("/admin/reset-senha", {
-        method:"POST",
-        body: JSON.stringify({ email: alvo })
-      });
-      alert("🔑 Link de senha:\n\n" + (resp.recovery_link || "(sem link)"));
+      const { error } = await sb.from("cadastros_clientes")
+        .update({ status:"rejeitado", rejeitado_em: new Date().toISOString() })
+        .eq("id", id);
+      if(error) throw error;
+      msg("Cadastro rejeitado.","ok");
+      if(tab==="cadastros") await renderList(true);
     }catch(e){
-      alert("Falha ao gerar link: " + (e?.message || e));
+      msg("Falha ao rejeitar: " + (e?.message || e), "err");
     }
   }
-  window.resetSenhaCliente = resetSenhaCliente;
 
-  // ===== MODAL =====
-  function setModalMsg(msg){
-    const box = el("modalMsg");
-    if(!msg){
-      box.style.display="none";
-      box.textContent="";
-      return;
+  el("btnToggleCadastro").addEventListener("click", async ()=>{
+    try{
+      const atual = await getCadastroAtivo();
+      await setCadastroAtivo(!atual);
+      msg(!atual ? "Cadastro público ATIVADO ✅" : "Cadastro público DESATIVADO ⛔","ok");
+      if(tab==="cadastros") await renderList(true);
+    }catch(e){
+      msg("Falha ao alternar: " + (e?.message || e), "err");
     }
-    box.style.display="block";
-    box.textContent=msg;
+  });
+
+  // ====== MODAL EDITAR + LINK SENHA ======
+  function openModal(){
+    el("modalBack").style.display="flex";
+    el("modalBack").setAttribute("aria-hidden","false");
+  }
+  function closeModal(){
+    el("modalBack").style.display="none";
+    el("modalBack").setAttribute("aria-hidden","true");
+    editingSlug = null;
+    modalMsg("");
   }
 
   function updateLogoPreview(){
-    const url = el("m_logo_url").value.trim();
+    const url = (el("m_logo_url").value||"").trim();
     const img = el("m_logo_prev");
     const txt = el("m_logo_text");
 
@@ -677,28 +1246,16 @@
     }
     img.style.display="block";
     img.src = url;
-    txt.textContent=url;
+    txt.textContent = url;
     img.onerror = ()=>{
       img.style.display="none";
       txt.textContent="URL inválida (não carregou)";
     };
   }
 
-  function openModal(){
-    el("modalBack").style.display="flex";
-    el("modalBack").setAttribute("aria-hidden","false");
-    setModalMsg("");
-  }
-  function closeModal(){
-    el("modalBack").style.display="none";
-    el("modalBack").setAttribute("aria-hidden","true");
-    editingSlug = null;
-    setModalMsg("");
-  }
-
-  function openEdit(slug){
-    const c = clientes.find(x => x.slug === slug);
-    if(!c) return alert("Cliente não encontrado.");
+  window.openEditModal = function(slug){
+    const c = clientes.find(x=>x.slug===slug);
+    if(!c) return msg("Cliente não encontrado.", "err");
 
     editingSlug = slug;
 
@@ -708,7 +1265,7 @@
     el("m_email").value = c.email || "";
     el("m_instagram").value = c.instagram || "";
     el("m_cidade").value = c.cidade || "";
-    el("m_tipo_negocio").value = c.tipo_negocio || c.tipo || "";
+    el("m_tipo_negocio").value = c.tipo_negocio || "";
     el("m_endereco").value = c.endereco || "";
     el("m_logo_url").value = c.logo_url || "";
     el("m_ativo").checked = !!c.ativo;
@@ -719,16 +1276,15 @@
     updateLogoPreview();
     openModal();
   }
-  window.openEdit = openEdit;
 
-  async function saveEdit(){
+  async function saveCliente(){
     if(!editingSlug) return;
 
     const payload = {
       slug: editingSlug,
       nome: el("m_nome").value.trim(),
       whatsapp: el("m_whatsapp").value.trim(),
-      email: el("m_email").value.trim().toLowerCase(),
+      email: el("m_email").value.trim(),
       instagram: el("m_instagram").value.trim().replace(/^@+/, ""),
       cidade: el("m_cidade").value.trim(),
       tipo_negocio: el("m_tipo_negocio").value.trim(),
@@ -737,91 +1293,139 @@
       ativo: el("m_ativo").checked
     };
 
-    if(!payload.nome) return setModalMsg("Preencha o nome.");
-    if(!payload.whatsapp) return setModalMsg("Preencha o WhatsApp.");
-    if(!payload.email) return setModalMsg("Preencha o email.");
+    if(!payload.nome) return modalMsg("Preencha o nome.");
+    if(!payload.whatsapp) return modalMsg("Preencha o WhatsApp.");
 
     try{
-      setModalMsg("");
-      el("btnSave").disabled = true;
+      modalMsg("");
+      el("btnSaveModal").disabled = true;
 
-      const resp = await apiFetch("/admin/editar-cliente", {
-        method:"POST",
-        body: JSON.stringify(payload)
-      });
+      // ✅ usa o endpoint que já existe no seu backend:
+      // PUT /clientes { slug, ...campos }
+      // (mantém compatibilidade; se seu backend não aceitar alguns campos, ele só ignora ou você ajusta depois)
+      await api("/clientes","PUT", payload);
 
-      if(resp.authEmailUpdated){
-        alert("✅ Cliente atualizado!\n\nEmail também foi sincronizado no Auth.");
-      }else{
-        alert("✅ Cliente atualizado!");
-      }
-
-      await loadAll();
+      msg("Cliente atualizado ✅","ok");
+      await bootLoad();
       closeModal();
     }catch(e){
-      setModalMsg("Erro ao salvar: " + (e?.message || e));
+      modalMsg("Erro ao salvar: " + (e?.message || e));
     }finally{
-      el("btnSave").disabled = false;
+      el("btnSaveModal").disabled = false;
     }
   }
 
-  // fecha clicando fora
+  // Link de senha (recovery) - precisa existir no backend
+  // Se ainda não tiver, ele mostra erro amigável.
+  window.gerarLinkSenha = async function(email){
+    const em = (email||"").trim();
+    const alvo = em || prompt("Email do cliente:", "");
+    if(!alvo) return;
+
+    try{
+      // ✅ caminho provável: POST /reset-senha { email }
+      const r = await api("/reset-senha","POST",{ email: alvo });
+
+      const link = r.recovery_link || r.link || r.url;
+      if(link){
+        alert("🔑 Link de senha (envie para o cliente):\n\n" + link);
+      }else{
+        alert("✅ Pedido feito, mas seu backend não retornou o link.\nVerifique o endpoint /reset-senha.");
+      }
+    }catch(e){
+      alert("❌ Falha ao gerar link de senha: " + (e?.message || e));
+    }
+  }
+
+  // binds modal
+  el("btnCloseModal").addEventListener("click", closeModal);
+  el("btnCancelModal").addEventListener("click", closeModal);
+  el("btnSaveModal").addEventListener("click", saveCliente);
+  el("btnLinkSenha").addEventListener("click", ()=>{
+    const email = el("m_email").value.trim();
+    if(!email) return modalMsg("Preencha o email para gerar link de senha.");
+    gerarLinkSenha(email);
+  });
+  el("m_logo_url").addEventListener("input", updateLogoPreview);
+
   el("modalBack").addEventListener("click", (e)=>{
     if(e.target === el("modalBack")) closeModal();
   });
-
-  // ===== UI binds =====
-  document.querySelectorAll(".tab").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-      tab = b.dataset.tab;
-      renderList();
-    });
+  window.addEventListener("keydown", (e)=>{
+    if(e.key==="Escape" && el("modalBack").style.display==="flex") closeModal();
   });
 
-  el("search").addEventListener("input", renderList);
+  // ====== BOOT LOAD ======
+  async function bootLoad(){
+    await loadAllApi();
+    fillCategoriaSelect();
+    await renderList(false);
+  }
 
-  el("btnLogin").onclick = signInEmail;
-  el("btnGoogle").onclick = signInGoogle;
-  el("btnLogout").onclick = logout;
-  el("btnReload").onclick = async ()=>{ await loadAll(); };
+  // ====== LOGIN ======
+  el("btnLogin").addEventListener("click", async ()=>{
+    try{
+      el("loginMsg").style.display="none";
+      const email = el("email").value.trim();
+      const password = el("senha").value.trim();
 
-  el("btnCloseModal").onclick = closeModal;
-  el("btnCancel").onclick = closeModal;
-  el("btnSave").onclick = saveEdit;
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
 
-  el("m_logo_url").addEventListener("input", updateLogoPreview);
-  el("btnLinkSenhaModal").onclick = ()=>{
-    const email = el("m_email").value.trim();
-    if(!email) return setModalMsg("Preencha o email para gerar link de senha.");
-    resetSenhaCliente(email);
-  };
+      session = data.session;
+      const ok = await requireAlfa();
+      if(!ok) return;
 
-  // Boot
+      await afterLogin();
+    }catch(e){
+      loginMsg(e.message || "Falha no login");
+    }
+  });
+
+  el("btnGoogle").addEventListener("click", async ()=>{
+    try{
+      await sb.auth.signInWithOAuth({
+        provider:"google",
+        options:{ redirectTo: window.location.href }
+      });
+    }catch(e){
+      loginMsg(e.message || "Falha no Google");
+    }
+  });
+
+  async function afterLogin(){
+    hide("login");
+    el("app").style.display="block";
+    await bootLoad();
+  }
+
+  el("btnSair").addEventListener("click", async ()=>{
+    await sb.auth.signOut();
+    session = null;
+    el("app").style.display="none";
+    show("login");
+  });
+
+  el("btnReload").addEventListener("click", bootLoad);
+
+  // init
   (async ()=>{
     const { data } = await sb.auth.getSession();
-    session = data.session;
+    session = data.session || null;
 
     if (session){
-      hide("login"); show("app");
-      await loadAll();
+      const ok = await requireAlfa();
+      if(ok) await afterLogin();
+      else show("login");
     }else{
-      show("login"); hide("app");
+      show("login");
     }
 
     sb.auth.onAuthStateChange(async (_event, s)=>{
       session = s;
       if(session){
-        hide("login"); show("app");
-        await loadAll();
-      }
-    });
-
-    // ESC fecha modal
-    window.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape" && el("modalBack").style.display === "flex"){
-        closeModal();
+        const ok = await requireAlfa();
+        if(ok) await afterLogin();
       }
     });
   })();
