@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redefinir senha • Portal da Chapada</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{
+      margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:linear-gradient(180deg,#070b14,#0b1220);
+      color:#f7f7fb;
+      padding:18px;
+    }
+    .card{
+      width:min(420px,92vw);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      box-shadow:0 25px 90px rgba(0,0,0,.55);
+      backdrop-filter: blur(14px);
+      padding:18px;
+    }
+    h1{margin:0 0 6px;font-size:18px}
+    p{margin:0 0 14px;opacity:.8;font-size:13px}
+    label{display:block;font-size:12px;opacity:.8;margin:0 0 6px}
+    input{
+      width:100%;
+      padding:11px 12px;border-radius:12px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.14);
+      color:#fff;outline:none;
+    }
+    button{
+      width:100%;
+      margin-top:12px;
+      padding:11px 12px;border-radius:12px;
+      border:none;cursor:pointer;
+      font-weight:900;
+      background:linear-gradient(135deg,#ffd24a,#ffbb1a);
+      color:#201400;
+    }
+    .msg{margin-top:12px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Redefinir senha</h1>
+    <p>Defina uma nova senha para acessar o painel do comerciante.</p>
+
+    <label>Nova senha</label>
+    <input id="pass" type="password" placeholder="••••••••" />
+
+    <label style="margin-top:10px">Confirmar senha</label>
+    <input id="pass2" type="password" placeholder="••••••••" />
+
+    <button id="btn">Salvar nova senha</button>
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const el = (id)=>document.getElementById(id);
+    const msg = (t)=>el("msg").textContent = t;
+
+    el("btn").addEventListener("click", async ()=>{
+      const p1 = el("pass").value.trim();
+      const p2 = el("pass2").value.trim();
+      if(!p1 || p1.length < 6) return msg("Senha muito curta (mín. 6).");
+      if(p1 !== p2) return msg("As senhas não conferem.");
+
+      const { error } = await sb.auth.updateUser({ password: p1 });
+      if(error) return msg("Erro: " + error.message);
+
+      msg("✅ Senha atualizada! Agora você pode voltar e fazer login.");
+      setTimeout(()=>{ window.location.href = "./cliente/login.html"; }, 1200);
+    });
+  </script>
+</body>
+</html>
