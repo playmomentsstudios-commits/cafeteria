@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Alfa • Cardápio</title>
+  <title>Admin Alfa • Portal da Chapada</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -34,6 +34,7 @@
         radial-gradient(900px 600px at 80% 10%, rgba(255,187,26,.14), transparent 55%),
         linear-gradient(180deg, #070b14, var(--bg));
       padding:18px 14px 90px;
+      min-height:100vh;
     }
     .wrap{max-width:1200px;margin:0 auto}
 
@@ -175,13 +176,15 @@
     .msg.err{border-color:rgba(255,90,103,.45); color:#ffd0d5}
     .msg.ok{border-color:rgba(29,214,164,.40); color:#c9fff0}
 
-    /* LOGIN SCREEN */
-    .loginFull{
-      min-height: calc(100vh - 36px);
-      display:flex;align-items:center;justify-content:center;
+    /* LOGIN (central + logo grande + Google slim) */
+    #login{min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .loginWrap{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px}
+    .loginHeroLogo img{
+      width:190px;max-width:70vw;height:auto;display:block;
+      filter:drop-shadow(0 10px 25px rgba(0,0,0,.35));
     }
     .loginCard{
-      width:min(420px,100%);
+      width:min(420px,92vw);
       border-radius:24px;
       padding:20px;
       background:rgba(255,255,255,.06);
@@ -190,51 +193,58 @@
       backdrop-filter: blur(12px);
       text-align:center;
     }
-    .loginLogo{
-      width:64px;height:64px;border-radius:20px;
-      margin:0 auto 12px;
-      overflow:hidden;border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
-    }
-    .loginLogo img{width:100%;height:100%;object-fit:cover}
     .loginCard h2{margin:8px 0 0}
     .loginCard p{margin:6px 0 14px;color:var(--muted);font-size:13px}
+    .loginForm{text-align:left;margin-top:8px}
+    .sp10{height:10px}
+    .loginActions{justify-content:center;margin-top:14px;gap:10px}
+    .btn.gIcon{
+      width:44px;min-width:44px;height:40px;padding:0;border-radius:12px;
+      display:flex;align-items:center;justify-content:center
+    }
+    .gMark{font-weight:900;font-size:18px;line-height:1;letter-spacing:-1px}
+
+    /* Cadastros (aprovação) */
+    .cadTop{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      margin-top:12px;
+    }
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      font-weight:900;font-size:12px;
+      background:rgba(255,255,255,.06);
+    }
+    .badge.ok{background:rgba(29,214,164,.14);border-color:rgba(29,214,164,.35)}
+    .badge.bad{background:rgba(255,90,103,.12);border-color:rgba(255,90,103,.28)}
+    .badge.warn{background:rgba(255,210,74,.12);border-color:rgba(255,210,74,.28)}
+
+    #cadList{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .cadRow{
+      display:flex;gap:12px;justify-content:space-between;align-items:flex-start;
+      padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(0,0,0,.18)
+    }
+    .cadTitle{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+    .cadMeta{display:flex;flex-wrap:wrap;gap:8px;opacity:.9;font-size:13px}
+    .dot{opacity:.6}
+    .link{color:#ffd24a;text-decoration:none}
+    .link:hover{text-decoration:underline}
+    .err{color:#ff8c96}
+    .muted{opacity:.8}
 
     @media (max-width:1050px){ .grid4{grid-template-columns:repeat(2,minmax(0,1fr))} }
     @media (max-width:720px){
       .grid2{grid-template-columns:1fr}
       .grid4{grid-template-columns:1fr}
     }
-  
-/* === Login (slim) === */
-.loginWrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px}
-.loginHeroLogo img{width:140px;max-width:60vw;height:auto;display:block;filter:drop-shadow(0 10px 25px rgba(0,0,0,.35))}
-.loginCard{width:min(420px,92vw);background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:18px 18px 16px;backdrop-filter: blur(10px)}
-.loginForm{margin-top:10px;text-align:left}
-.sp10{height:10px}
-.loginActions{justify-content:center;margin-top:14px;gap:10px}
-.btn.gIcon{width:44px;min-width:44px;height:40px;padding:0;border-radius:12px;display:flex;align-items:center;justify-content:center}
-.gMark{font-weight:900;font-size:18px;line-height:1;letter-spacing:-1px}
-
-
-/* Cadastros list */
-#cad-list{display:flex;flex-direction:column;gap:10px}
-.cad-row{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(0,0,0,.18)}
-.cad-title{display:flex;gap:10px;align-items:center;margin-bottom:6px}
-.cad-meta,.cad-small{display:flex;flex-wrap:wrap;gap:8px;opacity:.9;font-size:13px}
-.cad-desc{margin-top:8px;font-size:13px;opacity:.95}
-.dot{opacity:.6}
-.badge.ok{background:rgba(46,204,113,.18)}
-.badge.warn{background:rgba(241,196,15,.18)}
-.badge.bad{background:rgba(231,76,60,.18)}
-.link{color:#f1c40f;text-decoration:none}
-.err{color:#ff6b6b}
-.muted{opacity:.75}
-
-</style>
+  </style>
 </head>
 
 <body>
+
 <div class="wrap" id="app" style="display:none">
 
   <div class="top">
@@ -255,12 +265,13 @@
     <button class="tab active" data-tab="clientes">Clientes</button>
     <button class="tab" data-tab="categorias">Categorias</button>
     <button class="tab" data-tab="produtos">Produtos</button>
+    <button class="tab" data-tab="cadastros">Cadastros</button>
   </div>
 
   <div class="grid2">
     <div class="card">
       <h3 class="h">Criar Cliente</h3>
-      <p class="sub">Cria a loja + (opcional) cria login do cliente no Supabase Auth.</p>
+      <p class="sub">Cria a loja + (opcional) cria login do cliente no Supabase Auth (via API).</p>
 
       <div class="row">
         <div class="field">
@@ -288,6 +299,9 @@
             <option>Lanchonete</option>
             <option>Farmácia</option>
             <option>Petshop</option>
+            <option>Pousada</option>
+            <option>Serviços</option>
+            <option>Outro</option>
           </select>
         </div>
       </div>
@@ -392,32 +406,55 @@
       </div>
       <input id="search" placeholder="Buscar..." />
     </div>
+
+    <!-- Topo Cadastros (mostra apenas na aba cadastros) -->
+    <div id="cadBox" style="display:none">
+      <div class="cadTop">
+        <div class="row" style="align-items:center">
+          <span id="cadAtivoBadge" class="badge warn">Carregando…</span>
+          <button class="btn" id="btnToggleCadastro">Ativar/Desativar</button>
+          <span class="meta">Pendentes: <strong id="cadPend">0</strong></span>
+        </div>
+        <div class="meta">Obs: se aparecer erro aqui, é policy/permissão do Supabase para admin.</div>
+      </div>
+      <div id="cadList"></div>
+    </div>
+
     <div class="grid4" id="list"></div>
   </div>
 
 </div>
 
 <!-- LOGIN -->
-<div class="loginFull" id="login">
-  <div class="loginCard">
-    <div class="loginLogo"><img src="../logo.png" onerror="this.style.display='none';this.parentElement.textContent='ADM'"></div>
-    <h2>Entrar</h2>
-    <p>Email/senha do Supabase Auth ou Google.</p>
-
-    <div style="text-align:left;margin-top:10px">
-      <label>Email</label>
-      <input id="email" placeholder="seu@email.com" />
-      <div style="height:10px"></div>
-      <label>Senha</label>
-      <input id="senha" type="password" placeholder="••••••••" />
+<div id="login">
+  <div class="loginWrap">
+    <div class="loginHeroLogo">
+      <img src="../logo.png" alt="Logo"
+           onerror="this.style.display='none';document.getElementById('loginHeroFallback').style.display='block';" />
+      <div id="loginHeroFallback" style="display:none;font-weight:900;font-size:28px;letter-spacing:.5px;">Admin Alfa</div>
     </div>
 
-    <div class="row" style="justify-content:center;margin-top:14px">
-      <button class="btn y" id="btnLogin">🔒 Entrar</button>
-      <button class="btn" id="btnGoogle">🟦 Entrar com Google</button>
-    </div>
+    <div class="loginCard">
+      <h2>Entrar</h2>
+      <p>Email/senha do Supabase Auth ou Google.</p>
 
-    <div id="loginMsg" class="msg err" style="display:none;margin-top:12px"></div>
+      <div class="loginForm">
+        <label>Email</label>
+        <input id="email" placeholder="seu@email.com" />
+        <div class="sp10"></div>
+        <label>Senha</label>
+        <input id="senha" type="password" placeholder="••••••••" />
+      </div>
+
+      <div class="row loginActions">
+        <button class="btn y" id="btnLogin">🔒 Entrar</button>
+        <button class="btn gIcon" id="btnGoogle" title="Entrar com Google" aria-label="Entrar com Google">
+          <span class="gMark">G</span>
+        </button>
+      </div>
+
+      <div id="loginMsg" class="msg err" style="display:none;margin-top:12px"></div>
+    </div>
   </div>
 </div>
 
@@ -425,7 +462,12 @@
   // ====== CONFIG ======
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
+
+  // ✅ Mantém o que funciona: CRUD via sua API (provavelmente com service role)
   const API_BASE = "https://cafeteria-gamma-orpin.vercel.app/api/admin";
+
+  // Admin Alfa enforcement
+  const ALFA_EMAIL = "playmomentsstudios@gmail.com";
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -436,18 +478,29 @@
   let categorias = [];
   let produtos = [];
 
+  // cadastros
+  let cadRows = [];
+  let cadastroAtivo = true;
+
   // ====== UI HELPERS ======
   const el = (id)=>document.getElementById(id);
   const show = (id)=>el(id).style.display="block";
   const hide = (id)=>el(id).style.display="none";
+
+  function escapeHtml(str){
+    return String(str ?? "").replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
 
   function msg(text, type=""){
     const box = el("msg");
     box.style.display = "block";
     box.className = "msg " + (type||"");
     box.textContent = text;
-    setTimeout(()=>{ box.style.display="none"; }, 4000);
+    setTimeout(()=>{ box.style.display="none"; }, 4500);
   }
+
   function loginMsg(text){
     const box = el("loginMsg");
     box.style.display = "block";
@@ -475,7 +528,24 @@
     if (!e.target.closest(".menuWrap")) document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
   });
 
-  // ====== API CALL ======
+  // ====== AUTH HELPERS ======
+  function isAlfa(){
+    const email = session?.user?.email || "";
+    return String(email).toLowerCase().trim() === ALFA_EMAIL.toLowerCase();
+  }
+
+  async function requireAlfa(){
+    if(!session) return false;
+    if(isAlfa()) return true;
+    try{ await sb.auth.signOut(); }catch(_e){}
+    session = null;
+    el("app").style.display="none";
+    show("login");
+    loginMsg("Acesso negado: este painel é apenas para o Admin Alfa.");
+    return false;
+  }
+
+  // ====== API CALL (Vercel) ======
   async function api(path, method="GET", body=null){
     const token = session?.access_token;
     const headers = {
@@ -491,8 +561,8 @@
     return j;
   }
 
-  // ====== LOAD ALL ======
-  async function loadAll(){
+  // ====== LOAD (API) ======
+  async function loadAllApi(){
     const [c1,c2,c3] = await Promise.all([
       api("/clientes","GET"),
       api("/categorias","GET"),
@@ -504,13 +574,12 @@
 
     fillClienteSelect();
     fillCategoriaSelect();
-    renderList();
   }
 
   function fillClienteSelect(){
     const s = el("selCliente");
     s.innerHTML = clientes
-      .map(c=>`<option value="${c.slug}">${c.nome} (${c.slug})</option>`)
+      .map(c=>`<option value="${escapeHtml(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`)
       .join("");
   }
 
@@ -518,7 +587,7 @@
     const cliente_slug = el("selCliente").value;
     const s = el("selCategoria");
     const cats = categorias.filter(x=>x.cliente_slug===cliente_slug);
-    s.innerHTML = cats.map(c=>`<option value="${c.id}">${c.nome}</option>`).join("");
+    s.innerHTML = cats.map(c=>`<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join("");
   }
 
   el("selCliente").addEventListener("change", ()=>{
@@ -528,18 +597,46 @@
 
   // ====== TABS ======
   document.querySelectorAll(".tab").forEach(b=>{
-    b.addEventListener("click", ()=>{
+    b.addEventListener("click", async ()=>{
       document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
       b.classList.add("active");
       tab = b.dataset.tab;
-      renderList();
+      await renderList(true);
     });
   });
 
+  el("search").addEventListener("input", ()=>renderList(false));
+
   // ====== RENDER LIST ======
-  function renderList(){
+  async function renderList(forceReloadCadastros){
     const q = (el("search").value||"").trim().toLowerCase();
     const listEl = el("list");
+    const cadBox = el("cadBox");
+
+    // Cadastros tab
+    if(tab === "cadastros"){
+      el("listTitle").textContent = "Cadastros (aprovação)";
+      el("listSub").textContent = "Aprovar/Rejeitar cadastros públicos + ativar/desativar landing.";
+      listEl.style.display="none";
+      cadBox.style.display="block";
+
+      if(forceReloadCadastros) await loadCadastros();
+
+      // filtro local
+      const filtered = cadRows.filter(r=>{
+        if(!q) return true;
+        const blob = [r.nome_negocio,r.cidade,r.categoria,r.whatsapp,r.email,r.instagram,r.endereco,r.mensagem,r.status]
+          .filter(Boolean).join(" ").toLowerCase();
+        return blob.includes(q);
+      });
+
+      renderCadastros(filtered);
+      return;
+    }
+
+    // outras tabs
+    cadBox.style.display="none";
+    listEl.style.display="grid";
 
     if (tab==="clientes"){
       el("listTitle").textContent = "Clientes";
@@ -640,56 +737,79 @@
     }).join("");
   }
 
-  function escapeHtml(str){
-    return String(str ?? "").replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
-  // ====== ACTIONS ======
-  function verPublicado(slug){
+  // ====== ACTIONS (API) ======
+  window.verPublicado = function(slug){
     window.open("../?u=" + encodeURIComponent(slug), "_blank");
   }
 
-  async function toggleCliente(slug, ativo){
-    await api("/clientes","PUT",{ slug, ativo });
-    await loadAll();
-  
-    const tgl=document.getElementById('btnToggleCadastro'); if(tgl) tgl.onclick=()=>toggleCadastroPublico();
-    const s=document.getElementById('cad-search'); if(s) s.addEventListener('input', ()=>loadCadastrosAprovacao());
-    try{ await loadCadastrosAprovacao(); }catch(_e){}
-}
-  async function delCliente(slug){
+  window.toggleCliente = async function(slug, ativo){
+    try{
+      await api("/clientes","PUT",{ slug, ativo });
+      await bootLoad();
+      msg("Cliente atualizado ✅","ok");
+    }catch(e){
+      msg("Erro ao atualizar cliente: " + e.message, "err");
+    }
+  }
+
+  window.delCliente = async function(slug){
     if (!confirm("Excluir cliente e tudo dele?")) return;
-    await api("/clientes?slug="+encodeURIComponent(slug),"DELETE");
-    await loadAll();
+    try{
+      await api("/clientes?slug="+encodeURIComponent(slug),"DELETE");
+      await bootLoad();
+      msg("Cliente excluído ✅","ok");
+    }catch(e){
+      msg("Erro ao excluir cliente: " + e.message, "err");
+    }
   }
 
-  async function toggleCategoria(id, ativo){
-    await api("/categorias","PUT",{ id, ativo });
-    await loadAll();
+  window.toggleCategoria = async function(id, ativo){
+    try{
+      await api("/categorias","PUT",{ id, ativo });
+      await bootLoad();
+      msg("Categoria atualizada ✅","ok");
+    }catch(e){
+      msg("Erro ao atualizar categoria: " + e.message, "err");
+    }
   }
-  async function delCategoria(id){
+
+  window.delCategoria = async function(id){
     if (!confirm("Excluir categoria (e produtos dela)?")) return;
-    await api("/categorias?id="+encodeURIComponent(id),"DELETE");
-    await loadAll();
+    try{
+      await api("/categorias?id="+encodeURIComponent(id),"DELETE");
+      await bootLoad();
+      msg("Categoria excluída ✅","ok");
+    }catch(e){
+      msg("Erro ao excluir categoria: " + e.message, "err");
+    }
   }
 
-  async function toggleProduto(id, ativo){
-    await api("/produtos","PUT",{ id, ativo });
-    await loadAll();
+  window.toggleProduto = async function(id, ativo){
+    try{
+      await api("/produtos","PUT",{ id, ativo });
+      await bootLoad();
+      msg("Produto atualizado ✅","ok");
+    }catch(e){
+      msg("Erro ao atualizar produto: " + e.message, "err");
+    }
   }
-  async function delProduto(id){
+
+  window.delProduto = async function(id){
     if (!confirm("Excluir produto?")) return;
-    await api("/produtos?id="+encodeURIComponent(id),"DELETE");
-    await loadAll();
+    try{
+      await api("/produtos?id="+encodeURIComponent(id),"DELETE");
+      await bootLoad();
+      msg("Produto excluído ✅","ok");
+    }catch(e){
+      msg("Erro ao excluir produto: " + e.message, "err");
+    }
   }
 
-  // ====== CREATE ======
+  // ====== CREATE (API) ======
   el("btnCriarCliente").addEventListener("click", async ()=>{
     try{
       const nome = el("c_nome").value.trim();
-      const slug = el("c_slug").value.trim();
+      const slug = el("c_slug").value.trim() || slugify(nome);
       const whatsapp = el("c_whats").value.trim();
       const tipo_negocio = el("c_tipo").value.trim();
       const logo_url = el("c_logo").value.trim();
@@ -698,16 +818,11 @@
       const email = el("c_email").value.trim();
       const senha = el("c_senha").value.trim();
 
-      const payload = {
-        nome,
-        slug,
-        whatsapp,
-        tipo_negocio,
-        logo_url,
-        ativo
-      };
+      if(!nome) throw new Error("Preencha o nome.");
+      if(!slug) throw new Error("Slug inválido.");
 
-      // só manda email/senha se ambos vierem
+      const payload = { nome, slug, whatsapp, tipo_negocio, logo_url, ativo };
+
       if (email && senha) { payload.email = email; payload.senha = senha; }
 
       const r = await api("/clientes","POST",payload);
@@ -721,7 +836,7 @@
       el("c_email").value = "";
       el("c_senha").value = "";
 
-      await loadAll();
+      await bootLoad();
     }catch(e){
       msg("Erro ao criar cliente: " + e.message, "err");
     }
@@ -732,10 +847,12 @@
       const cliente_slug = el("selCliente").value;
       const nome = el("cat_nome").value.trim();
       const ordem = Number(el("cat_ordem").value||0);
+      if(!cliente_slug) throw new Error("Selecione um cliente.");
+      if(!nome) throw new Error("Digite o nome da categoria.");
       await api("/categorias","POST",{ cliente_slug, nome, ordem, ativo:true });
       msg("Categoria criada ✅","ok");
       el("cat_nome").value="";
-      await loadAll();
+      await bootLoad();
     }catch(e){
       msg("Erro ao criar categoria: " + e.message, "err");
     }
@@ -750,26 +867,206 @@
       const descricao = el("p_desc").value.trim();
       const imagem_url = el("p_img").value.trim();
 
-      if (!categoria_id) throw new Error("Selecione uma categoria");
+      if(!cliente_slug) throw new Error("Selecione um cliente.");
+      if(!categoria_id) throw new Error("Selecione uma categoria.");
+      if(!nome) throw new Error("Digite o nome do produto.");
 
       await api("/produtos","POST",{ cliente_slug, categoria_id, nome, preco, descricao, imagem_url, ativo:true });
       msg("Produto criado ✅","ok");
-      el("p_nome").value=""; el("p_preco").value="0"; el("p_desc").value=""; el("p_img").value="";
-      await loadAll();
+
+      el("p_nome").value="";
+      el("p_preco").value="0";
+      el("p_desc").value="";
+      el("p_img").value="";
+      await bootLoad();
     }catch(e){
       msg("Erro ao criar produto: " + e.message, "err");
     }
   });
 
+  // ====== CADASTROS (Supabase direto - depende de policy) ======
+  async function getCadastroAtivo(){
+    const { data, error } = await sb.from("portal_config")
+      .select("valor")
+      .eq("chave","cadastro_publico_ativo")
+      .maybeSingle();
+    if(error) return true;
+    return String(data?.valor || "true") === "true";
+  }
+
+  async function setCadastroAtivo(v){
+    const { error } = await sb.from("portal_config")
+      .upsert({ chave:"cadastro_publico_ativo", valor: v ? "true" : "false" }, { onConflict:"chave" });
+    if(error) throw error;
+  }
+
+  async function loadCadastros(){
+    const cadList = el("cadList");
+    cadList.innerHTML = `<div class="muted">Carregando…</div>`;
+
+    try{
+      cadastroAtivo = await getCadastroAtivo();
+      el("cadAtivoBadge").textContent = cadastroAtivo ? "Cadastro público ATIVO ✅" : "Cadastro público DESATIVADO ⛔";
+      el("cadAtivoBadge").className = "badge " + (cadastroAtivo ? "ok" : "bad");
+
+      const { data, error } = await sb.from("cadastros_clientes").select("*").order("created_at",{ascending:false});
+      if(error) throw error;
+
+      cadRows = data || [];
+      const pend = cadRows.filter(r => String(r.status||"").toLowerCase()==="pendente").length;
+      el("cadPend").textContent = String(pend);
+
+    }catch(e){
+      cadRows = [];
+      el("cadPend").textContent = "0";
+      cadList.innerHTML = `
+        <div class="err">
+          Erro ao carregar cadastros: ${escapeHtml(e?.message || e)}<br><br>
+          <span class="muted">
+            Isso indica policy/RLS bloqueando o admin no Supabase (cadastros_clientes / portal_config).
+          </span>
+        </div>
+      `;
+    }
+  }
+
+  function renderCadastros(rows){
+    const cadList = el("cadList");
+
+    if(!rows.length){
+      cadList.innerHTML = `<div class="muted" style="margin-top:12px">Nenhum cadastro encontrado.</div>`;
+      return;
+    }
+
+    cadList.innerHTML = rows.map(r=>{
+      const st = String(r.status || "pendente").toLowerCase();
+      const badge =
+        st === "pendente" ? `<span class="badge warn">Pendente</span>` :
+        st === "aprovado" ? `<span class="badge ok">Aprovado</span>` :
+        `<span class="badge bad">Rejeitado</span>`;
+
+      const when = r.created_at ? new Date(r.created_at).toLocaleString() : "";
+      const wpp = String(r.whatsapp||"").replace(/\D/g,"");
+      const wppLink = wpp ? `<a class="link" target="_blank" rel="noreferrer" href="https://wa.me/${wpp}">WhatsApp</a>` : "";
+
+      return `
+        <div class="cadRow">
+          <div>
+            <div class="cadTitle">
+              <strong>${escapeHtml(r.nome_negocio||"—")}</strong>
+              ${badge}
+            </div>
+            <div class="cadMeta">
+              <span>${escapeHtml(r.cidade||"—")}</span><span class="dot">•</span>
+              <span>${escapeHtml(r.categoria||"—")}</span><span class="dot">•</span>
+              <span>${escapeHtml(r.whatsapp||"—")}</span>
+              ${wppLink ? `<span class="dot">•</span>${wppLink}` : ``}
+            </div>
+            <div class="meta" style="margin-top:6px">
+              ${escapeHtml(when)}
+              ${r.email ? ` <span class="dot">•</span> ${escapeHtml(r.email)}` : ``}
+              ${r.instagram ? ` <span class="dot">•</span> @${escapeHtml(r.instagram)}` : ``}
+            </div>
+            ${r.endereco ? `<div class="meta" style="margin-top:6px"><strong>Endereço:</strong> ${escapeHtml(r.endereco)}</div>` : ``}
+            ${r.mensagem ? `<div class="meta" style="margin-top:6px"><strong>Mensagem:</strong> ${escapeHtml(r.mensagem)}</div>` : ``}
+          </div>
+
+          <div class="row" style="gap:10px;justify-content:flex-end">
+            ${ st === "pendente"
+              ? `
+                <button class="btn y" onclick="aprovarCadastro('${r.id}')">Aprovar</button>
+                <button class="btn" onclick="rejeitarCadastro('${r.id}')">Rejeitar</button>
+              `
+              : `<button class="btn" onclick="alert('Status: ${escapeHtml(st)}')">OK</button>`
+            }
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  window.aprovarCadastro = async function(id){
+    try{
+      const { data: cad, error } = await sb.from("cadastros_clientes").select("*").eq("id", id).single();
+      if(error) throw error;
+
+      const base = slugify(cad.nome_negocio || "negocio").slice(0,40) || "negocio";
+      let slug = base;
+
+      // verifica conflito
+      const { data: exists } = await sb.from("clientes").select("slug").eq("slug", slug).maybeSingle();
+      if(exists?.slug) slug = `${base}-${String(Date.now()).slice(-4)}`;
+
+      // cria cliente usando API (pra manter padrão/funcionar com RLS)
+      await api("/clientes","POST",{
+        nome: cad.nome_negocio,
+        slug,
+        whatsapp: cad.whatsapp || "",
+        tipo_negocio: cad.categoria || "",
+        logo_url: null,
+        ativo: true
+      });
+
+      // marca aprovado
+      const { error: uErr } = await sb.from("cadastros_clientes")
+        .update({ status:"aprovado", cliente_slug: slug, aprovado_em: new Date().toISOString() })
+        .eq("id", id);
+      if(uErr) throw uErr;
+
+      msg("Cadastro aprovado e cliente criado ✅","ok");
+      await bootLoad();
+      if(tab==="cadastros") await renderList(true);
+
+    }catch(e){
+      msg("Falha ao aprovar: " + (e?.message || e), "err");
+    }
+  }
+
+  window.rejeitarCadastro = async function(id){
+    try{
+      const { error } = await sb.from("cadastros_clientes")
+        .update({ status:"rejeitado", rejeitado_em: new Date().toISOString() })
+        .eq("id", id);
+      if(error) throw error;
+      msg("Cadastro rejeitado.","ok");
+      if(tab==="cadastros") await renderList(true);
+    }catch(e){
+      msg("Falha ao rejeitar: " + (e?.message || e), "err");
+    }
+  }
+
+  el("btnToggleCadastro").addEventListener("click", async ()=>{
+    try{
+      const atual = await getCadastroAtivo();
+      await setCadastroAtivo(!atual);
+      msg(!atual ? "Cadastro público ATIVADO ✅" : "Cadastro público DESATIVADO ⛔","ok");
+      if(tab==="cadastros") await renderList(true);
+    }catch(e){
+      msg("Falha ao alternar: " + (e?.message || e), "err");
+    }
+  });
+
+  // ====== BOOT LOAD ======
+  async function bootLoad(){
+    await loadAllApi();
+    fillCategoriaSelect();
+    await renderList(false);
+  }
+
   // ====== LOGIN ======
   el("btnLogin").addEventListener("click", async ()=>{
     try{
-      hide("loginMsg");
+      el("loginMsg").style.display="none";
       const email = el("email").value.trim();
       const password = el("senha").value.trim();
+
       const { data, error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw error;
+
       session = data.session;
+      const ok = await requireAlfa();
+      if(!ok) return;
+
       await afterLogin();
     }catch(e){
       loginMsg(e.message || "Falha no login");
@@ -790,7 +1087,7 @@
   async function afterLogin(){
     hide("login");
     el("app").style.display="block";
-    await loadAll();
+    await bootLoad();
   }
 
   el("btnSair").addEventListener("click", async ()=>{
@@ -800,190 +1097,30 @@
     show("login");
   });
 
-  el("btnReload").addEventListener("click", loadAll);
-  el("search").addEventListener("input", renderList);
+  el("btnReload").addEventListener("click", bootLoad);
 
   // init
   (async ()=>{
     const { data } = await sb.auth.getSession();
     session = data.session || null;
-    if (session) await afterLogin();
-    else { show("login"); }
+
+    if (session){
+      const ok = await requireAlfa();
+      if(ok) await afterLogin();
+      else show("login");
+    }else{
+      show("login");
+    }
+
+    sb.auth.onAuthStateChange(async (_event, s)=>{
+      session = s;
+      if(session){
+        const ok = await requireAlfa();
+        if(ok) await afterLogin();
+      }
+    });
   })();
-
-  // ===== Admin Alfa enforcement =====
-  const ALFA_EMAIL = "playmomentsstudios@gmail.com";
-  function isAlfa(){
-    const email = session?.user?.email || "";
-    return String(email).toLowerCase().trim() === ALFA_EMAIL.toLowerCase();
-  }
-  async function requireAlfa(){
-    if(!session) return false;
-    if(isAlfa()) return true;
-    try{ await sb.auth.signOut(); }catch(_e){}
-    session = null;
-    el("app").style.display="none";
-    show("login");
-    const box = document.getElementById("loginMsg");
-    if(box){ box.style.display="block"; box.textContent="Acesso negado: este painel é apenas para o Admin Alfa."; }
-    return false;
-  }
-
-  // ===== Cadastros (aprovação) =====
-  async function getCadastroAtivo(){
-    const { data, error } = await sb.from("portal_config").select("valor").eq("chave","cadastro_publico_ativo").maybeSingle();
-    if(error) return true;
-    return String(data?.valor || "true") === "true";
-  }
-
-  async function setCadastroAtivo(v){
-    const { error } = await sb.from("portal_config")
-      .upsert({ chave:"cadastro_publico_ativo", valor: v ? "true" : "false" }, { onConflict:"chave" });
-    if(error) throw error;
-  }
-
-  function renderCadastroRow(r){
-    const st = String(r.status || "pendente").toLowerCase();
-    const badge =
-      st === "pendente" ? `<span class="badge warn">Pendente</span>` :
-      st === "aprovado" ? `<span class="badge ok">Aprovado</span>` :
-      `<span class="badge bad">Rejeitado</span>`;
-    const when = r.created_at ? new Date(r.created_at).toLocaleString() : "";
-    const wpp = String(r.whatsapp||"").replace(/\D/g,"");
-    const wppLink = wpp ? `<a class="link" target="_blank" rel="noreferrer" href="https://wa.me/${wpp}">WhatsApp</a>` : "";
-
-    return `
-      <div class="cad-row">
-        <div>
-          <div class="cad-title"><strong>${escapeHtml(r.nome_negocio||"—")}</strong> ${badge}</div>
-          <div class="cad-meta">
-            <span>${escapeHtml(r.cidade||"—")}</span><span class="dot">•</span>
-            <span>${escapeHtml(r.categoria||"—")}</span><span class="dot">•</span>
-            <span>${escapeHtml(r.whatsapp||"—")}</span>
-            ${wppLink ? `<span class="dot">•</span>${wppLink}` : ``}
-          </div>
-          <div class="cad-small">
-            <span>${when}</span>
-            ${r.email ? `<span class="dot">•</span><span>${escapeHtml(r.email)}</span>` : ``}
-            ${r.instagram ? `<span class="dot">•</span><span>@${escapeHtml(r.instagram)}</span>` : ``}
-          </div>
-          ${r.endereco ? `<div class="cad-desc"><strong>Endereço:</strong> ${escapeHtml(r.endereco)}</div>` : ``}
-          ${r.mensagem ? `<div class="cad-desc"><strong>Mensagem:</strong> ${escapeHtml(r.mensagem)}</div>` : ``}
-        </div>
-
-        <div class="row" style="gap:10px">
-          ${ st === "pendente"
-              ? `<button class="btn y" data-aprovar="${r.id}">Aprovar</button>
-                 <button class="btn" data-rejeitar="${r.id}">Rejeitar</button>`
-              : `<button class="btn" data-detalhes="${r.id}">Detalhes</button>`
-          }
-        </div>
-      </div>
-    `;
-  }
-
-  async function loadCadastrosAprovacao(){
-    if(!session) return;
-    const wrap = document.getElementById("cad-list");
-    const pendEl = document.getElementById("cad-pendentes");
-    const badge = document.getElementById("cad-ativo-badge");
-    const q = String(document.getElementById("cad-search")?.value || "").trim().toLowerCase();
-
-    if(wrap) wrap.innerHTML = `<div class="muted">Carregando...</div>`;
-    if(pendEl) pendEl.textContent = "…";
-
-    const ativo = await getCadastroAtivo();
-    if(badge){
-      badge.textContent = ativo ? "Cadastro público ATIVO ✅" : "Cadastro público DESATIVADO ⛔";
-      badge.className = "badge " + (ativo ? "ok" : "bad");
-    }
-
-    const { data, error } = await sb.from("cadastros_clientes").select("*").order("created_at",{ascending:false});
-    if(error){
-      if(wrap) wrap.innerHTML = `<div class="err">Erro ao carregar: ${escapeHtml(error.message)}</div>`;
-      if(pendEl) pendEl.textContent = "0";
-      return;
-    }
-
-    const rows = data || [];
-    const pend = rows.filter(r => String(r.status||"").toLowerCase()==="pendente").length;
-    if(pendEl) pendEl.textContent = String(pend);
-
-    const filtered = rows.filter(r=>{
-      if(!q) return true;
-      const blob = [r.nome_negocio,r.cidade,r.categoria,r.whatsapp,r.email,r.instagram,r.endereco,r.mensagem,r.status]
-        .filter(Boolean).join(" ").toLowerCase();
-      return blob.includes(q);
-    });
-
-    if(!filtered.length){
-      if(wrap) wrap.innerHTML = `<div class="muted">Nenhum cadastro encontrado.</div>`;
-      return;
-    }
-
-    if(wrap) wrap.innerHTML = filtered.map(renderCadastroRow).join("");
-
-    wrap.querySelectorAll("[data-aprovar]").forEach(b=>b.onclick=()=>aprovarCadastro(b.getAttribute("data-aprovar")));
-    wrap.querySelectorAll("[data-rejeitar]").forEach(b=>b.onclick=()=>rejeitarCadastro(b.getAttribute("data-rejeitar")));
-    wrap.querySelectorAll("[data-detalhes]").forEach(b=>b.onclick=async()=>{
-      const id=b.getAttribute("data-detalhes");
-      const { data } = await sb.from("cadastros_clientes").select("*").eq("id",id).single();
-      alert(JSON.stringify(data||{},null,2));
-    });
-  }
-
-  async function aprovarCadastro(id){
-    const { data: cad, error } = await sb.from("cadastros_clientes").select("*").eq("id", id).single();
-    if(error) return msg("Falha ao buscar cadastro: "+error.message,"err");
-
-    const base = slugify(cad.nome_negocio || "negocio").slice(0,40) || "negocio";
-    let slug = base;
-    const { data: exists } = await sb.from("clientes").select("slug").eq("slug", slug).maybeSingle();
-    if(exists?.slug) slug = `${base}-${String(Date.now()).slice(-4)}`;
-
-    const payload = {
-      nome: cad.nome_negocio,
-      slug,
-      whatsapp: cad.whatsapp || "",
-      ativo: true,
-      tipo: "portal",
-      tipo_negocio: String(cad.categoria || "comercio").toLowerCase()
-    };
-
-    const { error: cErr } = await sb.from("clientes").insert(payload);
-    if(cErr) return msg("Falha ao criar cliente: "+cErr.message,"err");
-
-    const { error: uErr } = await sb.from("cadastros_clientes")
-      .update({ status:"aprovado", cliente_slug: slug, aprovado_em: new Date().toISOString() })
-      .eq("id", id);
-    if(uErr) return msg("Falha ao marcar aprovado: "+uErr.message,"err");
-
-    msg("Cadastro aprovado e cliente criado ✅","ok");
-    await loadCadastrosAprovacao();
-    if(typeof loadClientes === "function") loadClientes();
-  }
-
-  async function rejeitarCadastro(id){
-    const { error } = await sb.from("cadastros_clientes")
-      .update({ status:"rejeitado", rejeitado_em: new Date().toISOString() })
-      .eq("id", id);
-    if(error) return msg("Falha ao rejeitar: "+error.message,"err");
-    msg("Cadastro rejeitado.","ok");
-    await loadCadastrosAprovacao();
-  }
-
-  async function toggleCadastroPublico(){
-    const atual = await getCadastroAtivo();
-    try{
-      await setCadastroAtivo(!atual);
-      msg("Cadastro público " + (!atual ? "ATIVADO ✅" : "DESATIVADO ⛔"), "ok");
-      await loadCadastrosAprovacao();
-    }catch(e){
-      msg("Falha ao alternar: "+(e?.message||e),"err");
-    }
-  }
-
-
 </script>
+
 </body>
 </html>
