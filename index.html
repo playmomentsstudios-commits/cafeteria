@@ -3,1503 +3,795 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Alfa • Portal da Chapada</title>
+  <title>Cardápio Digital • Portal da Chapada</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg:#0b1220;
-      --line:rgba(255,255,255,.12);
-      --text:#f7f7fb;
-      --muted:rgba(247,247,251,.7);
-
       --y:#ffd24a;
       --y2:#ffbb1a;
-
-      --ok:#1dd6a4;
-      --danger:#ff5a67;
-      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --bg:#f7e9b6;
+      --card:#fff7df;
+      --card2:#ffffff;
+      --ink:#1b1b1f;
+      --muted:rgba(27,27,31,.68);
+      --line:rgba(27,27,31,.12);
+      --shadow:0 18px 55px rgba(0,0,0,.12);
+      --r:18px;
+      --ok:#12b981;
+      --danger:#ff5465;
     }
     *{box-sizing:border-box}
-
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      color:var(--text);
-      padding:18px 14px 90px;
+      color:var(--ink);
+      background:
+        radial-gradient(900px 500px at 25% 5%, rgba(255,210,74,.55), transparent 60%),
+        radial-gradient(900px 500px at 75% 10%, rgba(255,187,26,.35), transparent 60%),
+        linear-gradient(180deg, #fff3cf, var(--bg));
       min-height:100vh;
-
-      /* default (app) */
-      background:
-        radial-gradient(900px 600px at 20% 0%, rgba(255,210,74,.18), transparent 55%),
-        radial-gradient(900px 600px at 80% 10%, rgba(255,187,26,.14), transparent 55%),
-        linear-gradient(180deg, #070b14, var(--bg));
+      padding:18px 14px 96px;
     }
-
-    /* Fundo full-screen só no login (coloque admin-bg.jpg na mesma pasta do index) */
-    body.is-login{
-      padding:0;
-      background:
-        linear-gradient(180deg, rgba(7,11,20,.55), rgba(11,18,32,.92)),
-        url("./admin-bg.jpg") center/cover no-repeat fixed;
-    }
-
     .wrap{max-width:1200px;margin:0 auto}
-
     .top{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:14px 16px;border-radius:22px;
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid var(--line); box-shadow:var(--shadow);
-      backdrop-filter: blur(12px);
+      display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+      background:rgba(255,255,255,.55);
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:26px;
+      padding:14px 16px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
     }
-    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand{display:flex;align-items:center;gap:12px;min-width:240px}
     .logo{
       width:46px;height:46px;border-radius:16px;overflow:hidden;
-      background:rgba(255,255,255,.06);border:1px solid var(--line);
+      background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.10);
       display:flex;align-items:center;justify-content:center;
+      flex:0 0 auto;
     }
     .logo img{width:100%;height:100%;object-fit:cover}
-    .brand h1{margin:0;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand h1{margin:0;font-size:18px;line-height:1.1}
     .brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
 
+    .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .btn{
       border:none;cursor:pointer;
-      padding:10px 12px;border-radius:14px;
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      color:var(--text);
-      font-weight:800;
+      padding:11px 14px;border-radius:16px;
+      background:rgba(0,0,0,.06);
+      border:1px solid rgba(0,0,0,.10);
+      color:var(--ink);
+      font-weight:900;
       display:inline-flex;align-items:center;gap:8px;
+      text-decoration:none;
+      user-select:none;
     }
-    .btn.y{background:linear-gradient(135deg,var(--y),var(--y2)); color:#201400; border-color:rgba(0,0,0,.08)}
-    .btn.ghost{background:transparent}
+    .btn.y{background:linear-gradient(135deg,var(--y),var(--y2)); border-color:rgba(0,0,0,.12)}
+    .btn.dark{background:#111218;color:#fff;border-color:rgba(0,0,0,.35)}
+    .btn:active{transform:translateY(1px)}
     .btn:disabled{opacity:.6;cursor:not-allowed}
-    .btn.small{padding:8px 10px;border-radius:12px;font-size:12px}
 
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
-    .card{
-      border-radius:22px;padding:16px;
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid var(--line);
+    .hero{
+      margin-top:14px;
+      background:rgba(255,255,255,.55);
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:26px;
+      padding:16px;
       box-shadow:var(--shadow);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(10px);
     }
-    .h{margin:0 0 10px;font-size:14px}
-    .sub{color:var(--muted);font-size:12px;margin:0 0 12px}
-
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .field{flex:1;min-width:190px}
-    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    .hero h2{margin:0 0 6px;font-size:32px;letter-spacing:-.4px}
+    .hero p{margin:0;color:var(--muted);font-weight:600}
+    .heroBar{
+      margin-top:12px;
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+    }
+    .field{flex:1;min-width:220px}
     input,select{
       width:100%;
-      padding:11px 12px;border-radius:14px;
-      background:rgba(0,0,0,.25);
-      border:1px solid var(--line);
-      color:var(--text);
+      padding:13px 14px;
+      border-radius:18px;
+      border:1px solid rgba(0,0,0,.12);
+      background:rgba(255,255,255,.72);
       outline:none;
+      font-weight:700;
+      color:var(--ink);
     }
-    input:focus,select:focus{border-color:rgba(255,210,74,.55)}
+    input:focus,select:focus{border-color:rgba(255,187,26,.75)}
+    .rightTools{display:flex;gap:10px;flex-wrap:wrap}
+    .tiny{font-size:12px;color:var(--muted);margin-top:8px}
 
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .tab{
-      padding:10px 12px;border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
-      color:var(--muted);font-weight:900;
-      cursor:pointer;
+    .section{
+      margin-top:14px;
+      background:rgba(255,255,255,.55);
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:26px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
     }
-    .tab.active{background:rgba(255,210,74,.18); color:var(--text); border-color:rgba(255,210,74,.45)}
-
-    .toolbar{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-      margin:12px 0 0;
+    .secHead{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+      margin-bottom:10px;
     }
-    .toolbar input{max-width:360px}
+    .secHead h3{margin:0;font-size:20px}
+    .count{color:var(--muted);font-weight:800}
+    .msg{
+      margin-top:10px;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.75);
+      color:var(--muted);
+      font-weight:700;
+    }
+    .msg.err{border-color:rgba(255,84,101,.35); color:#a11925; background:rgba(255,84,101,.12)}
+    .msg.ok{border-color:rgba(18,185,129,.35); color:#0b6b4b; background:rgba(18,185,129,.12)}
 
     .grid4{
       display:grid;
       grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:12px;margin-top:12px;
-    }
-    .item{
-      border-radius:18px;padding:12px;
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--line);
-      display:flex;flex-direction:column;gap:10px;
-      min-height:160px;
-    }
-    .itemTop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-    .ttl{font-weight:900;line-height:1.15}
-    .meta{color:var(--muted);font-size:12px}
-    .pill{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 9px;border-radius:999px;
-      font-weight:900;font-size:12px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
-    }
-    .pill.ok{background:rgba(29,214,164,.14); border-color:rgba(29,214,164,.35)}
-    .pill.off{opacity:.65}
-    .menuWrap{position:relative}
-    .kebab{
-      width:38px;height:38px;border-radius:12px;
-      display:flex;align-items:center;justify-content:center;
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      cursor:pointer;
-      font-weight:900;
-    }
-    .menu{
-      position:absolute;right:0;top:44px;z-index:20;
-      min-width:200px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:#0b1220;
-      box-shadow:0 20px 60px rgba(0,0,0,.55);
-      overflow:hidden;
-      display:none;
-    }
-    .menu button{
-      width:100%;
-      text-align:left;
-      padding:10px 12px;
-      border:none;
-      background:transparent;
-      color:var(--text);
-      cursor:pointer;
-      font-weight:800;
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .menu button:hover{background:rgba(255,255,255,.06)}
-    .menu button.danger{color:#ff7b86}
-
-    .msg{
-      margin-top:12px;padding:12px;border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.20);
-      color:var(--muted);
-      font-size:13px;
-    }
-    .msg.err{border-color:rgba(255,90,103,.45); color:#ffd0d5}
-    .msg.ok{border-color:rgba(29,214,164,.40); color:#c9fff0}
-
-    /* LOGIN */
-    #login{min-height:100vh;display:flex;align-items:center;justify-content:center}
-    .loginWrap{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px}
-    .loginHeroLogo img{
-      width:190px;max-width:70vw;height:auto;display:block;
-      filter:drop-shadow(0 10px 25px rgba(0,0,0,.35));
-    }
-    .loginCard{
-      width:min(420px,92vw);
-      border-radius:24px;
-      padding:20px;
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow:0 25px 80px rgba(0,0,0,.55);
-      backdrop-filter: blur(12px);
-      text-align:center;
-    }
-    .loginCard h2{margin:8px 0 0}
-    .loginCard p{margin:6px 0 14px;color:var(--muted);font-size:13px}
-    .loginForm{text-align:left;margin-top:8px}
-    .sp10{height:10px}
-    .loginActions{justify-content:center;margin-top:14px;gap:10px}
-    .btn.gIcon{
-      width:44px;min-width:44px;height:40px;padding:0;border-radius:12px;
-      display:flex;align-items:center;justify-content:center
-    }
-    .gMark{font-weight:900;font-size:18px;line-height:1;letter-spacing:-1px}
-
-    /* Cadastros (aprovação) */
-    .cadTop{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-      padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-      margin-top:12px;
-    }
-    .badge{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      font-weight:900;font-size:12px;
-      background:rgba(255,255,255,.06);
-    }
-    .badge.ok{background:rgba(29,214,164,.14);border-color:rgba(29,214,164,.35)}
-    .badge.bad{background:rgba(255,90,103,.12);border-color:rgba(255,90,103,.28)}
-    .badge.warn{background:rgba(255,210,74,.12);border-color:rgba(255,210,74,.28)}
-
-    #cadList{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-    .cadRow{
-      display:flex;gap:12px;justify-content:space-between;align-items:flex-start;
-      padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(0,0,0,.18)
-    }
-    .cadTitle{display:flex;gap:10px;align-items:center;margin-bottom:6px}
-    .cadMeta{display:flex;flex-wrap:wrap;gap:8px;opacity:.9;font-size:13px}
-    .dot{opacity:.6}
-    .link{color:#ffd24a;text-decoration:none}
-    .link:hover{text-decoration:underline}
-    .err{color:#ff8c96}
-    .muted{opacity:.8}
-
-    @media (max-width:1050px){ .grid4{grid-template-columns:repeat(2,minmax(0,1fr))} }
-    @media (max-width:720px){
-      .grid2{grid-template-columns:1fr}
-      .grid4{grid-template-columns:1fr}
-    }
-
-    /* ===== MODAL EDITAR (bonitinho) ===== */
-    .modalBack{
-      position:fixed; inset:0; z-index:9999;
-      background:rgba(0,0,0,.60);
-      display:none;
-      align-items:center; justify-content:center;
-      padding:18px;
-    }
-    .modal{
-      width:min(860px, 96vw);
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.14);
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      box-shadow:0 25px 80px rgba(0,0,0,.55);
-      backdrop-filter: blur(14px);
-      overflow:hidden;
-    }
-    .modalHead{
-      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
-      padding:14px 16px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-    }
-    .modalTitle{font-weight:950;margin:0}
-    .modalSub{margin:4px 0 0;color:var(--muted);font-size:12px}
-    .xbtn{
-      width:40px;height:40px;border-radius:14px;
-      display:flex;align-items:center;justify-content:center;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.14);
-      cursor:pointer;
-      font-weight:900;
-      color:var(--text);
-    }
-    .xbtn:hover{background:rgba(255,255,255,.10)}
-    .modalBody{padding:16px}
-    .formGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
       gap:12px;
     }
-    .span2{grid-column:1/-1}
-    .hint{
-      font-size:12px;color:var(--muted);
-      padding:10px 12px;border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      margin-bottom:12px;
+    .card{
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:22px;
+      padding:12px;
+      box-shadow:0 10px 35px rgba(0,0,0,.10);
+      display:flex;flex-direction:column;gap:10px;
+      min-height:200px;
     }
-    .previewRow{
-      display:flex;gap:12px;align-items:center;flex-wrap:wrap;
-      padding:10px 12px;border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-    }
-    .prevImg{
-      width:56px;height:56px;border-radius:16px;overflow:hidden;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
+    .cover{
+      width:100%;
+      aspect-ratio: 16 / 10;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(0,0,0,.10);
+      background:rgba(0,0,0,.04);
       display:flex;align-items:center;justify-content:center;
+      font-weight:900;color:rgba(0,0,0,.35);
     }
-    .prevImg img{width:100%;height:100%;object-fit:cover}
-    .modalFoot{
-      display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;
-      padding:14px 16px;
-      border-top:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
+    .cover img{width:100%;height:100%;object-fit:cover;display:block}
+    .title{font-weight:950;font-size:16px;line-height:1.15}
+    .meta{color:var(--muted);font-weight:800;font-size:12px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(0,0,0,.10);
+      background:rgba(0,0,0,.04);
+      font-weight:950;font-size:12px;
+      color:rgba(0,0,0,.72);
+      width:max-content;
+    }
+    .pill.ok{background:rgba(18,185,129,.12); border-color:rgba(18,185,129,.25); color:#0b6b4b}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+    /* Loja (produtos) */
+    .backRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .shopHead{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .shopInfo{display:flex;gap:12px;align-items:center;min-width:260px}
+    .shopLogo{
+      width:54px;height:54px;border-radius:18px;overflow:hidden;
+      border:1px solid rgba(0,0,0,.10);
+      background:rgba(0,0,0,.04);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:950;color:rgba(0,0,0,.35);
+      flex:0 0 auto;
+    }
+    .shopLogo img{width:100%;height:100%;object-fit:cover}
+    .cats{
+      display:flex;gap:8px;flex-wrap:wrap;
+      margin:10px 0 12px;
+    }
+    .chip{
+      padding:8px 10px;border-radius:999px;
+      border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.72);
+      font-weight:950;font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip.active{background:rgba(255,210,74,.55); border-color:rgba(0,0,0,.14)}
+    .prodGrid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+    .pCard{
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:22px;
+      padding:12px;
+      box-shadow:0 10px 35px rgba(0,0,0,.10);
+      display:flex;flex-direction:column;gap:8px;
+      min-height:180px;
+    }
+    .pTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .pName{font-weight:950}
+    .pPrice{font-weight:950}
+    .pDesc{color:var(--muted);font-weight:700;font-size:12px;line-height:1.35}
+    .pImg{
+      width:100%;
+      aspect-ratio: 16 / 10;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(0,0,0,.10);
+      background:rgba(0,0,0,.04);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;color:rgba(0,0,0,.35);
+    }
+    .pImg img{width:100%;height:100%;object-fit:cover;display:block}
+    .pActions{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:auto;flex-wrap:wrap}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qbtn{
+      width:38px;height:38px;border-radius:14px;
+      border:1px solid rgba(0,0,0,.10);
+      background:rgba(0,0,0,.06);
+      font-weight:950;
+      cursor:pointer;
+    }
+
+    /* Carrinho (rodapé fixo) */
+    .cartBar{
+      position:fixed;left:0;right:0;bottom:0;
+      padding:12px 14px;
+      background:rgba(255,255,255,.85);
+      border-top:1px solid rgba(0,0,0,.10);
+      backdrop-filter: blur(10px);
+      box-shadow:0 -10px 35px rgba(0,0,0,.10);
+    }
+    .cartWrap{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .cartTotal{font-weight:950}
+    .cartMeta{color:var(--muted);font-weight:800;font-size:12px}
+    .cartBtns{display:flex;gap:10px;flex-wrap:wrap}
+    .btn.light{background:rgba(0,0,0,.06)}
+    .btn.danger{background:rgba(255,84,101,.12);border-color:rgba(255,84,101,.30);color:#a11925}
+
+    @media (max-width:1050px){
+      .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .prodGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .hero h2{font-size:28px}
+    }
+    @media (max-width:720px){
+      .grid4{grid-template-columns:1fr}
+      .prodGrid{grid-template-columns:1fr}
+      .hero h2{font-size:24px}
+      body{padding-bottom:120px}
     }
   </style>
 </head>
 
-<body class="is-login">
-
-<div class="wrap" id="app" style="display:none">
-
-  <div class="top">
-    <div class="brand">
-      <div class="logo"><img src="../logo.png" onerror="this.style.display='none';this.parentElement.textContent='ADM'"></div>
-      <div style="min-width:0">
-        <h1>Admin Alfa</h1>
-        <p>Gerencie clientes, categorias e produtos.</p>
-      </div>
-    </div>
-    <div class="row">
-      <button class="btn ghost" id="btnReload" title="Recarregar">🔄</button>
-      <button class="btn y" id="btnSair" title="Sair">🚪</button>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" data-tab="clientes">Clientes</button>
-    <button class="tab" data-tab="categorias">Categorias</button>
-    <button class="tab" data-tab="produtos">Produtos</button>
-    <button class="tab" data-tab="cadastros">Cadastros</button>
-  </div>
-
-  <div class="grid2">
-    <div class="card">
-      <h3 class="h">Criar Cliente</h3>
-      <p class="sub">Cria a loja + (opcional) cria login do cliente no Supabase Auth (via API).</p>
-
-      <div class="row">
-        <div class="field">
-          <label>Nome</label>
-          <input id="c_nome" placeholder="Ex: Padaria do Zé" />
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">
+          <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.parentElement.textContent='PC'">
         </div>
-        <div class="field">
-          <label>Slug</label>
-          <input id="c_slug" placeholder="ex: padaria-do-ze" />
+        <div>
+          <h1>Cardápio Digital</h1>
+          <p>Encontre lojas e produtos da Chapada dos Veadeiros.</p>
         </div>
       </div>
 
-      <div class="row">
+      <div class="actions">
+        <a class="btn y" id="btnCadastro" href="cadastro.html">➕ Cadastrar meu comércio</a>
+        <a class="btn dark" id="btnLogin" href="cafeteria/admin/">👤 Login do Comerciante</a>
+      </div>
+    </div>
+
+    <div class="hero">
+      <h2>Encontre aqui comércios da Chapada dos Veadeiros</h2>
+      <p>Escolha uma loja ativa, filtre por tipo de negócio e veja produtos por categoria. Finalize o pedido no WhatsApp.</p>
+
+      <div class="heroBar">
         <div class="field">
-          <label>WhatsApp</label>
-          <input id="c_whats" placeholder="6299..." />
+          <input id="q" placeholder="Buscar loja (nome ou slug)..." />
         </div>
-        <div class="field">
-          <label>Tipo de negócio</label>
-          <select id="c_tipo">
-            <option value="">Selecione…</option>
-            <option>Restaurante</option>
-            <option>Mercado</option>
-            <option>Padaria</option>
-            <option>Lanchonete</option>
-            <option>Cafeteria</option>
-            <option>Cervejaria Artesanal</option>
-            <option>Produtos Orgânicos e Naturais</option>
-            <option>Pousada</option>
-            <option>Hotel</option>
-            <option>Camping</option>
-            <option>Glamping</option>
-            <option>Hostel</option>
-            <option>Aluguel de Temporada (Casa/Chalé)</option>
-            <option>Guia de Turismo / Condutor</option>
-            <option>Agência de Passeios</option>
-            <option>Atrativo Natural (Cachoeiras)</option>
-            <option>Aluguel de Equipamentos</option>
-            <option>Transporte / Transfer</option>
-            <option>Terapias Holísticas</option>
-            <option>Centro de Yoga / Meditação</option>
-            <option>Spa e Massoterapia</option>
-            <option>Espaço de Cursos e Retiros</option>
-            <option>Farmácia</option>
-            <option>Petshop</option>
-            <option>Artesanato e Suvenires</option>
-            <option>Loja de Roupas / Cristais</option>
-            <option>Posto de Combustível</option>
-            <option>Oficina Mecânica / Borracharia</option>
-            <option>Serviços</option>
-            <option>Construção e Reformas</option>
-            <option>Imobiliária</option>
-            <option>Eventos e Produção Cultural</option>
-            <option>Outro</option>
+        <div class="field" style="max-width:280px">
+          <select id="tipo">
+            <option value="">Todos os tipos</option>
           </select>
         </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Logo URL (opcional)</label>
-          <input id="c_logo" placeholder="https://.../logo.png" />
-        </div>
-        <div class="field">
-          <label>Status</label>
-          <select id="c_ativo">
-            <option value="true">Ativo</option>
-            <option value="false">Inativo</option>
-          </select>
+        <div class="rightTools">
+          <button class="btn y" id="btnAtualizar">🔄 Atualizar</button>
+          <button class="btn" id="btnVoltar" style="display:none">← Voltar para lojas</button>
         </div>
       </div>
 
-      <div class="row">
-        <div class="field">
-          <label>Email do cliente (opcional)</label>
-          <input id="c_email" placeholder="cliente@dominio.com" />
-        </div>
-        <div class="field">
-          <label>Senha do cliente (opcional)</label>
-          <input id="c_senha" type="password" placeholder="••••••••" />
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <button class="btn y" id="btnCriarCliente">➕ Criar cliente</button>
-      </div>
-
-      <div id="msg" class="msg" style="display:none"></div>
+      <div class="tiny" id="tinyInfo">Dica: você pode abrir uma loja direto com <strong>?u=slug-da-loja</strong>.</div>
     </div>
 
-    <div class="card">
-      <h3 class="h">Cadastros</h3>
-      <p class="sub">Selecione um cliente e cadastre categorias/produtos com segurança.</p>
-
-      <div class="row">
-        <div class="field">
-          <label>Cliente selecionado</label>
-          <select id="selCliente"></select>
-        </div>
-        <div class="field">
-          <label>Categoria (para produto)</label>
-          <select id="selCategoria"></select>
-        </div>
+    <!-- LISTA LOJAS -->
+    <div class="section" id="secLojas">
+      <div class="secHead">
+        <h3>Lojas em destaque</h3>
+        <div class="count"><span id="lojasCount">—</span> lojas</div>
       </div>
 
-      <div class="row">
-        <div class="field">
-          <label>Nova categoria</label>
-          <input id="cat_nome" placeholder="Ex: Bebidas" />
-        </div>
-        <div class="field">
-          <label>Ordem</label>
-          <input id="cat_ordem" type="number" value="0" />
-        </div>
-      </div>
-
-      <div class="row">
-        <button class="btn y" id="btnCriarCategoria">📁 Criar categoria</button>
-      </div>
-
-      <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0">
-
-      <div class="row">
-        <div class="field">
-          <label>Produto</label>
-          <input id="p_nome" placeholder="Ex: Pão de queijo" />
-        </div>
-        <div class="field">
-          <label>Preço</label>
-          <input id="p_preco" type="number" step="0.01" value="0" />
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Descrição</label>
-          <input id="p_desc" placeholder="opcional..." />
-        </div>
-        <div class="field">
-          <label>Imagem URL (opcional)</label>
-          <input id="p_img" placeholder="https://.../foto.jpg" />
-        </div>
-      </div>
-
-      <div class="row">
-        <button class="btn y" id="btnCriarProduto">🧾 Criar produto</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:14px">
-    <div class="toolbar">
-      <div>
-        <h3 class="h" id="listTitle">Clientes</h3>
-        <p class="sub" id="listSub">Grid 4 colunas</p>
-      </div>
-      <input id="search" placeholder="Buscar..." />
+      <div id="lojasMsg" class="msg" style="display:none"></div>
+      <div class="grid4" id="lojasGrid"></div>
     </div>
 
-    <div id="cadBox" style="display:none">
-      <div class="cadTop">
-        <div class="row" style="align-items:center">
-          <span id="cadAtivoBadge" class="badge warn">Carregando…</span>
-          <button class="btn" id="btnToggleCadastro">Ativar/Desativar</button>
-          <span class="meta">Pendentes: <strong id="cadPend">0</strong></span>
-        </div>
-        <div class="meta">Obs: se aparecer erro aqui, é policy/permissão do Supabase para admin.</div>
-      </div>
-      <div id="cadList"></div>
-    </div>
-
-    <div class="grid4" id="list"></div>
-  </div>
-
-</div>
-
-<!-- LOGIN -->
-<div id="login">
-  <div class="loginWrap">
-    <div class="loginHeroLogo">
-      <img src="../logo.png" alt="Logo"
-           onerror="this.style.display='none';document.getElementById('loginHeroFallback').style.display='block';" />
-      <div id="loginHeroFallback" style="display:none;font-weight:900;font-size:28px;letter-spacing:.5px;">Admin Alfa</div>
-    </div>
-
-    <div class="loginCard">
-      <h2>Entrar</h2>
-      <p>Email/senha do Supabase Auth ou Google.</p>
-
-      <div class="loginForm">
-        <label>Email</label>
-        <input id="email" placeholder="seu@email.com" />
-        <div class="sp10"></div>
-        <label>Senha</label>
-        <input id="senha" type="password" placeholder="••••••••" />
-      </div>
-
-      <div class="row loginActions">
-        <button class="btn y" id="btnLogin">🔒 Entrar</button>
-        <button class="btn gIcon" id="btnGoogle" title="Entrar com Google" aria-label="Entrar com Google">
-          <span class="gMark">G</span>
-        </button>
-      </div>
-
-      <div id="loginMsg" class="msg err" style="display:none;margin-top:12px"></div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL EDITAR CLIENTE -->
-<div class="modalBack" id="modalBack" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true">
-    <div class="modalHead">
-      <div>
-        <div class="modalTitle" id="mTitle">Editar cliente</div>
-        <div class="modalSub" id="mSub">Atualize os dados do negócio.</div>
-      </div>
-      <button class="xbtn" id="btnCloseModal" title="Fechar">✕</button>
-    </div>
-
-    <div class="modalBody">
-      <div class="hint">
-        🔒 <strong>Senha não é visível</strong> (nem pro Admin). Para o cliente entrar, use <strong>Link de senha</strong> (recovery).
-      </div>
-
-      <div class="formGrid">
-        <div class="field span2">
-          <label>Slug (não edita)</label>
-          <input id="m_slug" disabled />
-        </div>
-
-        <div class="field">
-          <label>Nome</label>
-          <input id="m_nome" />
-        </div>
-
-        <div class="field">
-          <label>WhatsApp</label>
-          <input id="m_whatsapp" placeholder="6299..." />
-        </div>
-
-        <div class="field">
-          <label>Email (login)</label>
-          <input id="m_email" placeholder="cliente@email.com" />
-        </div>
-
-        <div class="field">
-          <label>Instagram</label>
-          <input id="m_instagram" placeholder="sem @" />
-        </div>
-
-        <div class="field">
-          <label>Cidade</label>
-          <input id="m_cidade" placeholder="Ex: Cavalcante" />
-        </div>
-
-        <div class="field">
-          <label>Tipo de negócio</label>
-          <input id="m_tipo_negocio" placeholder="Ex: mercado, pousada..." />
-        </div>
-
-        <div class="field span2">
-          <label>Endereço</label>
-          <input id="m_endereco" placeholder="Rua, número, bairro..." />
-        </div>
-
-        <div class="field span2">
-          <label>Logo URL (opcional)</label>
-          <input id="m_logo_url" placeholder="https://.../logo.png" />
-        </div>
-
-        <div class="field span2">
-          <div class="previewRow">
-            <div class="prevImg"><img id="m_logo_prev" alt="preview" style="display:none"/></div>
-            <div style="min-width:220px">
-              <div class="ttl" style="font-size:13px;margin-bottom:2px">Preview</div>
-              <div class="meta" id="m_logo_text">Sem logo</div>
-            </div>
-
-            <div class="row" style="margin-left:auto">
-              <label style="display:flex;align-items:center;gap:8px;margin:0;color:var(--text)">
-                <input type="checkbox" id="m_ativo" style="width:18px;height:18px"/>
-                Ativo (publicado)
-              </label>
-              <button class="btn y small" id="btnLinkSenha">🔑 Link de senha</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="modalMsg" class="msg err" style="display:none;margin-top:12px"></div>
-    </div>
-
-    <div class="modalFoot">
-      <button class="btn" id="btnCancelModal">Cancelar</button>
-      <button class="btn y" id="btnSaveModal">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  // ====== CONFIG ======
-  const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc25teHNweXl3d291aGNkd2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MzI3NzIsImV4cCI6MjA4MzUwODc3Mn0.dxj35rJ_g_952_VvwV4mjFraB1b0BLdsxHw_wYiQNQI";
-
-  // Backend Vercel
-  const API_BASE = "https://cafeteria-gamma-orpin.vercel.app/api/admin";
-
-  // Admin Alfa
-  const ALFA_EMAIL = "playmomentsstudios@gmail.com";
-
-  // ✅ apenas UMA instância
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // ====== STATE ======
-  let session = null;
-  let tab = "clientes";
-  let clientes = [];
-  let categorias = [];
-  let produtos = [];
-  let cadRows = [];
-  let cadastroAtivo = true;
-
-  // modal
-  let editingSlug = null;
-
-  // evita loop de login por refresh de token
-  let booting = false;
-  let bootedOnce = false;
-
-  // ====== UI HELPERS ======
-  const el = (id)=>document.getElementById(id);
-  const show = (id)=>el(id).style.display="block";
-  const hide = (id)=>el(id).style.display="none";
-
-  function setModeLogin(isLogin){
-    document.body.classList.toggle("is-login", !!isLogin);
-  }
-
-  function escapeHtml(str){
-    return String(str ?? "").replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
-  function msg(text, type=""){
-    const box = el("msg");
-    box.style.display = "block";
-    box.className = "msg " + (type||"");
-    box.textContent = text;
-    setTimeout(()=>{ box.style.display="none"; }, 4500);
-  }
-
-  function loginMsg(text){
-    const box = el("loginMsg");
-    box.style.display = "block";
-    box.textContent = text;
-  }
-
-  function modalMsg(text){
-    const box = el("modalMsg");
-    if(!text){
-      box.style.display="none";
-      box.textContent="";
-      return;
-    }
-    box.style.display="block";
-    box.textContent=text;
-  }
-
-  function slugify(s){
-    return String(s||"")
-      .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
-  }
-
-  function money(v){
-    return Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  }
-
-  function openMenu(id){
-    document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
-    const m = document.getElementById(id);
-    if (m) m.style.display = "block";
-  }
-  window.openMenu = openMenu;
-
-  window.addEventListener("click", (e)=>{
-    if (!e.target.closest(".menuWrap")) document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
-  });
-
-  // ====== AUTH HELPERS ======
-  function isAlfa(){
-    const email = session?.user?.email || "";
-    return String(email).toLowerCase().trim() === ALFA_EMAIL.toLowerCase();
-  }
-
-  async function requireAlfa(){
-    if(!session) return false;
-    if(isAlfa()) return true;
-
-    try{ await sb.auth.signOut(); }catch(_e){}
-    session = null;
-
-    el("app").style.display="none";
-    show("login");
-    setModeLogin(true);
-
-    loginMsg("Acesso negado: este painel é apenas para o Admin Alfa.");
-    return false;
-  }
-
-  // ====== API CALL (Vercel) ======
-  async function api(path, method="GET", body=null){
-    const token = session?.access_token;
-    const headers = {
-      "Content-Type":"application/json",
-      "Authorization": "Bearer " + (token || "")
-    };
-    const opts = { method, headers };
-    if (body) opts.body = JSON.stringify(body);
-
-    const r = await fetch(API_BASE + path, opts);
-    const j = await r.json().catch(()=> ({}));
-    if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
-    return j;
-  }
-
-  // ====== LOAD (API) ======
-  async function loadAllApi(){
-    const [c1,c2,c3] = await Promise.all([
-      api("/clientes","GET"),
-      api("/categorias","GET"),
-      api("/produtos","GET")
-    ]);
-    clientes = c1.data || [];
-    categorias = c2.data || [];
-    produtos = c3.data || [];
-
-    fillClienteSelect();
-    fillCategoriaSelect();
-  }
-
-  function fillClienteSelect(){
-    const s = el("selCliente");
-    s.innerHTML = clientes
-      .map(c=>`<option value="${escapeHtml(c.slug)}">${escapeHtml(c.nome)} (${escapeHtml(c.slug)})</option>`)
-      .join("");
-  }
-
-  function fillCategoriaSelect(){
-    const cliente_slug = el("selCliente").value;
-    const s = el("selCategoria");
-    const cats = categorias.filter(x=>x.cliente_slug===cliente_slug);
-    s.innerHTML = cats.map(c=>`<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join("");
-  }
-
-  el("selCliente").addEventListener("change", ()=>{
-    fillCategoriaSelect();
-    if (tab !== "clientes") renderList();
-  });
-
-  // ====== TABS ======
-  document.querySelectorAll(".tab").forEach(b=>{
-    b.addEventListener("click", async ()=>{
-      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-      tab = b.dataset.tab;
-      await renderList(true);
-    });
-  });
-
-  el("search").addEventListener("input", ()=>renderList(false));
-
-  // ====== RENDER LIST ======
-  async function renderList(forceReloadCadastros){
-    const q = (el("search").value||"").trim().toLowerCase();
-    const listEl = el("list");
-    const cadBox = el("cadBox");
-
-    if(tab === "cadastros"){
-      el("listTitle").textContent = "Cadastros (aprovação)";
-      el("listSub").textContent = "Aprovar/Rejeitar cadastros públicos + ativar/desativar landing.";
-      listEl.style.display="none";
-      cadBox.style.display="block";
-
-      if(forceReloadCadastros) await loadCadastros();
-
-      const filtered = cadRows.filter(r=>{
-        if(!q) return true;
-        const blob = [r.nome_negocio,r.cidade,r.categoria,r.whatsapp,r.email,r.instagram,r.endereco,r.mensagem,r.status]
-          .filter(Boolean).join(" ").toLowerCase();
-        return blob.includes(q);
-      });
-
-      renderCadastros(filtered);
-      return;
-    }
-
-    cadBox.style.display="none";
-    listEl.style.display="grid";
-
-    if (tab==="clientes"){
-      el("listTitle").textContent = "Clientes";
-      el("listSub").textContent = "Ações: ver publicado, ativar/desativar, editar, link de senha, excluir.";
-
-      let list = clientes.slice();
-      if (q) list = list.filter(x=>
-        (x.nome||"").toLowerCase().includes(q) ||
-        (x.slug||"").toLowerCase().includes(q) ||
-        (x.email||"").toLowerCase().includes(q)
-      );
-
-      listEl.innerHTML = list.map(c=>{
-        const mid = "m_cli_"+c.slug;
-        const slugJS = JSON.stringify(c.slug || "");
-        const emailJS = JSON.stringify(c.email || "");
-
-        return `
-          <div class="item">
-            <div class="itemTop">
-              <div>
-                <div class="ttl">${escapeHtml(c.nome||"—")}</div>
-                <div class="meta">${escapeHtml(c.slug||"")}</div>
-                <div class="meta">Email: ${escapeHtml(c.email||"—")}</div>
-              </div>
-
-              <div class="menuWrap">
-                <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
-                <div class="menu" id="${mid}">
-                  <button onclick="verPublicado(${slugJS})">🌐 Ver publicado</button>
-                  <button onclick="openEditModal(${slugJS})">✏️ Editar</button>
-                  <button onclick="gerarLinkSenha(${emailJS})">🔑 Link de senha</button>
-                  <button onclick="toggleCliente(${slugJS}, ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
-                  <button class="danger" onclick="delCliente(${slugJS})">🗑 Excluir</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <span class="pill ${c.ativo ? "ok":"off"}">${c.ativo ? "Ativo":"Inativo"}</span>
-              <span class="meta">${escapeHtml(c.tipo_negocio||"")}</span>
-            </div>
-            <div class="meta">Whats: ${escapeHtml(c.whatsapp||"—")}</div>
-          </div>
-        `;
-      }).join("");
-      return;
-    }
-
-    const cliente_slug = el("selCliente").value;
-
-    if (tab==="categorias"){
-      el("listTitle").textContent = "Categorias";
-      el("listSub").textContent = "Mostrando do cliente selecionado.";
-
-      let list = categorias.filter(x=>x.cliente_slug===cliente_slug);
-      if (q) list = list.filter(x=> (x.nome||"").toLowerCase().includes(q));
-
-      listEl.innerHTML = list.map(c=>{
-        const mid = "m_cat_"+c.id;
-        return `
-          <div class="item">
-            <div class="itemTop">
-              <div>
-                <div class="ttl">${escapeHtml(c.nome||"—")}</div>
-                <div class="meta">ordem: ${Number(c.ordem||0)}</div>
-              </div>
-              <div class="menuWrap">
-                <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
-                <div class="menu" id="${mid}">
-                  <button onclick="toggleCategoria(${c.id}, ${!c.ativo})">${c.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
-                  <button class="danger" onclick="delCategoria(${c.id})">🗑 Excluir</button>
-                </div>
-              </div>
-            </div>
-            <span class="pill ${c.ativo ? "ok":"off"}">${c.ativo ? "Ativo":"Inativo"}</span>
-          </div>
-        `;
-      }).join("");
-      return;
-    }
-
-    el("listTitle").textContent = "Produtos";
-    el("listSub").textContent = "Mostrando do cliente selecionado.";
-
-    let list = produtos.filter(x=>x.cliente_slug===cliente_slug);
-    if (q) list = list.filter(x=> (x.nome||"").toLowerCase().includes(q));
-
-    listEl.innerHTML = list.map(p=>{
-      const mid = "m_prod_"+p.id;
-      return `
-        <div class="item">
-          <div class="itemTop">
-            <div>
-              <div class="ttl">${escapeHtml(p.nome||"—")}</div>
-              <div class="meta">${money(p.preco)}</div>
-            </div>
-            <div class="menuWrap">
-              <div class="kebab" onclick="openMenu('${mid}')">⋯</div>
-              <div class="menu" id="${mid}">
-                <button onclick="toggleProduto(${p.id}, ${!p.ativo})">${p.ativo ? "⛔ Desativar" : "✅ Ativar"}</button>
-                <button class="danger" onclick="delProduto(${p.id})">🗑 Excluir</button>
-              </div>
-            </div>
-          </div>
-          <span class="pill ${p.ativo ? "ok":"off"}">${p.ativo ? "Ativo":"Inativo"}</span>
-          <div class="meta">${escapeHtml(p.descricao||"")}</div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  // ====== ACTIONS (API) ======
-  window.verPublicado = function(slug){
-    window.open("../?u=" + encodeURIComponent(slug), "_blank");
-  }
-
-  window.toggleCliente = async function(slug, ativo){
-    try{
-      await api("/clientes","PUT",{ slug, ativo });
-      await bootLoad();
-      msg("Cliente atualizado ✅","ok");
-    }catch(e){
-      msg("Erro ao atualizar cliente: " + e.message, "err");
-    }
-  }
-
-  window.delCliente = async function(slug){
-    if (!confirm("Excluir cliente e tudo dele?")) return;
-    try{
-      await api("/clientes?slug="+encodeURIComponent(slug),"DELETE");
-      await bootLoad();
-      msg("Cliente excluído ✅","ok");
-    }catch(e){
-      msg("Erro ao excluir cliente: " + e.message, "err");
-    }
-  }
-
-  window.toggleCategoria = async function(id, ativo){
-    try{
-      await api("/categorias","PUT",{ id, ativo });
-      await bootLoad();
-      msg("Categoria atualizada ✅","ok");
-    }catch(e){
-      msg("Erro ao atualizar categoria: " + e.message, "err");
-    }
-  }
-
-  window.delCategoria = async function(id){
-    if (!confirm("Excluir categoria (e produtos dela)?")) return;
-    try{
-      await api("/categorias?id="+encodeURIComponent(id),"DELETE");
-      await bootLoad();
-      msg("Categoria excluída ✅","ok");
-    }catch(e){
-      msg("Erro ao excluir categoria: " + e.message, "err");
-    }
-  }
-
-  window.toggleProduto = async function(id, ativo){
-    try{
-      await api("/produtos","PUT",{ id, ativo });
-      await bootLoad();
-      msg("Produto atualizado ✅","ok");
-    }catch(e){
-      msg("Erro ao atualizar produto: " + e.message, "err");
-    }
-  }
-
-  window.delProduto = async function(id){
-    if (!confirm("Excluir produto?")) return;
-    try{
-      await api("/produtos?id="+encodeURIComponent(id),"DELETE");
-      await bootLoad();
-      msg("Produto excluído ✅","ok");
-    }catch(e){
-      msg("Erro ao excluir produto: " + e.message, "err");
-    }
-  }
-
-  // ====== CREATE (API) ======
-  el("btnCriarCliente").addEventListener("click", async ()=>{
-    try{
-      const nome = el("c_nome").value.trim();
-      const slug = el("c_slug").value.trim() || slugify(nome);
-      const whatsapp = el("c_whats").value.trim();
-      const tipo_negocio = el("c_tipo").value.trim();
-      const logo_url = el("c_logo").value.trim();
-      const ativo = el("c_ativo").value === "true";
-
-      const email = el("c_email").value.trim();
-      const senha = el("c_senha").value.trim();
-
-      if(!nome) throw new Error("Preencha o nome.");
-      if(!slug) throw new Error("Slug inválido.");
-
-      const payload = { nome, slug, whatsapp, tipo_negocio, logo_url, ativo };
-      if (email && senha) { payload.email = email; payload.senha = senha; }
-
-      const r = await api("/clientes","POST",payload);
-      msg(r.warning ? r.warning : "Cliente criado ✅", r.warning ? "" : "ok");
-
-      el("c_nome").value = "";
-      el("c_slug").value = "";
-      el("c_whats").value = "";
-      el("c_tipo").value = "";
-      el("c_logo").value = "";
-      el("c_email").value = "";
-      el("c_senha").value = "";
-
-      await bootLoad();
-    }catch(e){
-      msg("Erro ao criar cliente: " + e.message, "err");
-    }
-  });
-
-  el("btnCriarCategoria").addEventListener("click", async ()=>{
-    try{
-      const cliente_slug = el("selCliente").value;
-      const nome = el("cat_nome").value.trim();
-      const ordem = Number(el("cat_ordem").value||0);
-      if(!cliente_slug) throw new Error("Selecione um cliente.");
-      if(!nome) throw new Error("Digite o nome da categoria.");
-      await api("/categorias","POST",{ cliente_slug, nome, ordem, ativo:true });
-      msg("Categoria criada ✅","ok");
-      el("cat_nome").value="";
-      await bootLoad();
-    }catch(e){
-      msg("Erro ao criar categoria: " + e.message, "err");
-    }
-  });
-
-  el("btnCriarProduto").addEventListener("click", async ()=>{
-    try{
-      const cliente_slug = el("selCliente").value;
-      const categoria_id = el("selCategoria").value;
-      const nome = el("p_nome").value.trim();
-      const preco = Number(el("p_preco").value||0);
-      const descricao = el("p_desc").value.trim();
-      const imagem_url = el("p_img").value.trim();
-
-      if(!cliente_slug) throw new Error("Selecione um cliente.");
-      if(!categoria_id) throw new Error("Selecione uma categoria.");
-      if(!nome) throw new Error("Digite o nome do produto.");
-
-      await api("/produtos","POST",{ cliente_slug, categoria_id, nome, preco, descricao, imagem_url, ativo:true });
-      msg("Produto criado ✅","ok");
-
-      el("p_nome").value="";
-      el("p_preco").value="0";
-      el("p_desc").value="";
-      el("p_img").value="";
-      await bootLoad();
-    }catch(e){
-      msg("Erro ao criar produto: " + e.message, "err");
-    }
-  });
-
-  // ====== CADASTROS (Supabase direto - depende de policy) ======
-  async function getCadastroAtivo(){
-    const { data, error } = await sb.from("portal_config")
-      .select("valor")
-      .eq("chave","cadastro_publico_ativo")
-      .maybeSingle();
-    if(error) return true;
-    return String(data?.valor || "true") === "true";
-  }
-
-  async function setCadastroAtivo(v){
-    const { error } = await sb.from("portal_config")
-      .upsert({ chave:"cadastro_publico_ativo", valor: v ? "true" : "false" }, { onConflict:"chave" });
-    if(error) throw error;
-  }
-
-  async function loadCadastros(){
-    const cadList = el("cadList");
-    cadList.innerHTML = `<div class="muted">Carregando…</div>`;
-
-    try{
-      cadastroAtivo = await getCadastroAtivo();
-      el("cadAtivoBadge").textContent = cadastroAtivo ? "Cadastro público ATIVO ✅" : "Cadastro público DESATIVADO ⛔";
-      el("cadAtivoBadge").className = "badge " + (cadastroAtivo ? "ok" : "bad");
-
-      const { data, error } = await sb.from("cadastros_clientes").select("*").order("created_at",{ascending:false});
-      if(error) throw error;
-
-      cadRows = data || [];
-      const pend = cadRows.filter(r => String(r.status||"").toLowerCase()==="pendente").length;
-      el("cadPend").textContent = String(pend);
-
-    }catch(e){
-      cadRows = [];
-      el("cadPend").textContent = "0";
-      cadList.innerHTML = `
-        <div class="err">
-          Erro ao carregar cadastros: ${escapeHtml(e?.message || e)}<br><br>
-          <span class="muted">
-            Isso indica policy/RLS bloqueando o admin no Supabase (cadastros_clientes / portal_config).
-          </span>
-        </div>
-      `;
-    }
-  }
-
-  function renderCadastros(rows){
-    const cadList = el("cadList");
-
-    if(!rows.length){
-      cadList.innerHTML = `<div class="muted" style="margin-top:12px">Nenhum cadastro encontrado.</div>`;
-      return;
-    }
-
-    cadList.innerHTML = rows.map(r=>{
-      const st = String(r.status || "pendente").toLowerCase();
-      const badge =
-        st === "pendente" ? `<span class="badge warn">Pendente</span>` :
-        st === "aprovado" ? `<span class="badge ok">Aprovado</span>` :
-        `<span class="badge bad">Rejeitado</span>`;
-
-      const when = r.created_at ? new Date(r.created_at).toLocaleString() : "";
-      const wpp = String(r.whatsapp||"").replace(/\D/g,"");
-      const wppLink = wpp ? `<a class="link" target="_blank" rel="noreferrer" href="https://wa.me/${wpp}">WhatsApp</a>` : "";
-
-      return `
-        <div class="cadRow">
+    <!-- LOJA / PRODUTOS -->
+    <div class="section" id="secLoja" style="display:none">
+      <div class="shopHead">
+        <div class="shopInfo">
+          <div class="shopLogo" id="shopLogo">🏪</div>
           <div>
-            <div class="cadTitle">
-              <strong>${escapeHtml(r.nome_negocio||"—")}</strong>
-              ${badge}
-            </div>
-            <div class="cadMeta">
-              <span>${escapeHtml(r.cidade||"—")}</span><span class="dot">•</span>
-              <span>${escapeHtml(r.categoria||"—")}</span><span class="dot">•</span>
-              <span>${escapeHtml(r.whatsapp||"—")}</span>
-              ${wppLink ? `<span class="dot">•</span>${wppLink}` : ``}
-            </div>
-            <div class="meta" style="margin-top:6px">
-              ${escapeHtml(when)}
-              ${r.email ? ` <span class="dot">•</span> ${escapeHtml(r.email)}` : ``}
-              ${r.instagram ? ` <span class="dot">•</span> @${escapeHtml(r.instagram)}` : ``}
-            </div>
-            ${r.endereco ? `<div class="meta" style="margin-top:6px"><strong>Endereço:</strong> ${escapeHtml(r.endereco)}</div>` : ``}
-            ${r.mensagem ? `<div class="meta" style="margin-top:6px"><strong>Mensagem:</strong> ${escapeHtml(r.mensagem)}</div>` : ``}
-          </div>
-
-          <div class="row" style="gap:10px;justify-content:flex-end">
-            ${ st === "pendente"
-              ? `
-                <button class="btn y" onclick="aprovarCadastro('${r.id}')">Aprovar</button>
-                <button class="btn" onclick="rejeitarCadastro('${r.id}')">Rejeitar</button>
-              `
-              : `<button class="btn" onclick="alert('Status: ${escapeHtml(st)}')">OK</button>`
-            }
+            <div class="title" id="shopNome">Loja</div>
+            <div class="meta" id="shopMeta">—</div>
           </div>
         </div>
-      `;
-    }).join("");
-  }
+        <div class="backRow">
+          <span class="pill ok" id="shopStatus">Ativo</span>
+          <a class="btn dark" id="btnWhats" target="_blank" rel="noreferrer">📲 WhatsApp</a>
+        </div>
+      </div>
 
-  window.aprovarCadastro = async function(id){
-    try{
-      const { data: cad, error } = await sb.from("cadastros_clientes").select("*").eq("id", id).single();
-      if(error) throw error;
+      <div id="cats" class="cats"></div>
+      <div id="prodsMsg" class="msg" style="display:none"></div>
+      <div class="prodGrid" id="prodsGrid"></div>
+    </div>
+  </div>
 
-      const base = slugify(cad.nome_negocio || "negocio").slice(0,40) || "negocio";
-      let slug = base;
+  <!-- CARRINHO -->
+  <div class="cartBar">
+    <div class="cartWrap">
+      <div>
+        <div class="cartTotal">Total: <span id="total">R$ 0,00</span></div>
+        <div class="cartMeta"><span id="itens">0</span> itens</div>
+      </div>
+      <div class="cartBtns">
+        <button class="btn light" id="btnLimpar">🧹 Limpar</button>
+        <button class="btn y" id="btnFinalizar">🧾 Finalizar</button>
+      </div>
+    </div>
+  </div>
 
-      const { data: exists } = await sb.from("clientes").select("slug").eq("slug", slug).maybeSingle();
-      if(exists?.slug) slug = `${base}-${String(Date.now()).slice(-4)}`;
+  <script>
+    // ====== CONFIG (já preenchido com seus dados) ======
+    const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc25teHNweXl3d291aGNkd2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MzI3NzIsImV4cCI6MjA4MzUwODc3Mn0.dxj35rJ_g_952_VvwV4mjFraB1b0BLdsxHw_wYiQNQI";
 
-      await api("/clientes","POST",{
-        nome: cad.nome_negocio,
-        slug,
-        whatsapp: cad.whatsapp || "",
-        tipo_negocio: cad.categoria || "",
-        logo_url: null,
-        ativo: true,
-        email: cad.email || ""
-      });
+    // ⚠️ IMPORTANTE:
+    // A HOME NÃO deve consultar auth.users (isso dá "permission denied").
+    // Aqui só consultamos public.clientes / public.categorias / public.produtos.
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const { error: uErr } = await sb.from("cadastros_clientes")
-        .update({ status:"aprovado", cliente_slug: slug, aprovado_em: new Date().toISOString() })
-        .eq("id", id);
-      if(uErr) throw uErr;
+    // ====== HELPERS ======
+    const el = (id)=>document.getElementById(id);
+    const money = (v)=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+    const esc = (s)=>String(s??"").replace(/[&<>"']/g,(m)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 
-      msg("Cadastro aprovado e cliente criado ✅","ok");
-      await bootLoad();
-      if(tab==="cadastros") await renderList(true);
-
-    }catch(e){
-      msg("Falha ao aprovar: " + (e?.message || e), "err");
+    function setMsg(id, text, type=""){
+      const box = el(id);
+      if(!text){ box.style.display="none"; box.className="msg"; box.textContent=""; return; }
+      box.style.display="block";
+      box.className = "msg " + (type||"");
+      box.textContent = text;
     }
-  }
 
-  window.rejeitarCadastro = async function(id){
-    try{
-      const { error } = await sb.from("cadastros_clientes")
-        .update({ status:"rejeitado", rejeitado_em: new Date().toISOString() })
-        .eq("id", id);
-      if(error) throw error;
-      msg("Cadastro rejeitado.","ok");
-      if(tab==="cadastros") await renderList(true);
-    }catch(e){
-      msg("Falha ao rejeitar: " + (e?.message || e), "err");
+    function parseU(){
+      const u = new URLSearchParams(location.search).get("u");
+      return (u||"").trim();
     }
-  }
 
-  el("btnToggleCadastro").addEventListener("click", async ()=>{
-    try{
-      const atual = await getCadastroAtivo();
-      await setCadastroAtivo(!atual);
-      msg(!atual ? "Cadastro público ATIVADO ✅" : "Cadastro público DESATIVADO ⛔","ok");
-      if(tab==="cadastros") await renderList(true);
-    }catch(e){
-      msg("Falha ao alternar: " + (e?.message || e), "err");
+    function setU(slug){
+      const url = new URL(location.href);
+      if(slug) url.searchParams.set("u", slug);
+      else url.searchParams.delete("u");
+      history.pushState({}, "", url.toString());
     }
-  });
 
-  // ====== MODAL EDITAR + LINK SENHA ======
-  function openModal(){
-    el("modalBack").style.display="flex";
-    el("modalBack").setAttribute("aria-hidden","false");
-  }
-  function closeModal(){
-    el("modalBack").style.display="none";
-    el("modalBack").setAttribute("aria-hidden","true");
-    editingSlug = null;
-    modalMsg("");
-  }
-
-  function updateLogoPreview(){
-    const url = (el("m_logo_url").value||"").trim();
-    const img = el("m_logo_prev");
-    const txt = el("m_logo_text");
-
-    if(!url){
-      img.style.display="none";
-      txt.textContent="Sem logo";
-      return;
-    }
-    img.style.display="block";
-    img.src = url;
-    txt.textContent = url;
-    img.onerror = ()=>{
-      img.style.display="none";
-      txt.textContent="URL inválida (não carregou)";
-    };
-  }
-
-  window.openEditModal = function(slug){
-    const c = clientes.find(x=>x.slug===slug);
-    if(!c) return msg("Cliente não encontrado.", "err");
-
-    editingSlug = slug;
-
-    el("m_slug").value = c.slug || "";
-    el("m_nome").value = c.nome || "";
-    el("m_whatsapp").value = c.whatsapp || "";
-    el("m_email").value = c.email || "";
-    el("m_instagram").value = c.instagram || "";
-    el("m_cidade").value = c.cidade || "";
-    el("m_tipo_negocio").value = c.tipo_negocio || "";
-    el("m_endereco").value = c.endereco || "";
-    el("m_logo_url").value = c.logo_url || "";
-    el("m_ativo").checked = !!c.ativo;
-
-    el("mTitle").textContent = "Editar cliente";
-    el("mSub").textContent = `${c.nome || "Cliente"} • ${c.slug}`;
-
-    updateLogoPreview();
-    openModal();
-  }
-
-  async function saveCliente(){
-    if(!editingSlug) return;
-
-    const payload = {
-      slug: editingSlug,
-      nome: el("m_nome").value.trim(),
-      whatsapp: el("m_whatsapp").value.trim(),
-      email: el("m_email").value.trim(),
-      instagram: el("m_instagram").value.trim().replace(/^@+/, ""),
-      cidade: el("m_cidade").value.trim(),
-      tipo_negocio: el("m_tipo_negocio").value.trim(),
-      endereco: el("m_endereco").value.trim(),
-      logo_url: el("m_logo_url").value.trim(),
-      ativo: el("m_ativo").checked
-    };
-
-    if(!payload.nome) return modalMsg("Preencha o nome.");
-
-    try{
-      modalMsg("");
-      el("btnSaveModal").disabled = true;
-
-      await api("/clientes","PUT", payload);
-
-      msg("Cliente atualizado ✅","ok");
-      await bootLoad();
-      closeModal();
-    }catch(e){
-      modalMsg("Erro ao salvar: " + (e?.message || e));
-    }finally{
-      el("btnSaveModal").disabled = false;
-    }
-  }
-
-  // Link de senha (recovery) - depende do backend existir
-  window.gerarLinkSenha = async function(email){
-    const em = (email||"").trim() || prompt("Email do cliente:", "");
-    if(!em) return;
-
-    try{
-      const r = await api("/reset-senha","POST",{ email: em });
-      const link = r.recovery_link || r.link || r.url;
-
-      if(link){
-        alert("🔑 Link de senha (envie para o cliente):\n\n" + link);
-      }else{
-        alert("✅ Endpoint respondeu, mas não retornou o link.\nAjuste o /reset-senha para devolver { recovery_link }.");
+    // Timeout seguro (evita “AbortError” matar a tela)
+    async function withTimeout(promise, ms=12000){
+      const c = new AbortController();
+      const t = setTimeout(()=>c.abort(), ms);
+      try{
+        // supabase-js não aceita signal direto aqui, então só usamos como “timer”
+        // (o abort serve só pra cair no catch com AbortError e mostrar msg melhor)
+        const r = await Promise.race([
+          promise,
+          new Promise((_,rej)=>c.signal.addEventListener("abort", ()=>rej(new DOMException("Timeout","AbortError"))))
+        ]);
+        return r;
+      } finally {
+        clearTimeout(t);
       }
-    }catch(e){
-      alert("❌ Falha ao gerar link de senha: " + (e?.message || e));
-    }
-  }
-
-  el("btnCloseModal").addEventListener("click", closeModal);
-  el("btnCancelModal").addEventListener("click", closeModal);
-  el("btnSaveModal").addEventListener("click", saveCliente);
-  el("btnLinkSenha").addEventListener("click", ()=>{
-    const email = el("m_email").value.trim();
-    if(!email) return modalMsg("Preencha o email para gerar link de senha.");
-    gerarLinkSenha(email);
-  });
-  el("m_logo_url").addEventListener("input", updateLogoPreview);
-
-  el("modalBack").addEventListener("click", (e)=>{
-    if(e.target === el("modalBack")) closeModal();
-  });
-  window.addEventListener("keydown", (e)=>{
-    if(e.key==="Escape" && el("modalBack").style.display==="flex") closeModal();
-  });
-
-  // ====== BOOT LOAD ======
-  async function bootLoad(){
-    await loadAllApi();
-    fillCategoriaSelect();
-    await renderList(false);
-  }
-
-  // ====== LOGIN ======
-  el("btnLogin").addEventListener("click", async ()=>{
-    try{
-      el("loginMsg").style.display="none";
-      const email = el("email").value.trim();
-      const password = el("senha").value.trim();
-
-      const { data, error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-
-      session = data.session;
-      const ok = await requireAlfa();
-      if(!ok) return;
-
-      await afterLogin();
-    }catch(e){
-      loginMsg(e.message || "Falha no login");
-    }
-  });
-
-  el("btnGoogle").addEventListener("click", async ()=>{
-    try{
-      // ✅ redirect fixo (troque se seu caminho for outro)
-      const fixedRedirect = window.location.origin + window.location.pathname;
-
-      await sb.auth.signInWithOAuth({
-        provider:"google",
-        options:{ redirectTo: fixedRedirect }
-      });
-    }catch(e){
-      loginMsg(e.message || "Falha no Google");
-    }
-  });
-
-  async function afterLogin(){
-    if(booting) return;
-    booting = true;
-
-    hide("login");
-    setModeLogin(false);
-    el("app").style.display="block";
-
-    try{
-      await bootLoad();
-      bootedOnce = true;
-    }finally{
-      booting = false;
-    }
-  }
-
-  el("btnSair").addEventListener("click", async ()=>{
-    try{ await sb.auth.signOut(); }catch(_e){}
-    session = null;
-    el("app").style.display="none";
-    show("login");
-    setModeLogin(true);
-  });
-
-  el("btnReload").addEventListener("click", bootLoad);
-
-  // init
-  (async ()=>{
-    setModeLogin(true);
-
-    const { data } = await sb.auth.getSession();
-    session = data.session || null;
-
-    if (session){
-      const ok = await requireAlfa();
-      if(ok) await afterLogin();
-      else { show("login"); setModeLogin(true); }
-    }else{
-      show("login");
-      setModeLogin(true);
     }
 
-    sb.auth.onAuthStateChange(async (event, s)=>{
-      session = s;
+    // ====== STATE ======
+    let lojas = [];
+    let tipos = [];
+    let categorias = [];
+    let produtos = [];
 
-      if(event === "SIGNED_OUT"){
-        el("app").style.display="none";
-        show("login");
-        setModeLogin(true);
+    let lojaAtual = null;        // cliente selecionado
+    let catAtiva = "all";        // filtro de categoria
+    let cart = [];               // {id,nome,preco,qty}
+
+    // ====== LOAD LOJAS ======
+    async function loadLojas(){
+      setMsg("lojasMsg","Carregando lojas…");
+      el("lojasGrid").innerHTML = "";
+      el("lojasCount").textContent = "—";
+
+      try{
+        // Clientes ativos (publicados)
+        const { data, error } = await withTimeout(
+          sb.from("clientes")
+            .select("slug,nome,whatsapp,tipo_negocio,logo_url,cidade,ativo")
+            .eq("ativo", true)
+            .order("nome",{ascending:true}),
+          12000
+        );
+
+        if(error) throw error;
+
+        lojas = data || [];
+        el("lojasCount").textContent = String(lojas.length);
+
+        // tipos para filtro
+        const set = new Set();
+        lojas.forEach(l=>{ if(l.tipo_negocio) set.add(l.tipo_negocio); });
+        tipos = Array.from(set).sort((a,b)=>a.localeCompare(b));
+        const sel = el("tipo");
+        sel.innerHTML = `<option value="">Todos os tipos</option>` + tipos.map(t=>`<option>${esc(t)}</option>`).join("");
+
+        setMsg("lojasMsg","", "");
+
+        renderLojas();
+      }catch(e){
+        const msg = (e?.name === "AbortError")
+          ? "Tempo de resposta alto. Toque em Atualizar e tente de novo."
+          : (e?.message || String(e));
+
+        setMsg("lojasMsg", "Erro ao carregar lojas: " + msg, "err");
+        el("lojasGrid").innerHTML = "";
+        el("lojasCount").textContent = "0";
+      }
+    }
+
+    function renderLojas(){
+      const q = (el("q").value||"").trim().toLowerCase();
+      const tipo = (el("tipo").value||"").trim();
+
+      let list = lojas.slice();
+      if(q){
+        list = list.filter(l=>{
+          const blob = ((l.nome||"") + " " + (l.slug||"")).toLowerCase();
+          return blob.includes(q);
+        });
+      }
+      if(tipo){
+        list = list.filter(l=>String(l.tipo_negocio||"")===tipo);
+      }
+
+      el("lojasCount").textContent = String(list.length);
+
+      el("lojasGrid").innerHTML = list.map(l=>{
+        const logo = (l.logo_url||"").trim();
+        const cidade = (l.cidade||"").trim();
+        const whats = (l.whatsapp||"").trim();
+        const tipoN = (l.tipo_negocio||"").trim();
+
+        return `
+          <div class="card">
+            <div class="cover">
+              ${logo
+                ? `<img src="${esc(logo)}" alt="${esc(l.nome||"")}" onerror="this.remove(); this.parentElement.textContent='SEM LOGO';">`
+                : `SEM LOGO`
+              }
+            </div>
+
+            <div class="title">${esc(l.nome||"—")}</div>
+
+            <div class="row">
+              <span class="pill ok">Ativo</span>
+              <span class="meta">${esc(tipoN||"")}</span>
+            </div>
+
+            <div class="meta">${cidade ? "📍 " + esc(cidade) : "📍 Cidade: —"}</div>
+            <div class="meta">${whats ? "📲 " + esc(whats) : "📲 WhatsApp: —"}</div>
+
+            <div class="row" style="margin-top:auto">
+              <button class="btn y" onclick="openLoja('${esc(l.slug)}')">👀 Ver produtos</button>
+              <span class="meta">/${esc(l.slug)}</span>
+            </div>
+          </div>
+        `;
+      }).join("") || `<div class="msg">Nenhuma loja encontrada.</div>`;
+    }
+
+    // ====== ABRIR LOJA ======
+    window.openLoja = async function(slug){
+      setU(slug);
+      await showLoja(slug);
+    }
+
+    async function showLoja(slug){
+      const s = String(slug||"").trim();
+      if(!s) return;
+
+      lojaAtual = lojas.find(x=>x.slug===s) || null;
+
+      // se ainda não carregou lojas, carrega e tenta achar
+      if(!lojaAtual){
+        await loadLojas();
+        lojaAtual = lojas.find(x=>x.slug===s) || null;
+      }
+
+      if(!lojaAtual){
+        setMsg("lojasMsg","Loja não encontrada: " + s, "err");
         return;
       }
 
-      // SIGNED_IN / TOKEN_REFRESHED
-      if(session){
-        const ok = await requireAlfa();
-        if(ok){
-          // evita re-boot infinito
-          if(!bootedOnce) await afterLogin();
-        }
+      // UI
+      el("secLojas").style.display = "none";
+      el("secLoja").style.display = "block";
+      el("btnVoltar").style.display = "inline-flex";
+
+      // Head loja
+      el("shopNome").textContent = lojaAtual.nome || lojaAtual.slug;
+      el("shopMeta").textContent = [
+        lojaAtual.cidade ? ("📍 " + lojaAtual.cidade) : null,
+        lojaAtual.tipo_negocio ? ("🏷️ " + lojaAtual.tipo_negocio) : null
+      ].filter(Boolean).join(" • ") || "—";
+
+      // Logo
+      const logo = (lojaAtual.logo_url||"").trim();
+      const wrap = el("shopLogo");
+      wrap.innerHTML = logo
+        ? `<img src="${esc(logo)}" alt="logo" onerror="this.remove(); this.parentElement.textContent='🏪';">`
+        : `🏪`;
+
+      // WhatsApp
+      const w = String(lojaAtual.whatsapp||"").replace(/\D/g,"");
+      const whatsLink = w ? ("https://wa.me/" + w) : "https://wa.me/";
+      el("btnWhats").href = whatsLink;
+
+      // Carrega categorias e produtos ativos dessa loja
+      await loadLojaData(lojaAtual.slug);
+
+      // Zera categoria ativa
+      catAtiva = "all";
+      renderCats();
+      renderProds();
+      updateCartBar();
+    }
+
+    async function loadLojaData(cliente_slug){
+      setMsg("prodsMsg","Carregando produtos…");
+      el("cats").innerHTML = "";
+      el("prodsGrid").innerHTML = "";
+
+      try{
+        const [c1, p1] = await Promise.all([
+          withTimeout(
+            sb.from("categorias")
+              .select("id,nome,ordem,ativo,cliente_slug")
+              .eq("cliente_slug", cliente_slug)
+              .eq("ativo", true)
+              .order("ordem",{ascending:true})
+              .order("nome",{ascending:true}),
+            12000
+          ),
+          withTimeout(
+            sb.from("produtos")
+              .select("id,nome,preco,descricao,imagem_url,ativo,cliente_slug,categoria_id")
+              .eq("cliente_slug", cliente_slug)
+              .eq("ativo", true)
+              .order("nome",{ascending:true}),
+            12000
+          )
+        ]);
+
+        if(c1.error) throw c1.error;
+        if(p1.error) throw p1.error;
+
+        categorias = c1.data || [];
+        produtos = p1.data || [];
+
+        setMsg("prodsMsg","", "");
+      }catch(e){
+        const msg = (e?.name === "AbortError")
+          ? "Tempo de resposta alto. Toque em Atualizar e tente de novo."
+          : (e?.message || String(e));
+
+        setMsg("prodsMsg", "Erro ao carregar produtos: " + msg, "err");
+        categorias = [];
+        produtos = [];
+      }
+    }
+
+    function renderCats(){
+      const cats = categorias.slice();
+      const chips = [
+        `<div class="chip ${catAtiva==='all'?'active':''}" onclick="setCat('all')">Todas</div>`,
+        ...cats.map(c=>`<div class="chip ${catAtiva===String(c.id)?'active':''}" onclick="setCat('${c.id}')">${esc(c.nome)}</div>`)
+      ];
+      el("cats").innerHTML = chips.join("");
+    }
+
+    window.setCat = function(id){
+      catAtiva = String(id);
+      renderCats();
+      renderProds();
+    }
+
+    function renderProds(){
+      let list = produtos.slice();
+
+      if(catAtiva !== "all"){
+        list = list.filter(p=>String(p.categoria_id) === String(catAtiva));
+      }
+
+      const q = (el("q").value||"").trim().toLowerCase();
+      if(q){
+        list = list.filter(p=>{
+          const blob = ((p.nome||"") + " " + (p.descricao||"")).toLowerCase();
+          return blob.includes(q);
+        });
+      }
+
+      el("prodsGrid").innerHTML = list.map(p=>{
+        const img = (p.imagem_url||"").trim();
+        const desc = (p.descricao||"").trim();
+        const item = cart.find(x=>String(x.id)===String(p.id));
+        const qty = item ? item.qty : 0;
+
+        return `
+          <div class="pCard">
+            <div class="pImg">
+              ${img
+                ? `<img src="${esc(img)}" alt="${esc(p.nome||"")}" onerror="this.remove(); this.parentElement.textContent='SEM FOTO';">`
+                : `SEM FOTO`
+              }
+            </div>
+
+            <div class="pTop">
+              <div class="pName">${esc(p.nome||"—")}</div>
+              <div class="pPrice">${money(p.preco||0)}</div>
+            </div>
+
+            ${desc ? `<div class="pDesc">${esc(desc)}</div>` : `<div class="pDesc">—</div>`}
+
+            <div class="pActions">
+              <div class="qty">
+                <button class="qbtn" onclick="dec('${p.id}')">−</button>
+                <strong>${qty}</strong>
+                <button class="qbtn" onclick="inc('${p.id}','${esc(p.nome||"")}',${Number(p.preco||0)})">+</button>
+              </div>
+              <button class="btn y" onclick="inc('${p.id}','${esc(p.nome||"")}',${Number(p.preco||0)})">Adicionar</button>
+            </div>
+          </div>
+        `;
+      }).join("") || `<div class="msg">Nenhum produto encontrado.</div>`;
+    }
+
+    // ====== CARRINHO ======
+    window.inc = function(id, nome, preco){
+      id = String(id);
+      const it = cart.find(x=>x.id===id);
+      if(it) it.qty += 1;
+      else cart.push({ id, nome, preco:Number(preco||0), qty:1 });
+      updateCartBar();
+      renderProds();
+    }
+    window.dec = function(id){
+      id = String(id);
+      const it = cart.find(x=>x.id===id);
+      if(!it) return;
+      it.qty -= 1;
+      if(it.qty <= 0) cart = cart.filter(x=>x.id!==id);
+      updateCartBar();
+      renderProds();
+    }
+
+    function updateCartBar(){
+      const itens = cart.reduce((a,b)=>a + (b.qty||0), 0);
+      const total = cart.reduce((a,b)=>a + (b.qty||0)*(b.preco||0), 0);
+      el("itens").textContent = String(itens);
+      el("total").textContent = money(total);
+    }
+
+    el("btnLimpar").addEventListener("click", ()=>{
+      cart = [];
+      updateCartBar();
+      renderProds();
+    });
+
+    el("btnFinalizar").addEventListener("click", ()=>{
+      if(!lojaAtual){
+        alert("Selecione uma loja primeiro.");
+        return;
+      }
+      const w = String(lojaAtual.whatsapp||"").replace(/\D/g,"");
+      if(!w){
+        alert("Essa loja não tem WhatsApp cadastrado.");
+        return;
+      }
+      if(!cart.length){
+        alert("Seu carrinho está vazio.");
+        return;
+      }
+
+      const linhas = [];
+      linhas.push(`Olá! Quero fazer um pedido na *${lojaAtual.nome||lojaAtual.slug}* ✅`);
+      linhas.push("");
+      cart.forEach(it=>{
+        linhas.push(`• ${it.qty}x ${it.nome} — ${money((it.preco||0)*(it.qty||0))}`);
+      });
+      linhas.push("");
+      const total = cart.reduce((a,b)=>a + (b.qty||0)*(b.preco||0), 0);
+      linhas.push(`*Total:* ${money(total)}`);
+      linhas.push("");
+      linhas.push("Pode confirmar, por favor?");
+
+      const msg = encodeURIComponent(linhas.join("\n"));
+      const url = `https://wa.me/${w}?text=${msg}`;
+      window.open(url, "_blank");
+    });
+
+    // ====== UI NAV ======
+    el("btnVoltar").addEventListener("click", ()=>{
+      setU("");
+      lojaAtual = null;
+      categorias = [];
+      produtos = [];
+      cart = [];
+      updateCartBar();
+
+      el("secLoja").style.display = "none";
+      el("secLojas").style.display = "block";
+      el("btnVoltar").style.display = "none";
+
+      setMsg("prodsMsg","", "");
+      setMsg("lojasMsg","", "");
+      renderLojas();
+    });
+
+    el("btnAtualizar").addEventListener("click", async ()=>{
+      const u = parseU();
+      await loadLojas();
+      if(u) await showLoja(u);
+    });
+
+    el("q").addEventListener("input", ()=>{
+      // se estiver em loja, filtra produtos; senão filtra lojas
+      if(lojaAtual) renderProds();
+      else renderLojas();
+    });
+
+    el("tipo").addEventListener("change", ()=>{
+      if(!lojaAtual) renderLojas();
+    });
+
+    // ====== INIT ======
+    window.addEventListener("popstate", async ()=>{
+      const u = parseU();
+      if(u) await showLoja(u);
+      else{
+        // voltou pro início
+        lojaAtual = null;
+        el("secLoja").style.display = "none";
+        el("secLojas").style.display = "block";
+        el("btnVoltar").style.display = "none";
+        renderLojas();
       }
     });
-  })();
-</script>
 
+    (async ()=>{
+      await loadLojas();
+      const u = parseU();
+      if(u) await showLoja(u);
+    })();
+  </script>
 </body>
 </html>
