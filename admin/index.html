@@ -326,8 +326,8 @@
       </div>
     </div>
     <div class="row">
-      <button class="btn ghost" id="btnReload">🔄 Recarregar</button>
-      <button class="btn y" id="btnSair">🚪 Sair</button>
+      <button class="btn ghost" id="btnReload">🔄</button>
+      <button class="btn y" id="btnSair">🚪</button>
     </div>
   </div>
 
@@ -362,15 +362,40 @@
         <div class="field">
           <label>Tipo de negócio</label>
           <select id="c_tipo">
-            <option value="">Selecione…</option>
+            <option value="">Selecione…</option
+                                         
             <option>Restaurante</option>
             <option>Mercado</option>
             <option>Padaria</option>
             <option>Lanchonete</option>
+            <option>Cafeteria</option>
+            <option>Cervejaria Artesanal</option>
+            <option>Produtos Orgânicos e Naturais</option>
+            <option>Pousada</option>
+            <option>Hotel</option>
+            <option>Camping</option>
+            <option>Glamping</option>
+            <option>Hostel</option>
+            <option>Aluguel de Temporada (Casa/Chalé)</option>
+            <option>Guia de Turismo / Condutor</option>
+            <option>Agência de Passeios</option>
+            <option>Atrativo Natural (Cachoeiras)</option>
+            <option>Aluguel de Equipamentos</option>
+            <option>Transporte / Transfer</option>
+            <option>Terapias Holísticas</option>
+            <option>Centro de Yoga / Meditação</option>
+            <option>Spa e Massoterapia</option>
+            <option>Espaço de Cursos e Retiros</option>
             <option>Farmácia</option>
             <option>Petshop</option>
-            <option>Pousada</option>
+            <option>Artesanato e Suvenires</option>
+            <option>Loja de Roupas / Cristais</option>
+            <option>Posto de Combustível</option>
+            <option>Oficina Mecânica / Borracharia</option>
             <option>Serviços</option>
+            <option>Construção e Reformas</option>
+            <option>Imobiliária</option>
+            <option>Eventos e Produção Cultural</option>
             <option>Outro</option>
           </select>
         </div>
@@ -622,8 +647,9 @@
 <script>
   // ====== CONFIG ======
   const SUPABASE_URL = "https://rgsnmxspyywwouhcdwkj.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_nHPsCV3y79FgexEMAeANWQ_P6jWRDd1";
-
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc25teHNweXl3d291aGNkd2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5MzI3NzIsImV4cCI6MjA4MzUwODc3Mn0.dxj35rJ_g_952_VvwV4mjFraB1b0BLdsxHw_wYiQNQI";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); let session = null;
+  
   // ✅ Mantém o que funciona: endpoints separados (/clientes, /categorias, /produtos)
   const API_BASE = "https://cafeteria-gamma-orpin.vercel.app/api/admin";
 
